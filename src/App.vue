@@ -3,7 +3,7 @@
     <div class="navbar">
       <h1>Project navigator</h1>
       <button class="btn btn-1 btn-sep icon-plus"
-              onclick="document.getElementById('id01').style.display='block'">
+              v-on:click="showCreateNewProjectDialog=true">
         Create new project
       </button>
     </div>
@@ -17,27 +17,29 @@
       </div>
     </div>
 
-    <div id="id01" class="newProjectModal">
+    <div v-if="showCreateNewProjectDialog" id="id01" class="newProjectModal">
       <form class="newProjectModal-content">
         <div class="formHeader">
           <h1>Create new project</h1>
-          <span onclick="document.getElementById('id01').style.display='none'" class="closeForm"
+          <span v-on:click="showCreateNewProjectDialog=false" class="closeForm"
                 title="Close form">X</span>
         </div>
         <hr>
         <div class="newProjectForm">
           <label for="Name"><b>Name</b></label>
-          <input type="text" placeholder="Enter project name" name="name" required>
+          <input type="text" placeholder="Enter project name"
+                 name="name" required v-model="newName">
 
           <label for="Description"><b>Description</b></label>
-          <input type="text" placeholder="Enter project description" name="description">
+          <input type="text" placeholder="Enter project description"
+                 name="description" v-model="newDescription">
 
           <div class="newProjectButtons">
-            <button type="button" onclick="document.getElementById('id01').style.display='none'"
+            <button type="button" v-on:click="showCreateNewProjectDialog=false"
                     class="cancelbtn">
               Cancel
             </button>
-            <button type="submit" class="signupbtn">Sign Up</button>
+            <button type="submit" class="signupbtn" v-on:click="addProject()">Create</button>
           </div>
         </div>
       </form>
@@ -55,7 +57,26 @@ export default {
         { name: 'Smandoprochi', description: 'Better then tamagochi' },
         { name: 'Diagrams', description: 'Use-case diagrams' },
         { name: 'Bricky', description: '' }],
+      newName: '',
+      newDescription: '',
+      currentProject: null,
+      showCreateNewProjectDialog: false,
     };
+  },
+
+  methods: {
+    addProject() {
+      // Creating new list with new created project
+      this.projects = [...this.projects, { name: this.newName, description: this.newDescription }];
+      this.showCreateNewProjectDialog = false;
+    },
+  },
+
+  watch: {
+    showCreateNewProjectDialog() {
+      // eslint-disable-next-line no-console
+      console.log(this.showCreateNewProjectDialog);
+    },
   },
 };
 </script>
