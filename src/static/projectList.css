@@ -1,0 +1,258 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+img {
+  width: 100%;
+  height: 200px;
+  object-fit: fill
+}
+
+.column {
+  float: left;
+  width: 33%;
+  padding: 0 10px;
+}
+
+.projectTable {margin: 20px -5px;}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: left;
+  background-color: #f1f1f1;
+  margin-bottom: 30px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.navbar {
+  width: 100%;
+  padding: 4px 20px;
+  overflow: hidden;
+  background-color: #333;
+  position: sticky;
+  position: -webkit-sticky;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar h1{
+  color: white;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* Add a background color when the inputs get focus */
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for all buttons */
+/* .navbar button  {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  opacity: 0.9;
+} */
+
+/* .navbar button:hover {
+  opacity:1;
+} */
+
+
+/* Add padding to container elements */
+.newProjectForm {
+  padding: 16px;
+}
+
+.newProjectModal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #474e5dad;
+  padding-top: 50px;
+}
+
+.newProjectModal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 15px;
+}
+
+.formHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.closeForm {
+  font-size: 40px;
+  font-weight: lighter;
+  color: #000000;
+}
+
+.closeForm:hover,
+.closeForm:focus {
+  color: #666666;
+}
+
+.closeForm:hover,
+.closeForm:focus,
+.cancelbtn:hover,
+.cancelbtn:focus,
+.signupbtn:hover,
+.cancelbtn:focus {
+  cursor: pointer;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  background-color: #fa6e64;
+}
+
+.signupbtn {
+  background-color: #69c1f5;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 25%;
+}
+
+.newProjectButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+/*
+.newProjectButtons::after {
+  content: "";
+  clear: both;
+  display: table;
+} */
+
+.btn {
+  border: none;
+  font-family: 'Lato';
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  padding: 5px 80px;
+  display: inline-block;
+  margin: 5px 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  outline: none;
+  position: relative;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.btn:after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+/* Pseudo elements for icons */
+.btn:before {
+  font-family: 'FontAwesome';
+  /* speak: none; */
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn-sep {
+  padding: 10px 10px 10px 70px;
+}
+
+.btn-sep:before {
+  background: rgba(0,0,0,0.15);
+}
+
+.btn-1 {
+  background: #505050;
+  color: #fff;
+}
+
+.btn-1:hover {
+  background: #888888;
+}
+
+.btn-1:active {
+  background: #818181;
+  top: 2px;
+}
+
+.btn-1:before {
+  position: absolute;
+  height: 100%;
+  left: 0;
+  top: 0px;
+  line-height: 2;
+  font-size: 140%;
+  width: 60px;
+}
+
+.icon-plus:before {
+  content: "\f055";
+}
