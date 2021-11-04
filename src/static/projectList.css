@@ -118,6 +118,11 @@ hr {
   margin-bottom: 15px;
 }
 
+select {
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
 .formHeader {
   display: flex;
   flex-direction: row;

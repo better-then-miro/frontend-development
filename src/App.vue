@@ -18,7 +18,7 @@
     </div>
     <div class="projectTable" v-if="state==='project navigator'">
       <div class="column" v-for="project in projects" v-bind:key="project.id">
-        <div class="card">
+        <div class="card" v-on:click="openProject(project)">
           <!--<img src={{ project.image }}>-->
           <p><b>Name:</b> {{ project.name }}</p>
           <p><b>Description:</b> {{ project.description }}</p>
@@ -32,6 +32,7 @@
           <!--<img src={{ project.image }}>-->
           <p><b>Name:</b> {{ diagram.name }}</p>
           <p><b>Description:</b> {{ diagram.description }}</p>
+          <p><b>Type:</b> {{ diagram.type }}</p>
         </div>
       </div>
     </div>
@@ -45,12 +46,12 @@
         </div>
         <hr>
         <div class="newProjectForm">
-          <label for="Name"><b>Name</b></label>
-          <input type="text" placeholder="Enter project name"
+          <label for="NameProj"><b>Name</b></label>
+          <input id="NameProj" type="text" placeholder="Enter project name"
                  name="name" required v-model="newName">
 
-          <label for="Description"><b>Description</b></label>
-          <input type="text" placeholder="Enter project description"
+          <label for="DescriptionProj"><b>Description</b></label>
+          <input id="DescriptionProj" type="text" placeholder="Enter project description"
                  name="description" v-model="newDescription">
 
           <div class="newProjectButtons">
@@ -74,13 +75,17 @@
         <hr>
         <div class="newProjectForm">
           <label for="Name"><b>Name</b></label>
-          <input type="text" placeholder="Enter project name"
-                 name="name" required v-model="newName">
+          <input id="Name" type="text" placeholder="Enter diagram name"
+                 name="name" v-model="newName" required>
 
           <label for="Description"><b>Description</b></label>
-          <input type="text" placeholder="Enter project description"
+          <input id="Description" type="text" placeholder="Enter diagram description"
                  name="description" v-model="newDescription">
-
+          <label><b>Diagram Type</b></label>
+          <select>
+            <option>strict</option>
+            <option>free</option>
+          </select>
           <div class="newProjectButtons">
             <button type="button" v-on:click="showCreateNewDiagramDialog=false"
                     class="cancelbtn">
@@ -107,6 +112,7 @@ export default {
       diagrams: [],
       newName: '',
       newDescription: '',
+      newDiagramType: '',
       currentProject: null,
       currentDiagram: null,
       showCreateNewProjectDialog: false,
@@ -126,7 +132,26 @@ export default {
       // Creating new list with new created project
       this.projects = [...this.projects, newProject];
       this.showCreateNewProjectDialog = false;
-      this.currentProject = newProject;
+      this.showProject(newProject);
+    },
+
+    openProject(project) {
+      this.showProject(project);
+      this.diagrams = this.loadDiagramsFromServer(project.id);
+    },
+
+    loadDiagramsFromServer(pid) {
+      return [
+        { id: 0, projID: pid, name: 'Test Diagram 1', description: '', type: 'strict' },
+        { id: 1, projID: pid, name: 'Test Diagram 2', description: '', type: 'strict' },
+        { id: 2, projID: pid, name: 'Test Diagram 3', description: '', type: 'free' },
+        { id: 3, projID: pid, name: 'Test Diagram 4', description: '', type: 'strict' },
+        { id: 4, projID: pid, name: 'Test Diagram 5', description: '', type: 'free' },
+      ];
+    },
+
+    showProject(project) {
+      this.currentProject = project;
       this.state = 'diagram navigator';
       this.newName = '';
       this.newDescription = '';
@@ -135,13 +160,19 @@ export default {
     addDiagram() {
       const newDiagram = {
         id: this.projects.length,
+        projID: this.currentProject.id,
         name: this.newName,
         description: this.newDescription,
+        type: this.newDiagramType,
       };
       this.diagrams = [...this.diagrams, newDiagram];
       this.showCreateNewDiagramDialog = false;
-      this.currentDiagram = newDiagram;
-      // this.state = 'diagram editor';
+      this.showDiagram(newDiagram);
+    },
+
+    showDiagram(diagram) {
+      this.currentDiagram = diagram;
+      this.state = 'diagram editor';
       this.newName = '';
       this.newDescription = '';
     },
