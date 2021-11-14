@@ -104,6 +104,7 @@
 <script>
 // import Project from './entity/project';
 import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -142,7 +143,9 @@ export default {
 
     openProject(project) {
       this.showProject(project);
-      this.diagrams = loadDiagramsFromServer(project.id);
+      // loadDiagramsFromServer(project.id)
+      // .then((response) => { this.diagrams = response.data; console.log(this.diagrams); });
+      axios.get('/getDiagrams').then((response) => { this.diagrams = response.data; });
     },
 
     showProject(project) {
