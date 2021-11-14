@@ -38,6 +38,7 @@
     </div>
 
     <div v-if="showCreateNewProjectDialog" id="id01" class="newProjectModal">
+      <!-- TODO: form @submit handling -->
       <form class="newProjectModal-content">
         <div class="formHeader">
           <h1>Create new project</h1>
@@ -101,14 +102,14 @@
 </template>
 
 <script>
+// import Project from './entity/project';
+import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+
 export default {
   name: 'App',
   data() {
     return {
-      projects: [{ id: 0, name: 'Project 1', description: 'Project description' },
-        { id: 1, name: 'Smandoprochi', description: 'Better then tamagochi' },
-        { id: 2, name: 'Diagrams', description: 'Use-case diagrams' },
-        { id: 3, name: 'Bricky', description: '' }],
+      projects: [],
       diagrams: [],
       newName: '',
       newDescription: '',
@@ -119,6 +120,10 @@ export default {
       showCreateNewDiagramDialog: false,
       state: 'project navigator',
     };
+  },
+
+  mounted() {
+    this.projects = loadProjectsFromServer();
   },
 
   methods: {
@@ -137,17 +142,7 @@ export default {
 
     openProject(project) {
       this.showProject(project);
-      this.diagrams = this.loadDiagramsFromServer(project.id);
-    },
-
-    loadDiagramsFromServer(pid) {
-      return [
-        { id: 0, projID: pid, name: 'Test Diagram 1', description: '', type: 'strict' },
-        { id: 1, projID: pid, name: 'Test Diagram 2', description: '', type: 'strict' },
-        { id: 2, projID: pid, name: 'Test Diagram 3', description: '', type: 'free' },
-        { id: 3, projID: pid, name: 'Test Diagram 4', description: '', type: 'strict' },
-        { id: 4, projID: pid, name: 'Test Diagram 5', description: '', type: 'free' },
-      ];
+      this.diagrams = loadDiagramsFromServer(project.id);
     },
 
     showProject(project) {
