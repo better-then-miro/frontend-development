@@ -1,3 +1,5 @@
+
+
 <template>
   <div>
     <div class="navbar">
@@ -19,7 +21,6 @@
     <div class="projectTable" v-if="state==='project navigator'">
       <div class="column" v-for="project in projects" v-bind:key="project.id">
         <div class="card" v-on:click="openProject(project)">
-          <!--<img src={{ project.image }}>-->
           <p><b>Name:</b> {{ project.name }}</p>
           <p><b>Description:</b> {{ project.description }}</p>
         </div>
@@ -27,14 +28,17 @@
     </div>
 
     <div class="projectTable" v-else-if="state==='diagram navigator'">
-      <div class="column" v-for="diagram in diagrams" v-bind:key="diagram.id">
-        <div class="card">
-          <!--<img src={{ project.image }}>-->
+      <div class="column" v-for="diagram in diagrams" v-bind:key="diagram.diagramID">
+        <div class="card" @click="openDiagram(diagram)">
           <p><b>Name:</b> {{ diagram.name }}</p>
           <p><b>Description:</b> {{ diagram.description }}</p>
           <p><b>Type:</b> {{ diagram.type }}</p>
         </div>
       </div>
+    </div>
+
+    <div v-else-if="state==='diagram editor'" class="diagramEditor">
+      <editing-panel />
     </div>
 
     <div v-if="showCreateNewProjectDialog" id="id01" class="newProjectModal">
@@ -98,16 +102,18 @@
       </form>
     </div>
   </div>
-
 </template>
 
+
 <script>
-// import Project from './entity/project';
-import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+/* eslint-disable no-console */
 import axios from 'axios';
+import EditingPanel from './boundary/EditingPanel/EditingPanel';
+import { loadProjectsFromServer } from './boundary/serverProtocol';
 
 export default {
   name: 'App',
+  components: { EditingPanel },
   data() {
     return {
       projects: [],
@@ -145,7 +151,9 @@ export default {
       this.showProject(project);
       // loadDiagramsFromServer(project.id)
       // .then((response) => { this.diagrams = response.data; console.log(this.diagrams); });
-      axios.get('/getDiagrams').then((response) => { this.diagrams = response.data; });
+      axios.get('http://127.0.0.1:5000/getDiagrams').then(
+
+        (response) => { this.diagrams = response.data; console.log(response); });
     },
 
     showProject(project) {
@@ -166,6 +174,11 @@ export default {
       this.diagrams = [...this.diagrams, newDiagram];
       this.showCreateNewDiagramDialog = false;
       this.showDiagram(newDiagram);
+    },
+
+    openDiagram(diagram) {
+      this.showDiagram(diagram);
+      // TODO - Get content of diagram
     },
 
     showDiagram(diagram) {
