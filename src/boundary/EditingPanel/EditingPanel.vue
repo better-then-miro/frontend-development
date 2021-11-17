@@ -32,6 +32,8 @@ export default {
       this.snap.attr({ viewBox: '0 0 500 500' });
       const rect = this.snap.rect(20, 20, 40, 40);
       const circle = this.snap.circle(60, 150, 50);
+      rect.data('id', 0);
+      circle.data('id', 1);
       rect.drag(dragMove, dragStart, dragStop);
       circle.drag(dragMove, dragStart, dragStop);
     },

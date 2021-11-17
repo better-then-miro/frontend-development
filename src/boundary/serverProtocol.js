@@ -19,10 +19,16 @@ export function loadDiagramsFromServer(pid) {
 
 export function loadProjectsFromServer() {
   // Example of request - use with Sandbox
-  axios.get('/example2').then(response => console.log(response));
+  axios.get('http://127.0.0.1:5000//example2').then(response => console.log(response));
 
   return [new Project(0, 'Project 1', 'Project description'),
     new Project(1, 'Smandoprochi', 'Better then tamagochi'),
     new Project(2, 'Diagrams', 'Use-case diagrams'),
     new Project(3, 'Bricky', '')];
+}
+
+export function updateBlockProperties(properties) {
+  console.log(properties);
+  axios.post('http://127.0.0.1:5000//updateBlockProperties', properties)
+    .then(response => console.log(response));
 }
