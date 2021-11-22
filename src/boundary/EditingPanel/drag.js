@@ -29,11 +29,10 @@ export const dragStop = function () {
   const coords = this.node.getBoundingClientRect();
 
   const properties = {
-    block_id: this.data('id'),
-    'x_left:': Math.round(coords.left),
-    'y_top:': Math.round(coords.top),
-    'width:': Math.round(coords.width),
-    'Height:': Math.round(coords.height),
+    Id: this.data('id'),
+    coords: [Math.round(coords.left), Math.round(coords.top)],
+    width: Math.round(coords.width),
+    height: Math.round(coords.height),
   };
 
   updateBlockProperties(properties);

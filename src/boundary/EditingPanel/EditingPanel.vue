@@ -4,12 +4,13 @@
 
 <script>
 import Snap from 'snapsvg-cjs';
+import { dragMove, dragStart, dragStop, setBounds } from './drag';
 import { getDiagramContent } from '../serverProtocol';
-import { setBounds } from './drag';
 
 
 export default {
   name: 'EditingPanel',
+  props: ['currentDiagram'],
   data() {
     return {
       snap: null,
@@ -32,7 +33,29 @@ export default {
     init() {
       setBounds(10, 10, 510, 510);
       this.snap.attr({ viewBox: '0 0 500 500' });
-      getDiagramContent(this.snap);
+      // eslint-disable-next-line no-console
+      console.log(this.currentDiagram);
+      getDiagramContent(this.currentDiagram.diagramID)
+        .then((data) => {
+          data.blocks.forEach((block) => {
+            // eslint-disable-next-line no-console
+            console.log(block);
+            if (block.Type === 'Std') {
+              const newRect = this.snap.rect(
+                block.coords[0], block.coords[0],
+                block.width, block.height);
+              newRect.data('id', block.Id);
+              newRect.drag(dragMove, dragStart, dragStop);
+            } else if (block.type === 'circle') {
+              const newEllipse = this.snap.ellipse(
+                block.coords[0], block.coords[1],
+                block.width, block.height);
+              newEllipse.data('id', block.Id);
+              newEllipse.drag(dragMove, dragStart, dragStop);
+            }
+          });
+        },
+        );
     },
   },
 };

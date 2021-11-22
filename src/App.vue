@@ -38,7 +38,7 @@
     </div>
 
     <div v-else-if="state==='diagram editor'" class="diagramEditor">
-      <editing-panel />
+      <editing-panel v-bind:currentDiagram="this.currentDiagram"/>
     </div>
 
     <div v-if="showCreateNewProjectDialog" id="id01" class="newProjectModal">
@@ -107,6 +107,7 @@
 
 <script>
 import EditingPanel from './boundary/EditingPanel/EditingPanel';
+// eslint-disable-next-line no-unused-vars
 import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
 import Project from './entity/project';
 import Diagram from './entity/diagram';
@@ -190,28 +191,7 @@ export default {
 
     openDiagram(diagram) {
       this.showDiagram(diagram);
-      // eslint-disable-next-line no-console
-      console.log(diagram);
       // TODO - Get content of diagram
-      getDiagramContent(diagram.diagramID)
-        .then((data) => {
-        // eslint-disable-next-line no-console
-          console.log(data);
-        // response.data.forEach((block) => {
-        //   if (block.type === 'rect') {
-        //     const newRect = this.snap.rect(block.x_left, block.y_top,
-        //       block.width, block.height);
-        //     newRect.data('id', block.blockID);
-        //     newRect.drag(dragMove, dragStart, dragStop);
-        //   } else if (block.type === 'circle') {
-        //     const newEllipse = this.snap.ellipse(block.x_left, block.y_top,
-        //       block.width, block.height);
-        //     newEllipse.data('id', block.blockID);
-        //     newEllipse.drag(dragMove, dragStart, dragStop);
-        //   }
-        // });
-        },
-        );
     },
 
     showDiagram(diagram) {
