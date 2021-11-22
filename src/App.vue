@@ -106,10 +106,11 @@
 
 
 <script>
-/* eslint-disable no-console */
-import axios from 'axios';
 import EditingPanel from './boundary/EditingPanel/EditingPanel';
-import { loadProjectsFromServer } from './boundary/serverProtocol';
+import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import Project from './entity/project';
+import Diagram from './entity/diagram';
+// import { dragMove, dragStart, dragStop } from './boundary/EditingPanel/drag';
 
 export default {
   name: 'App',
@@ -130,7 +131,14 @@ export default {
   },
 
   mounted() {
-    this.projects = loadProjectsFromServer();
+    // eslint-disable-next-line no-return-assign
+    loadProjectsFromServer().then((data) => {
+      // eslint-disable-next-line no-console
+      this.projects = [];
+      data.forEach((project) => {
+        this.projects.push(new Project(project.Id, project.name, project.description));
+      });
+    });
   },
 
   methods: {
@@ -149,11 +157,15 @@ export default {
 
     openProject(project) {
       this.showProject(project);
-      // loadDiagramsFromServer(project.id)
-      // .then((response) => { this.diagrams = response.data; console.log(this.diagrams); });
-      axios.get('http://127.0.0.1:5000/getDiagrams').then(
-
-        (response) => { this.diagrams = response.data; console.log(response); });
+      // eslint-disable-next-line no-return-assign
+      loadDiagramsFromServer(project.id).then((data) => {
+        this.diagrams = [];
+        data.forEach((diagram) => {
+          this.diagrams.push(
+            new Diagram(diagram.Id, project.id, diagram.name, diagram.description, diagram.type),
+          );
+        });
+      });
     },
 
     showProject(project) {
@@ -178,7 +190,28 @@ export default {
 
     openDiagram(diagram) {
       this.showDiagram(diagram);
+      // eslint-disable-next-line no-console
+      console.log(diagram);
       // TODO - Get content of diagram
+      getDiagramContent(diagram.diagramID)
+        .then((data) => {
+        // eslint-disable-next-line no-console
+          console.log(data);
+        // response.data.forEach((block) => {
+        //   if (block.type === 'rect') {
+        //     const newRect = this.snap.rect(block.x_left, block.y_top,
+        //       block.width, block.height);
+        //     newRect.data('id', block.blockID);
+        //     newRect.drag(dragMove, dragStart, dragStop);
+        //   } else if (block.type === 'circle') {
+        //     const newEllipse = this.snap.ellipse(block.x_left, block.y_top,
+        //       block.width, block.height);
+        //     newEllipse.data('id', block.blockID);
+        //     newEllipse.drag(dragMove, dragStart, dragStop);
+        //   }
+        // });
+        },
+        );
     },
 
     showDiagram(diagram) {
