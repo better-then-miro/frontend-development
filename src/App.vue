@@ -106,7 +106,7 @@
 
 
 <script>
-import EditingPanel from './boundary/EditingPanel/EditingPanel';
+import EditingPanel from './boundary/EditingPanel/DiagramUI';
 // eslint-disable-next-line no-unused-vars
 import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
 import Project from './entity/project';
