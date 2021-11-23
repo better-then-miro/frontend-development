@@ -19,7 +19,7 @@
       </button>
     </div>
     <div class="projectTable" v-if="state==='project navigator'">
-      <div class="column" v-for="project in projects" v-bind:key="project.id">
+      <div class="column" v-for="project in projects" v-bind:key="project.Id">
         <div class="card" v-on:click="openProject(project)">
           <p><b>Name:</b> {{ project.name }}</p>
           <p><b>Description:</b> {{ project.description }}</p>
@@ -28,11 +28,11 @@
     </div>
 
     <div class="projectTable" v-else-if="state==='diagram navigator'">
-      <div class="column" v-for="diagram in diagrams" v-bind:key="diagram.diagramID">
+      <div class="column" v-for="diagram in currentProject.diagrams" v-bind:key="diagram.Id">
         <div class="card" @click="openDiagram(diagram)">
           <p><b>Name:</b> {{ diagram.name }}</p>
           <p><b>Description:</b> {{ diagram.description }}</p>
-          <p><b>Type:</b> {{ diagram.type }}</p>
+          <p><b>Type:</b> {{ diagram.Type }}</p>
         </div>
       </div>
     </div>
@@ -111,7 +111,6 @@ import EditingPanel from './boundary/EditingPanel/EditingPanel';
 import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
 import Project from './entity/project';
 import Diagram from './entity/diagram';
-// import { dragMove, dragStart, dragStop } from './boundary/EditingPanel/drag';
 
 export default {
   name: 'App',
@@ -119,7 +118,6 @@ export default {
   data() {
     return {
       projects: [],
-      diagrams: [],
       newName: '',
       newDescription: '',
       newDiagramType: '',
@@ -132,24 +130,13 @@ export default {
   },
 
   mounted() {
-    // eslint-disable-next-line no-return-assign
-    loadProjectsFromServer().then((data) => {
-      // eslint-disable-next-line no-console
-      this.projects = [];
-      data.forEach((project) => {
-        this.projects.push(new Project(project.Id, project.name, project.description));
-      });
-    });
+    this.projects = loadProjectsFromServer();
   },
 
   methods: {
     addProject() {
-      // TODO: Creating project should be done by server... probably... (UID?)
-      const newProject = {
-        id: this.projects.length,
-        name: this.newName,
-        description: this.newDescription,
-      };
+      // TODO: Creating project should be done by server
+      const newProject = new Project(this.projects.length, this.newName, this.newDescription);
       // Creating new list with new created project
       this.projects = [...this.projects, newProject];
       this.showCreateNewProjectDialog = false;
@@ -159,14 +146,7 @@ export default {
     openProject(project) {
       this.showProject(project);
       // eslint-disable-next-line no-return-assign
-      loadDiagramsFromServer(project.id).then((data) => {
-        this.diagrams = [];
-        data.forEach((diagram) => {
-          this.diagrams.push(
-            new Diagram(diagram.Id, project.id, diagram.name, diagram.description, diagram.type),
-          );
-        });
-      });
+      this.currentProject.diagrams = loadDiagramsFromServer(project.Id);
     },
 
     showProject(project) {
@@ -177,14 +157,14 @@ export default {
     },
 
     addDiagram() {
-      const newDiagram = {
-        id: this.projects.length,
-        projID: this.currentProject.id,
-        name: this.newName,
-        description: this.newDescription,
-        type: this.newDiagramType,
-      };
-      this.diagrams = [...this.diagrams, newDiagram];
+      // TODO: Creating of diagram request to server
+      const newDiagram = new Diagram(
+        this.projects.length,
+        this.newName,
+        this.newDescription,
+        this.newDiagramType,
+      );
+      this.currentProject.diagrams = [...this.currentProject.diagrams, newDiagram];
       this.showCreateNewDiagramDialog = false;
       this.showDiagram(newDiagram);
     },

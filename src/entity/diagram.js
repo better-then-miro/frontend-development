@@ -1,14 +1,17 @@
 export default class Diagram {
-  diagramID = null;
-  projectID = null;
+  Id = null;
   name = '';
   description = '';
-  type = '';
-  constructor(diagramID, projectID, name, description, type) {
-    this.diagramID = diagramID;
-    this.projectID = projectID;
+  Type = '';
+  blocks = [];
+  links = [];
+  constructor(Id, name, description, Type, blocks = [], links = []) {
+    this.Id = Id;
+    Object.defineProperty(this, 'Id', { writable: false }); // readonly ID
     this.name = name;
     this.description = description;
-    this.type = type;
+    this.Type = Type;
+    this.blocks = blocks;
+    this.links = links;
   }
 }

@@ -3,24 +3,39 @@
 // import Diagram from '../entity/diagram';
 /* eslint-disable no-console */
 
+import Diagram from '../entity/diagram';
+import Project from '../entity/project';
+
 const axios = require('axios');
 
-// TODO server request: see "Server Protocol Boundary API"
 export function loadDiagramsFromServer(pId) {
-  return axios.get('http://127.0.0.1:5000/getDiagrams', { params: { Id: pId } })
-    .then(response => response.data);
+  const diagrams = [];
+  axios.get('http://127.0.0.1:5000/getDiagrams', { params: { Id: pId } })
+    .then((response) => {
+      const data = response.data;
+      data.forEach((diagram) => {
+        diagrams.push(
+          new Diagram(diagram.Id, diagram.name, diagram.description, diagram.Type),
+        );
+      });
+    });
+  return diagrams;
 }
 
-// eslint-disable-next-line no-unused-vars
 export function loadProjectsFromServer() {
-  // Example of request - use with Sandbox
-  // eslint-disable-next-line no-param-reassign,no-return-assign
-  return axios.get('http://127.0.0.1:5000/getProjectList')
-    .then(response => response.data);
+  const projects = [];
+  axios.get('http://127.0.0.1:5000/getProjectList')
+    .then((response) => {
+      const data = response.data;
+      data.forEach((project) => {
+        projects.push(new Project(project.Id, project.name, project.description));
+      });
+    });
+  return projects;
 }
 
 export function updateBlockProperties(properties) {
-  console.log(properties);
+  console.log('Properties to update: ', properties);
   axios.post('http://127.0.0.1:5000/updateBlockProperties', properties)
     .then(response => console.log(response));
 }

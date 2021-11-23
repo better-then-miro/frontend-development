@@ -14,8 +14,6 @@ export default {
   data() {
     return {
       snap: null,
-      radius: 15,
-      myCircle: null,
     };
   },
 
@@ -23,23 +21,18 @@ export default {
     this.snap = Snap('#mySvg');
     this.init();
   },
-  watch: {
-    radius() {
-      this.myCircle.attr({ r: this.radius });
-    },
-  },
 
   methods: {
     init() {
       setBounds(10, 10, 510, 510);
       this.snap.attr({ viewBox: '0 0 500 500' });
       // eslint-disable-next-line no-console
-      console.log(this.currentDiagram);
-      getDiagramContent(this.currentDiagram.diagramID)
+      console.log('Current diagram: ', this.currentDiagram);
+      getDiagramContent(this.currentDiagram.Id)
         .then((data) => {
           data.blocks.forEach((block) => {
             // eslint-disable-next-line no-console
-            console.log(block);
+            console.log('Block from getDiagramContent: ', block);
             if (block.Type === 'Std') {
               const newRect = this.snap.rect(
                 block.coords[0], block.coords[0],
