@@ -23,16 +23,23 @@ export const dragStart = function () {
 export const dragStop = function () {
   // eslint-disable-next-line no-console
   console.log('Stop dragging');
-
+  // eslint-disable-next-line no-console
+  console.log(this.data('Type'));
   // TODO entity modification
   const coords = this.getBBox();
 
   const properties = {
-    Id: this.data('id'),
-    coords: [Math.round(coords.cx), Math.round(coords.cy)],
+    Id: this.data('Id'),
+    //  coords: [Math.round(coords.cx), Math.round(coords.cy)],
     width: Math.round(coords.width),
     height: Math.round(coords.height),
   };
+
+  if (this.data('Type') === 'circle') {
+    properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
+  } else {
+    properties.coords = [Math.round(coords.x), Math.round(coords.y)];
+  }
 
   updateBlockProperties(properties);
 };

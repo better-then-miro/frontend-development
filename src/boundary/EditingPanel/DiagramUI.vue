@@ -35,16 +35,18 @@ export default {
             console.log('Block from getDiagramContent: ', block);
             if (block.Type === 'Std') {
               const newRect = this.snap.rect(
-                block.coords[0], block.coords[0],
+                block.coords[0], block.coords[1],
                 block.width, block.height);
-              newRect.data('id', block.Id);
+              newRect.data('Id', block.Id);
+              newRect.data('Type', 'Std');
               newRect.drag(dragMove, dragStart, dragStop);
             } else if (block.Type === 'circle') {
               const newEllipse = this.snap.ellipse(
                 block.coords[0], block.coords[1],
                 // horizontal and vertical RADIUS -> width and height needed to be divided by two
                 Math.round(block.width / 2), Math.round(block.height / 2));
-              newEllipse.data('id', block.Id);
+              newEllipse.data('Id', block.Id);
+              newEllipse.data('Type', 'circle');
               newEllipse.drag(dragMove, dragStart, dragStop);
             }
           });
