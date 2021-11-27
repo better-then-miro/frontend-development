@@ -25,11 +25,11 @@ export const dragStop = function () {
   console.log('Stop dragging');
 
   // TODO entity modification
-  const coords = this.node.getBoundingClientRect();
+  const coords = this.getBBox();
 
   const properties = {
     Id: this.data('id'),
-    coords: [Math.round(coords.left), Math.round(coords.top)],
+    coords: [Math.round(coords.cx), Math.round(coords.cy)],
     width: Math.round(coords.width),
     height: Math.round(coords.height),
   };

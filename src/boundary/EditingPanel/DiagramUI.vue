@@ -39,10 +39,11 @@ export default {
                 block.width, block.height);
               newRect.data('id', block.Id);
               newRect.drag(dragMove, dragStart, dragStop);
-            } else if (block.type === 'circle') {
+            } else if (block.Type === 'circle') {
               const newEllipse = this.snap.ellipse(
                 block.coords[0], block.coords[1],
-                block.width, block.height);
+                // horizontal and vertical RADIUS -> width and height needed to be divided by two
+                Math.round(block.width / 2), Math.round(block.height / 2));
               newEllipse.data('id', block.Id);
               newEllipse.drag(dragMove, dragStart, dragStop);
             }
