@@ -1,11 +1,27 @@
 <template>
-  <svg id="mySvg" class="editorSvg" width="500" height="500"></svg>
+  <div style="display:flex; justify-content: space-around">
+    <svg id="mySvg" class="editorSvg" width="500" height="500"></svg>
+    <div style="display:flex; flex-direction: column; margin-top: 20px">
+      <div>
+        <input type="radio" id="contactChoice1"
+               name="blockType" value="Std" v-model="blockType">
+        <label for="contactChoice1">Std</label>
+
+        <input type="radio" id="contactChoice2"
+               name="blockType" value="circle" v-model="blockType">
+        <label for="contactChoice2">Circle</label>
+        <button class="btn icon-plus" v-on:click="addNewBlock()">
+          Add new block
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import Snap from 'snapsvg-cjs';
 import { dragMove, dragStart, dragStop, setBounds } from './drag';
-import { getDiagramContent } from '../serverProtocol';
+import { getDiagramContent, createNewBlock } from '../serverProtocol';
 
 
 export default {
@@ -14,6 +30,7 @@ export default {
   data() {
     return {
       snap: null,
+      blockType: null,
     };
   },
 
@@ -52,6 +69,37 @@ export default {
           });
         },
         );
+    },
+
+    addNewBlock() {
+      if (this.blockType != null) {
+        const properties = {
+          dId: this.currentDiagram.Id,
+          type: this.blockType,
+          coords: [250, 250],
+          width: 50,
+          height: 50,
+        };
+
+        createNewBlock(properties)
+          .then((blockId) => {
+            if (properties.type === 'Std') {
+              const newRect = this.snap.rect(
+                properties.coords[0], properties.coords[1],
+                properties.width, properties.height);
+              newRect.data('id', blockId);
+              newRect.drag(dragMove, dragStart, dragStop);
+            } else if (this.blockType === 'circle') {
+              const newEllipse = this.snap.ellipse(
+                properties.coords[0], properties.coords[1],
+                properties.width / 2, properties.height / 2);
+              newEllipse.data('id', blockId);
+              newEllipse.drag(dragMove, dragStart, dragStop);
+            }
+          },
+          );
+        this.blockType = null;
+      }
     },
   },
 };
