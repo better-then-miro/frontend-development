@@ -50,21 +50,34 @@ export default {
             // eslint-disable-next-line no-console
             console.log('Block from getDiagramContent: ', block);
             let newBlock;
+            let blockTitle;
             if (block.Type === 'Class') {
               newBlock = this.snap.rect(
                 block.coords[0], block.coords[1],
                 block.width, block.height);
+              blockTitle = this.snap.text(
+                block.coords[0] + Math.round(block.width / 2),
+                block.coords[1] + Math.round(block.height / 2),
+                'Block name',
+              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             } else if (block.Type === 'Use-case') {
               newBlock = this.snap.ellipse(
                 block.coords[0], block.coords[1],
                 Math.round(block.width / 2), Math.round(block.height / 2));
+              blockTitle = this.snap.text(
+                block.coords[0],
+                block.coords[1],
+                'Hehe',
+              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             }
-            newBlock.data('Id', block.Id);
-            newBlock.data('Type', block.Type);
-            newBlock.drag(dragMove, dragStart, dragStop);
-            newBlock.data('snap', this.snap);
-            newBlock.data('isScaling', false);
-            newBlock.dblclick(turnOnscaleMode);
+
+            const blockGroup = this.snap.group(newBlock, blockTitle);
+            blockGroup.data('Id', block.Id);
+            blockGroup.data('Type', block.Type);
+            blockGroup.drag(dragMove, dragStart, dragStop);
+            blockGroup.data('snap', this.snap);
+            blockGroup.data('isScaling', false);
+            blockGroup.dblclick(turnOnscaleMode);
           });
         },
         );
