@@ -21,6 +21,7 @@
 <script>
 import Snap from 'snapsvg-cjs';
 import { dragMove, dragStart, dragStop, setBounds } from './drag';
+import { turnOnscaleMode } from './scale';
 import { getDiagramContent, createNewBlock } from '../serverProtocol';
 
 
@@ -48,23 +49,22 @@ export default {
           data.blocks.forEach((block) => {
             // eslint-disable-next-line no-console
             console.log('Block from getDiagramContent: ', block);
+            let newBlock;
             if (block.Type === 'Class') {
-              const newRect = this.snap.rect(
+              newBlock = this.snap.rect(
                 block.coords[0], block.coords[1],
                 block.width, block.height);
-              newRect.data('Id', block.Id);
-              newRect.data('Type', 'Class');
-              newRect.data('Type', block.Type);
-              newRect.drag(dragMove, dragStart, dragStop);
             } else if (block.Type === 'Use-case') {
-              const newEllipse = this.snap.ellipse(
+              newBlock = this.snap.ellipse(
                 block.coords[0], block.coords[1],
-                // horizontal and vertical RADIUS -> width and height needed to be divided by two
                 Math.round(block.width / 2), Math.round(block.height / 2));
-              newEllipse.data('Id', block.Id);
-              newEllipse.data('Type', block.Type);
-              newEllipse.drag(dragMove, dragStart, dragStop);
             }
+            newBlock.data('Id', block.Id);
+            newBlock.data('Type', block.Type);
+            newBlock.drag(dragMove, dragStart, dragStop);
+            newBlock.data('snap', this.snap);
+            newBlock.data('isScaling', false);
+            newBlock.dblclick(turnOnscaleMode);
           });
         },
         );
@@ -84,21 +84,22 @@ export default {
           .then((blockId) => {
             // eslint-disable-next-line no-console
             console.log('New block id: ', blockId);
+            let newBlock;
             if (properties.type === 'Class') {
-              const newRect = this.snap.rect(
+              newBlock = this.snap.rect(
                 properties.coords[0], properties.coords[1],
                 properties.width, properties.height);
-              newRect.data('Id', blockId);
-              newRect.data('Type', properties.type);
-              newRect.drag(dragMove, dragStart, dragStop);
             } else if (properties.type === 'Use-case') {
-              const newEllipse = this.snap.ellipse(
+              newBlock = this.snap.ellipse(
                 properties.coords[0], properties.coords[1],
                 Math.round(properties.width / 2), Math.round(properties.height / 2));
-              newEllipse.data('Id', blockId);
-              newEllipse.data('Type', properties.type);
-              newEllipse.drag(dragMove, dragStart, dragStop);
             }
+            newBlock.data('Id', blockId);
+            newBlock.data('Type', properties.type);
+            newBlock.drag(dragMove, dragStart, dragStop);
+            newBlock.data('snap', this.snap);
+            newBlock.data('isScaling', false);
+            newBlock.dblclick(turnOnscaleMode);
           },
           );
         this.blockType = null;

@@ -8,11 +8,13 @@ export const setBounds = (x1, y1, x2, y2) => {
 };
 
 export const dragMove = function (dx, dy, x, y) {
-  if (x >= boundsToDrag.x1 && y >= boundsToDrag.y1 &&
+  if (this.data('isScaling') === false) {
+    if (x >= boundsToDrag.x1 && y >= boundsToDrag.y1 &&
       x <= boundsToDrag.x2 && y <= boundsToDrag.y2) {
-    this.attr({
-      transform: this.data('ot') + (this.data('ot') ? 'T' : 't') + [dx, dy],
-    });
+      this.attr({
+        transform: this.data('ot') + (this.data('ot') ? 'T' : 't') + [dx, dy],
+      });
+    }
   }
 };
 
@@ -23,23 +25,5 @@ export const dragStart = function () {
 export const dragStop = function () {
   // eslint-disable-next-line no-console
   console.log('Stop dragging');
-  // eslint-disable-next-line no-console
-  console.log(this.data('Type'));
-  // TODO entity modification
-  const coords = this.getBBox();
-
-  const properties = {
-    Id: this.data('Id'),
-    //  coords: [Math.round(coords.cx), Math.round(coords.cy)],
-    width: Math.round(coords.width),
-    height: Math.round(coords.height),
-  };
-
-  if (this.data('Type') === 'Use-case') {
-    properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
-  } else {
-    properties.coords = [Math.round(coords.x), Math.round(coords.y)];
-  }
-
-  updateBlockProperties(properties);
+  updateBlockProperties(this);
 };
