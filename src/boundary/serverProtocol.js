@@ -34,7 +34,20 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockProperties(properties) {
+export function updateBlockProperties(block) {
+  const coords = block.getBBox();
+
+  const properties = {
+    Id: block.data('Id'),
+    width: Math.round(coords.width),
+    height: Math.round(coords.height),
+  };
+
+  if (block.data('Type') === 'Use-case') {
+    properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
+  } else {
+    properties.coords = [Math.round(coords.x), Math.round(coords.y)];
+  }
   console.log('Properties to update: ', properties);
   axios.post('http://127.0.0.1:5000/updateBlockProperties', properties)
     .then(response => console.log(response));
