@@ -35,7 +35,7 @@ export const dragStop = function () {
     height: Math.round(coords.height),
   };
 
-  if (this.data('Type') === 'circle') {
+  if (this.data('Type') === 'Use-case') {
     properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
   } else {
     properties.coords = [Math.round(coords.x), Math.round(coords.y)];

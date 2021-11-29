@@ -41,7 +41,7 @@ export function updateBlockProperties(properties) {
 }
 
 export function getDiagramContent(diagramId) {
-  console.log(diagramId);
+  console.log('Fetch content of diagram: ', diagramId);
   return axios.get('http://127.0.0.1:5000/getDiagramContent', { params: { Id: diagramId } })
     .then(response => response.data);
 }
@@ -49,5 +49,5 @@ export function getDiagramContent(diagramId) {
 export function createNewBlock(properties) {
   console.log('New block properties: ', properties);
   return axios.post('http://127.0.0.1:5000/createNewBlock', properties)
-    .then(response => response.data);
+    .then(response => response.data.bId);
 }
