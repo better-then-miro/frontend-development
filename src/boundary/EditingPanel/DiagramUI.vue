@@ -3,14 +3,17 @@
     <svg id="mySvg" class="editorSvg" width="500" height="500"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
       <div>
-        <input type="radio" id="contactChoice1"
-               name="blockType" value="Class" v-model="blockType">
-        <label for="contactChoice1">Class</label>
-
-        <input type="radio" id="contactChoice2"
-               name="blockType" value="Use-case" v-model="blockType">
-        <label for="contactChoice2">Use-case</label>
-        <button class="btn icon-plus" v-on:click="addNewBlock()">
+        <input id="blockTitle" type="text" placeholder="Enter block title"
+               name="blockTitle" v-model="blockTitle">
+        <div>
+          <input type="radio" id="contactChoice1"
+                 name="blockType" value="Class" v-model="blockType">
+          <label for="contactChoice1">Class</label>
+          <input type="radio" id="contactChoice2"
+                 name="blockType" value="Use-case" v-model="blockType">
+          <label for="contactChoice2">Use-case</label>
+        </div>
+        <button type="button" class="btn icon-plus" v-on:click="addNewBlock()">
           Add new block
         </button>
       </div>
@@ -31,6 +34,7 @@ export default {
   data() {
     return {
       snap: null,
+      blockTitle: '',
       blockType: null,
     };
   },
@@ -58,7 +62,7 @@ export default {
               blockTitle = this.snap.text(
                 block.coords[0] + Math.round(block.width / 2),
                 block.coords[1] + Math.round(block.height / 2),
-                'Block name',
+                'Class name',
               ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             } else if (block.Type === 'Use-case') {
               newBlock = this.snap.ellipse(
@@ -67,7 +71,7 @@ export default {
               blockTitle = this.snap.text(
                 block.coords[0],
                 block.coords[1],
-                'Hehe',
+                'Use-case name',
               ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             }
 
@@ -84,7 +88,9 @@ export default {
     },
 
     addNewBlock() {
-      if (this.blockType != null) {
+      // TODO: Find a better way to handle blocks with an empty title
+      // TODO: (or a title that only contains spaces)
+      if (this.blockType != null && this.blockTitle.replaceAll(' ', '') !== '') {
         const properties = {
           dId: this.currentDiagram.Id,
           type: this.blockType,
@@ -106,7 +112,7 @@ export default {
               blockTitle = this.snap.text(
                 properties.coords[0] + Math.round(properties.width / 2),
                 properties.coords[1] + Math.round(properties.height / 2),
-                'Block name',
+                this.blockTitle,
               ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             } else if (properties.type === 'Use-case') {
               newBlock = this.snap.ellipse(
@@ -115,7 +121,7 @@ export default {
               blockTitle = this.snap.text(
                 properties.coords[0],
                 properties.coords[1],
-                'Hehe',
+                this.blockTitle,
               ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             }
 
@@ -126,9 +132,11 @@ export default {
             blockGroup.data('snap', this.snap);
             blockGroup.data('isScaling', false);
             blockGroup.dblclick(turnOnscaleMode);
+
+            this.blockType = null;
+            this.blockTitle = '';
           },
           );
-        this.blockType = null;
       }
     },
   },
