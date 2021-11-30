@@ -89,7 +89,7 @@ export default {
           dId: this.currentDiagram.Id,
           type: this.blockType,
           coords: [250, 250],
-          width: 50,
+          width: 100,
           height: 50,
         };
 
@@ -98,21 +98,34 @@ export default {
             // eslint-disable-next-line no-console
             console.log('New block id: ', blockId);
             let newBlock;
+            let blockTitle;
             if (properties.type === 'Class') {
               newBlock = this.snap.rect(
                 properties.coords[0], properties.coords[1],
                 properties.width, properties.height);
+              blockTitle = this.snap.text(
+                properties.coords[0] + Math.round(properties.width / 2),
+                properties.coords[1] + Math.round(properties.height / 2),
+                'Block name',
+              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             } else if (properties.type === 'Use-case') {
               newBlock = this.snap.ellipse(
                 properties.coords[0], properties.coords[1],
                 Math.round(properties.width / 2), Math.round(properties.height / 2));
+              blockTitle = this.snap.text(
+                properties.coords[0],
+                properties.coords[1],
+                'Hehe',
+              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
             }
-            newBlock.data('Id', blockId);
-            newBlock.data('Type', properties.type);
-            newBlock.drag(dragMove, dragStart, dragStop);
-            newBlock.data('snap', this.snap);
-            newBlock.data('isScaling', false);
-            newBlock.dblclick(turnOnscaleMode);
+
+            const blockGroup = this.snap.group(newBlock, blockTitle);
+            blockGroup.data('Id', blockId);
+            blockGroup.data('Type', properties.type);
+            blockGroup.drag(dragMove, dragStart, dragStop);
+            blockGroup.data('snap', this.snap);
+            blockGroup.data('isScaling', false);
+            blockGroup.dblclick(turnOnscaleMode);
           },
           );
         this.blockType = null;
