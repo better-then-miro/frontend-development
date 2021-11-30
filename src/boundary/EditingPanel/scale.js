@@ -5,30 +5,49 @@ import { updateBlockProperties } from '../serverProtocol';
 
 let handleGroup = null;
 let lastModifiedGroup = null;
+let lastScaleX = 1;
+let lastScaleY = 1;
 
 const start = function () {
   handleGroup.data('origTransform', handleGroup.transform().local);
 };
 
 const move = function (dx, dy) {
+  const groupBox = handleGroup.getBBox();
   let scaleX = 1;
   let scaleY = 1;
   if (this.data('side') === 'topleft') {
-    scaleX = 1 - (dx / 50);
-    scaleY = 1 - (dy / 50);
+    scaleX = dx > 0 ?
+      groupBox.width / (groupBox.width + dx) : (groupBox.width - dx) / groupBox.width;
+    scaleY = dy > 0 ?
+      groupBox.height / (groupBox.height + dy) : (groupBox.height - dy) / groupBox.height;
   } else if (this.data('side') === 'topright') {
-    scaleX = 1 + (dx / 50);
-    scaleY = 1 - (dy / 50);
+    scaleX = dx > 0 ?
+      (groupBox.width + dx) / groupBox.width : groupBox.width / (groupBox.width - dx);
+    scaleY = dy > 0 ?
+      groupBox.height / (groupBox.height + dy) : (groupBox.height - dy) / groupBox.height;
   } else if (this.data('side') === 'bottomleft') {
-    scaleX = 1 - (dx / 50);
-    scaleY = 1 + (dy / 50);
+    scaleX = dx > 0 ?
+      groupBox.width / (groupBox.width + dx) : (groupBox.width - dx) / groupBox.width;
+    scaleY = dy > 0 ?
+      (groupBox.height + dy) / groupBox.height : groupBox.height / (groupBox.height - dy);
   } else if (this.data('side') === 'bottomright') {
-    scaleX = 1 + (dx / 50);
-    scaleY = 1 + (dy / 50);
+    scaleX = dx > 0 ?
+      (groupBox.width + dx) / groupBox.width : groupBox.width / (groupBox.width - dx);
+    scaleY = dy > 0 ?
+      (groupBox.height + dy) / groupBox.height : groupBox.height / (groupBox.height - dy);
+  }
+
+  if (handleGroup[0].getBBox().width * scaleX > 100) {
+    lastScaleX = scaleX;
+  }
+
+  if (handleGroup[0].getBBox().height * scaleY > 50) {
+    lastScaleY = scaleY;
   }
 
   handleGroup.attr({
-    transform: `${handleGroup.data('origTransform') + (handleGroup.data('origTransform') ? 'S' : 's') + scaleX},${scaleY}`,
+    transform: `${handleGroup.data('origTransform') + (handleGroup.data('origTransform') ? 'S' : 's') + lastScaleX},${lastScaleY}`,
   });
 };
 
