@@ -1,25 +1,66 @@
-import Project from '../entity/project';
-import Diagram from '../entity/diagram';
+// import Project from '../entity/project';
+// import { dragMove, dragStart, dragStop } from './EditingPanel/drag';
+// import Diagram from '../entity/diagram';
 /* eslint-disable no-console */
+
+import Diagram from '../entity/diagram';
+import Project from '../entity/project';
+
 const axios = require('axios');
 
-// TODO server request: see "Server Protocol Boundary API"
-export function loadDiagramsFromServer(pid) {
-  return [
-    new Diagram(0, pid, 'Test Diagram 1', '', 'strict'),
-    new Diagram(1, pid, 'Test Diagram 2', '', 'strict'),
-    new Diagram(2, pid, 'Test Diagram 3', '', 'free'),
-    new Diagram(3, pid, 'Test Diagram 4', '', 'strict'),
-    new Diagram(4, pid, 'Test Diagram 5', '', 'free'),
-  ];
+export function loadDiagramsFromServer(pId) {
+  const diagrams = [];
+  axios.get('http://127.0.0.1:5000/getDiagrams', { params: { Id: pId } })
+    .then((response) => {
+      const data = response.data;
+      data.forEach((diagram) => {
+        diagrams.push(
+          new Diagram(diagram.Id, diagram.name, diagram.description, diagram.Type),
+        );
+      });
+    });
+  return diagrams;
 }
 
 export function loadProjectsFromServer() {
-  // Example of request - use with Sandbox
-  axios.get('/example2').then(response => console.log(response));
+  const projects = [];
+  axios.get('http://127.0.0.1:5000/getProjectList')
+    .then((response) => {
+      const data = response.data;
+      data.forEach((project) => {
+        projects.push(new Project(project.Id, project.name, project.description));
+      });
+    });
+  return projects;
+}
 
-  return [new Project(0, 'Project 1', 'Project description'),
-    new Project(1, 'Smandoprochi', 'Better then tamagochi'),
-    new Project(2, 'Diagrams', 'Use-case diagrams'),
-    new Project(3, 'Bricky', '')];
+export function updateBlockProperties(blockGroup) {
+  const coords = blockGroup[0].getBBox();
+
+  const properties = {
+    Id: blockGroup.data('Id'),
+    width: Math.round(coords.width),
+    height: Math.round(coords.height),
+  };
+
+  if (blockGroup.data('Type') === 'Use-case') {
+    properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
+  } else {
+    properties.coords = [Math.round(coords.x), Math.round(coords.y)];
+  }
+  console.log('Properties to update: ', properties);
+  axios.post('http://127.0.0.1:5000/updateBlockProperties', properties)
+    .then(response => console.log(response));
+}
+
+export function getDiagramContent(diagramId) {
+  console.log('Fetch content of diagram: ', diagramId);
+  return axios.get('http://127.0.0.1:5000/getDiagramContent', { params: { Id: diagramId } })
+    .then(response => response.data);
+}
+
+export function createNewBlock(properties) {
+  console.log('New block properties: ', properties);
+  return axios.post('http://127.0.0.1:5000/createNewBlock', properties)
+    .then(response => response.data.bId);
 }

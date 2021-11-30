@@ -1,3 +1,5 @@
+
+
 <template>
   <div>
     <div class="navbar">
@@ -17,9 +19,8 @@
       </button>
     </div>
     <div class="projectTable" v-if="state==='project navigator'">
-      <div class="column" v-for="project in projects" v-bind:key="project.id">
+      <div class="column" v-for="project in projects" v-bind:key="project.Id">
         <div class="card" v-on:click="openProject(project)">
-          <!--<img src={{ project.image }}>-->
           <p><b>Name:</b> {{ project.name }}</p>
           <p><b>Description:</b> {{ project.description }}</p>
         </div>
@@ -27,14 +28,17 @@
     </div>
 
     <div class="projectTable" v-else-if="state==='diagram navigator'">
-      <div class="column" v-for="diagram in diagrams" v-bind:key="diagram.id">
-        <div class="card">
-          <!--<img src={{ project.image }}>-->
+      <div class="column" v-for="diagram in currentProject.diagrams" v-bind:key="diagram.Id">
+        <div class="card" @click="openDiagram(diagram)">
           <p><b>Name:</b> {{ diagram.name }}</p>
           <p><b>Description:</b> {{ diagram.description }}</p>
-          <p><b>Type:</b> {{ diagram.type }}</p>
+          <p><b>Type:</b> {{ diagram.Type }}</p>
         </div>
       </div>
+    </div>
+
+    <div v-else-if="state==='diagram editor'" class="diagramEditor">
+      <editing-panel v-bind:currentDiagram="this.currentDiagram"/>
     </div>
 
     <div v-if="showCreateNewProjectDialog" id="id01" class="newProjectModal">
@@ -98,19 +102,22 @@
       </form>
     </div>
   </div>
-
 </template>
 
+
 <script>
-// import Project from './entity/project';
-import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import EditingPanel from './boundary/EditingPanel/DiagramUI';
+// eslint-disable-next-line no-unused-vars
+import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import Project from './entity/project';
+import Diagram from './entity/diagram';
 
 export default {
   name: 'App',
+  components: { EditingPanel },
   data() {
     return {
       projects: [],
-      diagrams: [],
       newName: '',
       newDescription: '',
       newDiagramType: '',
@@ -128,12 +135,8 @@ export default {
 
   methods: {
     addProject() {
-      // TODO: Creating project should be done by server... probably... (UID?)
-      const newProject = {
-        id: this.projects.length,
-        name: this.newName,
-        description: this.newDescription,
-      };
+      // TODO: Creating project should be done by server
+      const newProject = new Project(this.projects.length, this.newName, this.newDescription);
       // Creating new list with new created project
       this.projects = [...this.projects, newProject];
       this.showCreateNewProjectDialog = false;
@@ -142,7 +145,8 @@ export default {
 
     openProject(project) {
       this.showProject(project);
-      this.diagrams = loadDiagramsFromServer(project.id);
+      // eslint-disable-next-line no-return-assign
+      this.currentProject.diagrams = loadDiagramsFromServer(project.Id);
     },
 
     showProject(project) {
@@ -153,16 +157,21 @@ export default {
     },
 
     addDiagram() {
-      const newDiagram = {
-        id: this.projects.length,
-        projID: this.currentProject.id,
-        name: this.newName,
-        description: this.newDescription,
-        type: this.newDiagramType,
-      };
-      this.diagrams = [...this.diagrams, newDiagram];
+      // TODO: Creating of diagram request to server
+      const newDiagram = new Diagram(
+        this.projects.length,
+        this.newName,
+        this.newDescription,
+        this.newDiagramType,
+      );
+      this.currentProject.diagrams = [...this.currentProject.diagrams, newDiagram];
       this.showCreateNewDiagramDialog = false;
       this.showDiagram(newDiagram);
+    },
+
+    openDiagram(diagram) {
+      this.showDiagram(diagram);
+      // TODO - Get content of diagram
     },
 
     showDiagram(diagram) {
