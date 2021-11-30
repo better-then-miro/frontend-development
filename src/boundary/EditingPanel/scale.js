@@ -10,13 +10,25 @@ const start = function () {
   handleGroup.data('origTransform', handleGroup.transform().local);
 };
 
-const move = function (dx) {
-  let scale = 1 + (dx / 50);
-  if (this.data('side') === 'left') {
-    scale = 1 - (dx / 50);
+const move = function (dx, dy) {
+  let scaleX = 1;
+  let scaleY = 1;
+  if (this.data('side') === 'topleft') {
+    scaleX = 1 - (dx / 50);
+    scaleY = 1 - (dy / 50);
+  } else if (this.data('side') === 'topright') {
+    scaleX = 1 + (dx / 50);
+    scaleY = 1 - (dy / 50);
+  } else if (this.data('side') === 'bottomleft') {
+    scaleX = 1 - (dx / 50);
+    scaleY = 1 + (dy / 50);
+  } else if (this.data('side') === 'bottomright') {
+    scaleX = 1 + (dx / 50);
+    scaleY = 1 + (dy / 50);
   }
+
   handleGroup.attr({
-    transform: handleGroup.data('origTransform') + (handleGroup.data('origTransform') ? 'S' : 's') + scale,
+    transform: `${handleGroup.data('origTransform') + (handleGroup.data('origTransform') ? 'S' : 's') + scaleX},${scaleY}`,
   });
 };
 
@@ -87,16 +99,16 @@ export const turnOnscaleMode = function () {
     const bb = this.getBBox();
     const handle = [];
     handle[0] = snap.circle(bb.x, bb.y, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[0].data('side', 'left');
+    handle[0].data('side', 'topleft');
     handle[0].drag(move, start, stop);
     handle[1] = snap.circle(bb.x + bb.width, bb.y, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[1].data('side', 'right');
+    handle[1].data('side', 'topright');
     handle[1].drag(move, start, stop);
     handle[2] = snap.circle(bb.x, bb.y + bb.height, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[2].data('side', 'left');
+    handle[2].data('side', 'bottomleft');
     handle[2].drag(move, start, stop);
     handle[3] = snap.circle(bb.x + bb.width, bb.y + bb.height, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[3].data('side', 'right');
+    handle[3].data('side', 'bottomright');
     handle[3].drag(move, start, stop);
     handleGroup = snap.group(this, handle[0], handle[1], handle[2], handle[3]);
   } else {
