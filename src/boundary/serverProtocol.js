@@ -34,16 +34,16 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockProperties(block) {
-  const coords = block.getBBox();
+export function updateBlockProperties(blockGroup) {
+  const coords = blockGroup[0].getBBox();
 
   const properties = {
-    Id: block.data('Id'),
+    Id: blockGroup.data('Id'),
     width: Math.round(coords.width),
     height: Math.round(coords.height),
   };
 
-  if (block.data('Type') === 'Use-case') {
+  if (blockGroup.data('Type') === 'Use-case') {
     properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
   } else {
     properties.coords = [Math.round(coords.x), Math.round(coords.y)];

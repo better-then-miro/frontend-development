@@ -115,18 +115,18 @@ export const turnOnscaleMode = function () {
     }
     lastModifiedGroup = this;
     this.data('isScaling', true);
-    const bb = this.getBBox();
+    const groupBbox = this.getBBox();
     const handle = [];
-    handle[0] = snap.circle(bb.x, bb.y, 5).attr({ class: 'handler', fill: 'blue' });
+    handle[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     handle[0].data('side', 'topleft');
     handle[0].drag(move, start, stop);
-    handle[1] = snap.circle(bb.x + bb.width, bb.y, 5).attr({ class: 'handler', fill: 'blue' });
+    handle[1] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     handle[1].data('side', 'topright');
     handle[1].drag(move, start, stop);
-    handle[2] = snap.circle(bb.x, bb.y + bb.height, 5).attr({ class: 'handler', fill: 'blue' });
+    handle[2] = snap.circle(groupBbox.x, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
     handle[2].data('side', 'bottomleft');
     handle[2].drag(move, start, stop);
-    handle[3] = snap.circle(bb.x + bb.width, bb.y + bb.height, 5).attr({ class: 'handler', fill: 'blue' });
+    handle[3] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
     handle[3].data('side', 'bottomright');
     handle[3].drag(move, start, stop);
     handleGroup = snap.group(this, handle[0], handle[1], handle[2], handle[3]);
