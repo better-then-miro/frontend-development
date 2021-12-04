@@ -3,15 +3,15 @@ export default class Block {
   Type = '';
   coords = [null, null];
   width = null;
-  heigth = null;
+  height = null;
   // TODO additional fields. For example name and description
-  constructor(Id, Type, x, y, width, heigth) {
+  constructor(Id, Type, x, y, width, height) {
     this.Id = Id;
     Object.defineProperty(this, 'Id', { writable: false }); // readonly ID
     this.Type = Type;
     this.coords = [x, y];
     this.width = width;
-    this.heigth = heigth;
+    this.height = height;
     this.name = name;
   }
 }

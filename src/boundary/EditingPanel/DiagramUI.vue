@@ -22,15 +22,16 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
 import { dragMove, dragStart, dragStop, setBounds } from './drag';
 import { turnOnscaleMode } from './scale';
-import { getDiagramContent, createNewBlock } from '../serverProtocol';
+import { createNewBlock } from '../serverProtocol';
 
 
 export default {
-  name: 'EditingPanel',
-  props: ['currentDiagram'],
+  name: 'DiagramUi',
+  props: ['currentDiagram'], // TODO only blocks and links needed to this boundary
   data() {
     return {
       snap: null,
@@ -48,43 +49,37 @@ export default {
     init() {
       setBounds(10, 10, 510, 510);
       this.snap.attr({ viewBox: '0 0 500 500' });
-      getDiagramContent(this.currentDiagram.Id)
-        .then((data) => {
-          data.blocks.forEach((block) => {
-            // eslint-disable-next-line no-console
-            console.log('Block from getDiagramContent: ', block);
-            let newBlock;
-            let blockTitle;
-            if (block.Type === 'Class') {
-              newBlock = this.snap.rect(
-                block.coords[0], block.coords[1],
-                block.width, block.height);
-              blockTitle = this.snap.text(
-                block.coords[0] + Math.round(block.width / 2),
-                block.coords[1] + Math.round(block.height / 2),
-                'Class name',
-              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-            } else if (block.Type === 'Use-case') {
-              newBlock = this.snap.ellipse(
-                block.coords[0], block.coords[1],
-                Math.round(block.width / 2), Math.round(block.height / 2));
-              blockTitle = this.snap.text(
-                block.coords[0],
-                block.coords[1],
-                'Use-case name',
-              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-            }
+      this.currentDiagram.blocks.forEach((block) => {
+        let newBlock;
+        let blockTitle;
+        if (block.Type === 'Class') {
+          newBlock = this.snap.rect(
+            block.coords[0], block.coords[1],
+            block.width, block.height);
+          blockTitle = this.snap.text(
+            block.coords[0] + Math.round(block.width / 2),
+            block.coords[1] + Math.round(block.height / 2),
+            'Class name',
+          ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
+        } else if (block.Type === 'Use-case') {
+          newBlock = this.snap.ellipse(
+            block.coords[0], block.coords[1],
+            Math.round(block.width / 2), Math.round(block.height / 2));
+          blockTitle = this.snap.text(
+            block.coords[0],
+            block.coords[1],
+            'Use-case name',
+          ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
+        }
 
-            const blockGroup = this.snap.group(newBlock, blockTitle);
-            blockGroup.data('Id', block.Id);
-            blockGroup.data('Type', block.Type);
-            blockGroup.drag(dragMove, dragStart, dragStop);
-            blockGroup.data('snap', this.snap);
-            blockGroup.data('isScaling', false);
-            blockGroup.dblclick(turnOnscaleMode);
-          });
-        },
-        );
+        const blockGroup = this.snap.group(newBlock, blockTitle);
+        blockGroup.data('Id', block.Id);
+        blockGroup.data('Type', block.Type);
+        blockGroup.drag(dragMove, dragStart, dragStop);
+        blockGroup.data('snap', this.snap);
+        blockGroup.data('isScaling', false);
+        blockGroup.dblclick(turnOnscaleMode);
+      });
     },
 
     addNewBlock() {
