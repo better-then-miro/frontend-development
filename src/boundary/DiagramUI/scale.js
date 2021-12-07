@@ -2,7 +2,6 @@
 
 import { dragMove, dragStart, dragStop } from './drag';
 import { updateBlockProperties } from '../serverProtocol';
-import DiagramUI from './DiagramUI';
 
 let handleGroup = null;
 let lastModifiedGroup = null;
@@ -138,12 +137,6 @@ export const turnOnscaleMode = function () {
 
 // eslint-disable-next-line import/no-mutable-exports
 export let sel = null;
-
 export const select = function () {
-  // eslint-disable-next-line no-console
-  console.log(this);
-  DiagramUI.data().selectedBlock = this;
   sel = this;
-  // eslint-disable-next-line no-console
-  console.log(sel);
 };

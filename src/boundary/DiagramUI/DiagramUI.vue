@@ -1,6 +1,6 @@
 <template>
-  <div @click="updateInfo" style="display:flex; justify-content: space-around">
-    <svg id="mySvg" class="editorSvg" height="700" width="700"></svg>
+  <div style="display:flex">
+    <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
       <div>
         <input id="blockTitle" type="text" placeholder="Enter block title"
@@ -17,10 +17,10 @@
           Add new block
         </button>
       </div>
-      <div class="editing-panel" v-if="selectedBlock!=null">
-        <input id="selectedBlockTitle" type="text" placeholder="Enter block title"
-               name="blockTitle" v-model="blockTitle">
-      </div>
+      <editing-panel v-if="selectedBlockSVG!=null"
+                     v-bind:selected-block-svg="selectedBlockSVG"
+                     v-bind:selected-block-entity="selectedBlockEntity"
+                     v-on:close-panel="selectedBlockSVG=null"/>
     </div>
   </div>
 </template>
@@ -31,17 +31,19 @@ import Snap from 'snapsvg-cjs';
 import { dragMove, dragStart, dragStop, setBounds } from './drag';
 import { turnOnscaleMode, select, sel } from './scale';
 import { createNewBlock } from '../serverProtocol';
+import EditingPanel from '../EditingPanel';
 
 
 export default {
   name: 'DiagramUi',
+  components: { EditingPanel },
   props: ['currentDiagram'], // TODO only blocks and links needed to this boundary
   data() {
     return {
       snap: null,
       blockTitle: '',
       blockType: null,
-      selectedBlock: null,
+      selectedBlockSVG: null,
     };
   },
 
@@ -65,7 +67,7 @@ export default {
           blockTitle = this.snap.text(
             block.coords[0] + Math.round(block.width / 2),
             block.coords[1] + Math.round(block.height / 2),
-            'Class name',
+            block.title,
           ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
         } else if (block.Type === 'Use-case') {
           newBlock = this.snap.ellipse(
@@ -74,7 +76,7 @@ export default {
           blockTitle = this.snap.text(
             block.coords[0],
             block.coords[1],
-            'Use-case name',
+            block.title,
           ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
         }
 
@@ -143,10 +145,23 @@ export default {
     },
 
     updateInfo() {
-      this.selectedBlock = sel;
+      this.selectedBlockSVG = sel;
     },
   },
 
+  computed: {
+    selectedBlockEntity() {
+      if (this.selectedBlockSVG == null) return null;
+      let res;
+      for (let i = 0; i < this.currentDiagram.blocks.length; i += 1) {
+        if (this.currentDiagram.blocks[i].Id === this.selectedBlockSVG.data('Id')) {
+          res = this.currentDiagram.blocks[i];
+          break;
+        }
+      }
+      return res;
+    },
+  },
 };
 </script>
 

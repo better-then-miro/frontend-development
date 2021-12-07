@@ -29,7 +29,6 @@ export default {
 
   methods: {
     init() {
-      console.log('Diagram before getDiagramContent: ', this.currentDiagram);
       getDiagramContent(this.currentDiagram.Id)
         .then((data) => {
           data.blocks.forEach((block) => {
