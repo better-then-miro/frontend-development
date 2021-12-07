@@ -35,7 +35,7 @@ export function loadProjectsFromServer() {
 }
 
 export function updateBlockProperties(blockGroup) {
-  const coords = blockGroup[0].getBBox();
+  const coords = blockGroup.getBBox();
 
   const properties = {
     Id: blockGroup.data('Id'),

@@ -54,7 +54,7 @@ const move = function (dx, dy) {
 export const stop = function () {
 };
 
-function saveNewBlockScale(blockGroup) {
+function updateBlockPosition(blockGroup) {
   const snap = blockGroup.data('snap');
   const newBlockBox = handleGroup.getBBox();
   const oldBlockBox = blockGroup.getBBox();
@@ -111,7 +111,7 @@ export const turnOnscaleMode = function () {
   const snap = this.data('snap');
   if (this.data('isScaling') === false) {
     if (lastModifiedGroup != null) {
-      saveNewBlockScale(lastModifiedGroup);
+      updateBlockPosition(lastModifiedGroup);
     }
     lastModifiedGroup = this;
     this.data('isScaling', true);
@@ -131,6 +131,6 @@ export const turnOnscaleMode = function () {
     handle[3].drag(move, start, stop);
     handleGroup = snap.group(this, handle[0], handle[1], handle[2], handle[3]);
   } else {
-    saveNewBlockScale(this);
+    updateBlockPosition(this);
   }
 };
