@@ -1,6 +1,6 @@
 <template>
-  <div style="display:flex; justify-content: space-around">
-    <svg id="mySvg" class="editorSvg" width="500" height="500"></svg>
+  <div @click="updateInfo" style="display:flex; justify-content: space-around">
+    <svg id="mySvg" class="editorSvg" height="700" width="700"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
       <div>
         <input id="blockTitle" type="text" placeholder="Enter block title"
@@ -17,6 +17,10 @@
           Add new block
         </button>
       </div>
+      <div class="editing-panel" v-if="selectedBlock!=null">
+        <input id="selectedBlockTitle" type="text" placeholder="Enter block title"
+               name="blockTitle" v-model="blockTitle">
+      </div>
     </div>
   </div>
 </template>
@@ -25,7 +29,7 @@
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
 import { dragMove, dragStart, dragStop, setBounds } from './drag';
-import { turnOnscaleMode } from './scale';
+import { turnOnscaleMode, select, sel } from './scale';
 import { createNewBlock } from '../serverProtocol';
 
 
@@ -37,6 +41,7 @@ export default {
       snap: null,
       blockTitle: '',
       blockType: null,
+      selectedBlock: null,
     };
   },
 
@@ -47,8 +52,9 @@ export default {
 
   methods: {
     init() {
-      setBounds(10, 10, 510, 510);
-      this.snap.attr({ viewBox: '0 0 500 500' });
+      setBounds(10, 10, 710, 710);
+      this.snap.attr({ viewBox: '0 0 700 700' });
+      this.snap.rect(0, 0, 700, 700).attr({ fill: 'none', stroke: 'black' });
       this.currentDiagram.blocks.forEach((block) => {
         let newBlock;
         let blockTitle;
@@ -79,6 +85,7 @@ export default {
         blockGroup.data('snap', this.snap);
         blockGroup.data('isScaling', false);
         blockGroup.dblclick(turnOnscaleMode);
+        blockGroup.click(select);
       });
     },
 
@@ -127,20 +134,25 @@ export default {
             blockGroup.data('snap', this.snap);
             blockGroup.data('isScaling', false);
             blockGroup.dblclick(turnOnscaleMode);
-
+            blockGroup.click(select);
             this.blockType = null;
             this.blockTitle = '';
           },
           );
       }
     },
+
+    updateInfo() {
+      this.selectedBlock = sel;
+    },
   },
+
 };
 </script>
 
 <style scoped>
 .editorSvg {
-  border: 5px solid black;
+  /*border: 5px solid black;*/
   margin: 5px;
 }
 </style>

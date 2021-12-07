@@ -7,7 +7,7 @@
 
 <script>
 /* eslint-disable no-console */
-import DiagramUi from '../boundary/EditingPanel/DiagramUI';
+import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import { getDiagramContent } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 

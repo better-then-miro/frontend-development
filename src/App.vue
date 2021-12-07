@@ -106,7 +106,7 @@
 
 
 <script>
-import DiagramUi from './boundary/EditingPanel/DiagramUI';
+import DiagramUi from './boundary/DiagramUI/DiagramUI';
 import DiagramController from './controller/DiagramController';
 // eslint-disable-next-line no-unused-vars
 import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
@@ -172,7 +172,6 @@ export default {
 
     openDiagram(diagram) {
       this.showDiagram(diagram);
-      // TODO - Get content of diagram
     },
 
     showDiagram(diagram) {
