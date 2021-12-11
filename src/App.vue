@@ -18,6 +18,7 @@
         Create new diagram
       </button>
     </div>
+
     <div class="projectTable" v-if="state==='project navigator'">
       <div class="column" v-for="project in projects" v-bind:key="project.Id">
         <div class="card" v-on:click="openProject(project)">
@@ -37,7 +38,7 @@
       </div>
     </div>
 
-    <div v-else-if="state==='diagram editor'" class="diagramEditor">
+    <div class="diagramEditor" v-else-if="state==='diagram editor'">
       <diagram-controller v-bind:current-diagram="currentDiagram"/>
     </div>
 
@@ -106,16 +107,16 @@
 
 
 <script>
-import DiagramUi from './boundary/DiagramUI/DiagramUI';
 import DiagramController from './controller/DiagramController';
-// eslint-disable-next-line no-unused-vars
-import { getDiagramContent, loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
 import Project from './entity/project';
 import Diagram from './entity/diagram';
 
 export default {
   name: 'App',
-  components: { DiagramUi, DiagramController },
+  components: {
+    'diagram-controller': DiagramController,
+  },
   data() {
     return {
       projects: [],
