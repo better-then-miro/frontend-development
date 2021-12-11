@@ -28,10 +28,12 @@
 <script>
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
-import { dragMove, dragStart, dragStop, setBounds } from './drag';
-import { turnOnscaleMode, select, sel } from './scale';
+import { setBounds } from './drag';
+import { sel } from './scale';
 import { createNewBlock } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
+import BlockView from '../../entity/blockView';
+import Block from '../../entity/block';
 
 
 export default {
@@ -58,36 +60,8 @@ export default {
       this.snap.attr({ viewBox: '0 0 700 700' });
       this.snap.rect(0, 0, 700, 700).attr({ fill: 'none', stroke: 'black' });
       this.currentDiagram.blocks.forEach((block) => {
-        let newBlock;
-        let blockTitle;
-        if (block.Type === 'Class') {
-          newBlock = this.snap.rect(
-            block.coords[0], block.coords[1],
-            block.width, block.height);
-          blockTitle = this.snap.text(
-            block.coords[0] + Math.round(block.width / 2),
-            block.coords[1] + Math.round(block.height / 2),
-            block.title,
-          ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-        } else if (block.Type === 'Use-case') {
-          newBlock = this.snap.ellipse(
-            block.coords[0], block.coords[1],
-            Math.round(block.width / 2), Math.round(block.height / 2));
-          blockTitle = this.snap.text(
-            block.coords[0],
-            block.coords[1],
-            block.title,
-          ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-        }
-
-        const blockGroup = this.snap.group(newBlock, blockTitle);
-        blockGroup.data('Id', block.Id);
-        blockGroup.data('Type', block.Type);
-        blockGroup.drag(dragMove, dragStart, dragStop);
-        blockGroup.data('snap', this.snap);
-        blockGroup.data('isScaling', false);
-        blockGroup.dblclick(turnOnscaleMode);
-        blockGroup.click(select);
+        const blockView = new BlockView(block, this.snap);
+        blockView.redrawOnSnap();
       });
     },
 
@@ -105,40 +79,11 @@ export default {
 
         createNewBlock(properties)
           .then((blockId) => {
-            // eslint-disable-next-line no-console
-            console.log('New block id: ', blockId);
-            let newBlock;
-            let blockTitle;
-            if (properties.type === 'Class') {
-              newBlock = this.snap.rect(
-                properties.coords[0], properties.coords[1],
-                properties.width, properties.height);
-              blockTitle = this.snap.text(
-                properties.coords[0] + Math.round(properties.width / 2),
-                properties.coords[1] + Math.round(properties.height / 2),
-                this.blockTitle,
-              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-            } else if (properties.type === 'Use-case') {
-              newBlock = this.snap.ellipse(
-                properties.coords[0], properties.coords[1],
-                Math.round(properties.width / 2), Math.round(properties.height / 2));
-              blockTitle = this.snap.text(
-                properties.coords[0],
-                properties.coords[1],
-                this.blockTitle,
-              ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-            }
-
-            const blockGroup = this.snap.group(newBlock, blockTitle);
-            blockGroup.data('Id', blockId);
-            blockGroup.data('Type', properties.type);
-            blockGroup.drag(dragMove, dragStart, dragStop);
-            blockGroup.data('snap', this.snap);
-            blockGroup.data('isScaling', false);
-            blockGroup.dblclick(turnOnscaleMode);
-            blockGroup.click(select);
-            this.blockType = null;
-            this.blockTitle = '';
+            const newBlock = new Block(blockId, properties.type,
+              properties.coords[0], properties.coords[1], properties.width, properties.height);
+            this.currentDiagram.blocks.push(newBlock);
+            const blockView = new BlockView(newBlock, this.snap);
+            blockView.redrawOnSnap();
           },
           );
       }

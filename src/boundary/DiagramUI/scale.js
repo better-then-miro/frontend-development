@@ -1,6 +1,5 @@
 /* eslint-disable func-names */
 
-import { dragMove, dragStart, dragStop } from './drag';
 import { updateBlockProperties } from '../serverProtocol';
 
 let handleGroup = null;
@@ -55,52 +54,23 @@ export const stop = function () {
 };
 
 function updateBlockPosition(blockGroup) {
-  const snap = blockGroup.data('snap');
-  const newBlockBox = handleGroup.getBBox();
-  const oldBlockBox = blockGroup.getBBox();
+  handleGroup.selectAll('circle.handler').remove();
 
-  let newBlock;
-  let blockTitle;
-  if (blockGroup.data('Type') === 'Class') {
-    newBlock = snap.rect(
-      newBlockBox.x + (5 * (newBlockBox.width / oldBlockBox.width)),
-      newBlockBox.y + (5 * (newBlockBox.height / oldBlockBox.height)),
-      newBlockBox.width - (10 * (newBlockBox.width / oldBlockBox.width)),
-      newBlockBox.height - (10 * (newBlockBox.height / oldBlockBox.height)),
-    );
-    blockTitle = snap.text(
-      newBlockBox.x + (5 * (newBlockBox.width / oldBlockBox.width)) +
-        ((newBlockBox.width - (10 * (newBlockBox.width / oldBlockBox.width))) / 2),
-      newBlockBox.y + (5 * (newBlockBox.height / oldBlockBox.height)) +
-        ((newBlockBox.height - (10 * (newBlockBox.height / oldBlockBox.height))) / 2),
-      blockGroup[1].node.textContent,
-    ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
-  } else if (blockGroup.data('Type') === 'Use-case') {
-    newBlock = snap.ellipse(
-      newBlockBox.cx,
-      newBlockBox.cy,
-      Math.round((newBlockBox.width - (10 * (newBlockBox.width / oldBlockBox.width))) / 2),
-      Math.round((newBlockBox.height - (10 * (newBlockBox.height / oldBlockBox.height))) / 2),
-    );
-    blockTitle = snap.text(
-      newBlockBox.cx,
-      newBlockBox.cy,
-      blockGroup[1].node.textContent,
-    ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
+  const coords = handleGroup.getBBox();
+
+  if (blockGroup.data('blockView').block.Type === 'Use-case') {
+    blockGroup.data('blockView').block.setCoords([Math.round(coords.cx), Math.round(coords.cy)]);
+  } else {
+    blockGroup.data('blockView').block.setCoords([Math.round(coords.x), Math.round(coords.y)]);
   }
 
-  const newBlockGroup = snap.group(newBlock, blockTitle);
-  newBlockGroup.data('Id', blockGroup.data('Id'));
-  newBlockGroup.data('Type', blockGroup.data('Type'));
-  newBlockGroup.drag(dragMove, dragStart, dragStop);
-  newBlockGroup.data('snap', blockGroup.data('snap'));
-  newBlockGroup.data('isScaling', false);
-  // eslint-disable-next-line no-use-before-define
-  newBlockGroup.dblclick(turnOnscaleMode);
+  blockGroup.data('blockView').block.setWidth(Math.round(coords.width));
+  blockGroup.data('blockView').block.setHeight(Math.round(coords.height));
 
-  updateBlockProperties(newBlockGroup);
+  updateBlockProperties(blockGroup.data('blockView').block);
 
-  handleGroup.selectAll('handler').remove();
+  blockGroup.data('blockView').redrawOnSnap();
+
   handleGroup.remove();
 
   lastModifiedGroup = null;
@@ -108,13 +78,15 @@ function updateBlockPosition(blockGroup) {
 
 // eslint-disable-next-line func-names
 export const turnOnscaleMode = function () {
-  const snap = this.data('snap');
-  if (this.data('isScaling') === false) {
+  const snap = this.data('blockView').snap;
+
+  if (this.data('blockView').isScaling === false) {
     if (lastModifiedGroup != null) {
       updateBlockPosition(lastModifiedGroup);
+      // TODO: Fix issue with modifying block when the old block is selected
     }
     lastModifiedGroup = this;
-    this.data('isScaling', true);
+    this.data('blockView').isScaling = true;
     const groupBbox = this.getBBox();
     const handle = [];
     handle[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
@@ -132,6 +104,7 @@ export const turnOnscaleMode = function () {
     handleGroup = snap.group(this, handle[0], handle[1], handle[2], handle[3]);
   } else {
     updateBlockPosition(this);
+    this.data('blockView').isScaling = false;
   }
 };
 

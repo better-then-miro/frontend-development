@@ -34,20 +34,14 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockProperties(blockGroup) {
-  const coords = blockGroup.getBBox();
-
+export function updateBlockProperties(block) {
   const properties = {
-    Id: blockGroup.data('Id'),
-    width: Math.round(coords.width),
-    height: Math.round(coords.height),
+    Id: block.Id,
+    width: block.width,
+    height: block.height,
+    coords: block.coords,
   };
 
-  if (blockGroup.data('Type') === 'Use-case') {
-    properties.coords = [Math.round(coords.cx), Math.round(coords.cy)];
-  } else {
-    properties.coords = [Math.round(coords.x), Math.round(coords.y)];
-  }
   console.log('Properties to update: ', properties);
   axios.post('http://127.0.0.1:5000/updateBlockProperties', properties)
     .then(response => console.log(response));
