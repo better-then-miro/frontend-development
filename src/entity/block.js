@@ -16,4 +16,16 @@ export default class Block {
     this.title = title;
     this.description = description;
   }
+
+  setCoords(coords) {
+    this.coords = coords;
+  }
+
+  setWidth(width) {
+    this.width = width;
+  }
+
+  setHeight(height) {
+    this.height = height;
+  }
 }
