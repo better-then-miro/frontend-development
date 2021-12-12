@@ -3,12 +3,14 @@ import { turnOnscaleMode, select } from '../boundary/DiagramUI/scale';
 
 export default class BlockView {
   block = null;
+  connections = null;
   isScaling = false;
   snap = null;
   blockGroup = null;
-  constructor(block, snap) {
+  constructor(block, snap, connections) {
     this.block = block;
     this.snap = snap;
+    this.connections = connections;
   }
 
   redrawOnSnap(x = this.block.coords[0], y = this.block.coords[1],
@@ -41,6 +43,11 @@ export default class BlockView {
       ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
 
       this.blockGroup.add(newBlock, blockTitle);
+    }
+
+    // eslint-disable-next-line no-plusplus
+    for (let i = this.connections.length; i--;) {
+      this.snap.connection(this.connections[i]);
     }
 
     this.blockGroup.drag(dragMove, dragStart, dragStop);

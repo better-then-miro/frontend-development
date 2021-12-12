@@ -49,10 +49,9 @@ export default {
       this.snap.attr({ viewBox: '0 0 700 700' });
       this.snap.rect(0, 0, 700, 700).attr({ fill: 'none', stroke: 'black' });
       this.currentDiagram.blocks.forEach((block) => {
-        const blockView = new BlockView(block, this.snap);
+        const blockView = new BlockView(block, this.snap, this.snapLinks);
         blockView.redrawOnSnap();
         this.snapBlocks.push(blockView);
-        blockView.blockGroup.data('connections', this.snapLinks);
       });
       this.snapLinks.push(this.snap.connection(this.snapBlocks[0], this.snapBlocks[1], '#333', '#111'));
     },
@@ -74,7 +73,7 @@ export default {
             properties.coords[0], properties.coords[1], properties.width,
             properties.height, properties.title);
           this.currentDiagram.blocks.push(newBlock);
-          const blockView = new BlockView(newBlock, this.snap);
+          const blockView = new BlockView(newBlock, this.snap, this.snapLinks);
           blockView.redrawOnSnap();
         },
         );
