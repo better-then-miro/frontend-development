@@ -16,8 +16,12 @@ export default class Block {
     this.coords = [x, y];
     this.width = width;
     this.height = height;
-    this.title = title;
     this.description = description;
+    if (title.replaceAll(' ', '') === ''){
+      this.title = Type;
+    } else {
+      this.title = title;
+    }
     if (this.Type === 'Class' && additionalFields === null) {
       this.additionalFields.attrs = [];
       this.additionalFields.methods = [];

@@ -73,13 +73,20 @@ export default {
     addNewBlock() {
       // TODO: Find a better way to handle blocks with an empty title
       // TODO: (or a title that only contains spaces)
-      if (this.blockType != null && this.blockTitle.replaceAll(' ', '') !== '') {
+      if (this.blockType != null) {
+        let newTitle;
+        if (this.blockTitle.replaceAll(' ', '') === '') {
+          newTitle = this.blockType;
+        } else {
+          newTitle = this.blockTitle;
+        }
         const properties = {
           dId: this.currentDiagram.Id,
           Type: this.blockType,
           coords: [250, 250],
           width: 100,
           height: 50,
+          title: newTitle,
         };
 
         createNewBlock(properties)
@@ -87,11 +94,10 @@ export default {
             console.log('New block ID:', blockId);
             const newBlock = new Block(blockId, properties.Type,
               properties.coords[0], properties.coords[1], properties.width,
-              properties.height, this.blockTitle);
+              properties.height, newTitle);
             this.currentDiagram.blocks.push(newBlock);
             const blockView = new BlockView(newBlock, this.snap);
             blockView.redrawOnSnap();
-            this.snapBlocks.push(blockView);
           },
           );
       }
