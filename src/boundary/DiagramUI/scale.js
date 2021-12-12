@@ -7,11 +7,11 @@ let lastModifiedGroup = null;
 let lastScaleX = 1;
 let lastScaleY = 1;
 
-const start = function () {
+const scaleStart = function () {
   scalingBlockGroup.data('origTransform', scalingBlockGroup.transform().local);
 };
 
-const move = function (dx, dy) {
+const scaleMove = function (dx, dy) {
   const groupBox = scalingBlockGroup.getBBox();
   let scaleX = 1;
   let scaleY = 1;
@@ -50,7 +50,7 @@ const move = function (dx, dy) {
   });
 };
 
-export const stop = function () {
+export const scaleStop = function () {
 };
 
 function updateBlockPosition(blockGroup) {
@@ -92,16 +92,16 @@ export const turnOnscaleMode = function () {
     const anchors = [];
     anchors[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[0].data('side', 'topleft');
-    anchors[0].drag(move, start, stop);
+    anchors[0].drag(scaleMove, scaleStart, scaleStop);
     anchors[1] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[1].data('side', 'topright');
-    anchors[1].drag(move, start, stop);
+    anchors[1].drag(scaleMove, scaleStart, scaleStop);
     anchors[2] = snap.circle(groupBbox.x, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[2].data('side', 'bottomleft');
-    anchors[2].drag(move, start, stop);
+    anchors[2].drag(scaleMove, scaleStart, scaleStop);
     anchors[3] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[3].data('side', 'bottomright');
-    anchors[3].drag(move, start, stop);
+    anchors[3].drag(scaleMove, scaleStart, scaleStop);
     scalingBlockGroup = snap.group(this, anchors[0], anchors[1], anchors[2], anchors[3]);
   } else {
     updateBlockPosition(this);
