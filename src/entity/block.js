@@ -25,6 +25,8 @@ export default class Block {
     if (this.Type === 'Class' && additionalFields === null) {
       this.additionalFields.attrs = [];
       this.additionalFields.methods = [];
+    } else {
+      this.additionalFields = additionalFields;
     }
   }
 
