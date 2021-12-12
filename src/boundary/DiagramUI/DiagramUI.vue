@@ -53,7 +53,15 @@ export default {
         blockView.redrawOnSnap();
         this.snapBlocks.push(blockView);
       });
-      this.snapLinks.push(this.snap.connection(this.snapBlocks[0], this.snapBlocks[1], '#333', '#111'));
+      this.currentDiagram.links.forEach((link) => {
+        const sBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.sId);
+        const tBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.tId);
+        if (sBlockView.length === 1 && tBlockView.length === 1) {
+          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], '#333', '#111'));
+        } else {
+          console.log('Incorrect link parameters!');
+        }
+      });
     },
 
     addNewBlock(fields) {
