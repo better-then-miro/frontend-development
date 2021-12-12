@@ -2,17 +2,17 @@
 
 import { updateBlockProperties } from '../serverProtocol';
 
-let handleGroup = null;
+let scalingBlockGroup = null;
 let lastModifiedGroup = null;
 let lastScaleX = 1;
 let lastScaleY = 1;
 
 const start = function () {
-  handleGroup.data('origTransform', handleGroup.transform().local);
+  scalingBlockGroup.data('origTransform', scalingBlockGroup.transform().local);
 };
 
 const move = function (dx, dy) {
-  const groupBox = handleGroup.getBBox();
+  const groupBox = scalingBlockGroup.getBBox();
   let scaleX = 1;
   let scaleY = 1;
   if (this.data('side') === 'topleft') {
@@ -37,16 +37,16 @@ const move = function (dx, dy) {
       (groupBox.height + dy) / groupBox.height : groupBox.height / (groupBox.height - dy);
   }
 
-  if (handleGroup[0].getBBox().width * scaleX > 100) {
+  if (scalingBlockGroup[0].getBBox().width * scaleX > 100) {
     lastScaleX = scaleX;
   }
 
-  if (handleGroup[0].getBBox().height * scaleY > 50) {
+  if (scalingBlockGroup[0].getBBox().height * scaleY > 50) {
     lastScaleY = scaleY;
   }
 
-  handleGroup.attr({
-    transform: `${handleGroup.data('origTransform') + (handleGroup.data('origTransform') ? 'S' : 's') + lastScaleX},${lastScaleY}`,
+  scalingBlockGroup.attr({
+    transform: `${scalingBlockGroup.data('origTransform') + (scalingBlockGroup.data('origTransform') ? 'S' : 's') + lastScaleX},${lastScaleY}`,
   });
 };
 
@@ -54,9 +54,9 @@ export const stop = function () {
 };
 
 function updateBlockPosition(blockGroup) {
-  handleGroup.selectAll('circle.handler').remove();
+  scalingBlockGroup.selectAll('circle.handler').remove();
 
-  const coords = handleGroup.getBBox();
+  const coords = scalingBlockGroup.getBBox();
 
   if (blockGroup.data('blockView').block.Type === 'Use-case') {
     blockGroup.data('blockView').block.setCoords([Math.round(coords.cx), Math.round(coords.cy)]);
@@ -70,8 +70,9 @@ function updateBlockPosition(blockGroup) {
   updateBlockProperties(blockGroup.data('blockView').block);
 
   blockGroup.data('blockView').redrawOnSnap();
-
-  handleGroup.remove();
+  // eslint-disable-next-line no-param-reassign
+  blockGroup.data('blockView').isScaling = false;
+  scalingBlockGroup.remove();
 
   lastModifiedGroup = null;
 }
@@ -80,31 +81,30 @@ function updateBlockPosition(blockGroup) {
 export const turnOnscaleMode = function () {
   const snap = this.data('blockView').snap;
 
+  if (lastModifiedGroup != null) {
+    updateBlockPosition(lastModifiedGroup);
+  }
+  lastModifiedGroup = this;
+
   if (this.data('blockView').isScaling === false) {
-    if (lastModifiedGroup != null) {
-      updateBlockPosition(lastModifiedGroup);
-      // TODO: Fix issue with modifying block when the old block is selected
-    }
-    lastModifiedGroup = this;
     this.data('blockView').isScaling = true;
     const groupBbox = this.getBBox();
-    const handle = [];
-    handle[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[0].data('side', 'topleft');
-    handle[0].drag(move, start, stop);
-    handle[1] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[1].data('side', 'topright');
-    handle[1].drag(move, start, stop);
-    handle[2] = snap.circle(groupBbox.x, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[2].data('side', 'bottomleft');
-    handle[2].drag(move, start, stop);
-    handle[3] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
-    handle[3].data('side', 'bottomright');
-    handle[3].drag(move, start, stop);
-    handleGroup = snap.group(this, handle[0], handle[1], handle[2], handle[3]);
+    const anchors = [];
+    anchors[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
+    anchors[0].data('side', 'topleft');
+    anchors[0].drag(move, start, stop);
+    anchors[1] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
+    anchors[1].data('side', 'topright');
+    anchors[1].drag(move, start, stop);
+    anchors[2] = snap.circle(groupBbox.x, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
+    anchors[2].data('side', 'bottomleft');
+    anchors[2].drag(move, start, stop);
+    anchors[3] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
+    anchors[3].data('side', 'bottomright');
+    anchors[3].drag(move, start, stop);
+    scalingBlockGroup = snap.group(this, anchors[0], anchors[1], anchors[2], anchors[3]);
   } else {
     updateBlockPosition(this);
-    this.data('blockView').isScaling = false;
   }
 };
 
