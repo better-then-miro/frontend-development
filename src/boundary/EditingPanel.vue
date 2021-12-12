@@ -40,8 +40,7 @@ export default {
   },
 
   mounted() {
-    this.blockTitle = this.selectedBlockView.block.title;
-    this.blockDescription = this.selectedBlockView.block.description;
+    this.changeSelected();
   },
 
   methods: {
@@ -50,18 +49,19 @@ export default {
     },
 
     apply() {
-      // this.selectedBlockView.block.title = this.blockTitle;
       this.selectedBlockView.blockGroup[1].node.textContent = this.blockTitle;
-      // this.selectedBlockView.block.description = this.blockDescription;
-      // TODO server save
       this.$emit('apply-changes', { title: this.blockTitle, description: this.blockDescription });
+    },
+
+    changeSelected() {
+      this.blockTitle = this.selectedBlockView.block.title;
+      this.blockDescription = this.selectedBlockView.block.description;
     },
   },
 
   watch: {
-    selectedBlockEntity() {
-      this.blockTitle = this.selectedBlockEntity.title;
-      this.blockDescription = this.selectedBlockEntity.description;
+    selectedBlockView() {
+      this.changeSelected();
     },
   },
 };
