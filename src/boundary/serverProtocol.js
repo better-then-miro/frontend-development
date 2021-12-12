@@ -1,6 +1,3 @@
-// import Project from '../entity/project';
-// import { dragMove, dragStart, dragStop } from './DiagramUI/drag';
-// import Diagram from '../entity/diagram';
 /* eslint-disable no-console */
 
 import Diagram from '../entity/diagram';

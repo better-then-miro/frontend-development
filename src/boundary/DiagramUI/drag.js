@@ -14,6 +14,11 @@ export const dragMove = function (dx, dy, x, y) {
       this.attr({
         transform: this.data('ot') + (this.data('ot') ? 'T' : 't') + [dx, dy],
       });
+
+      // eslint-disable-next-line no-plusplus
+      for (let i = this.data('connections').length; i--;) {
+        this.data('blockView').snap.connection(this.data('connections')[i]);
+      }
     }
 
     if (dx > 2 || dy > 2) {
@@ -45,7 +50,10 @@ export const dragStop = function () {
 
   this.data('blockView').block.setCoords(newCoords);
 
+  const connections = this.data('connections');
   updateBlockProperties(this.data('blockView').block);
 
   this.data('blockView').redrawOnSnap();
+
+  this.data('blockView').blockGroup.data('connections', connections);
 };

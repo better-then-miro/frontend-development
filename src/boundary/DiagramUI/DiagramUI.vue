@@ -34,7 +34,7 @@ import { createNewBlock, updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
 import BlockView from '../../entity/blockView';
 import Block from '../../entity/block';
-
+import '../../entity/connection';
 
 export default {
   name: 'DiagramUi',
@@ -46,6 +46,8 @@ export default {
       blockTitle: '',
       blockType: null,
       selectedBlockView: null,
+      snapBlocks: [],
+      snapLinks: [],
     };
   },
 
@@ -62,7 +64,10 @@ export default {
       this.currentDiagram.blocks.forEach((block) => {
         const blockView = new BlockView(block, this.snap);
         blockView.redrawOnSnap();
+        this.snapBlocks.push(blockView);
+        blockView.blockGroup.data('connections', this.snapLinks);
       });
+      this.snapLinks.push(this.snap.connection(this.snapBlocks[0], this.snapBlocks[1], '#333', '#111'));
     },
 
     addNewBlock() {
@@ -86,6 +91,7 @@ export default {
             this.currentDiagram.blocks.push(newBlock);
             const blockView = new BlockView(newBlock, this.snap);
             blockView.redrawOnSnap();
+            this.snapBlocks.push(blockView);
           },
           );
       }
