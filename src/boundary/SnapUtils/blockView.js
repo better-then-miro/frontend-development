@@ -1,18 +1,20 @@
 /* eslint-disable camelcase */
 import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
 import { turnOnscaleMode, select } from '../DiagramUI/scale';
-import { svgCreate_ClassBlock, svgCreate_UseCase } from './svgBlockFactory';
+import SvgBlockFactory from './svgBlockFactory';
 
 export default class BlockView {
   block = null;
   connections = null;
   isScaling = false;
   snap = null;
+  factory = null;
   blockGroup = null;
   constructor(block, snap, connections) {
     this.block = block;
     this.snap = snap;
     this.connections = connections;
+    this.factory = new SvgBlockFactory(snap);
   }
 
   redrawOnSnap(x = this.block.coords[0], y = this.block.coords[1],
@@ -23,7 +25,7 @@ export default class BlockView {
     this.blockGroup = this.snap.group();
 
     if (this.block.Type === 'Class') {
-      const newBlock = svgCreate_ClassBlock(this.snap, x, y, width, height);
+      const newBlock = this.factory.svgCreate_ClassBlock(x, y, width, height);
 
       const blockTitle = this.snap.text(
         x + Math.round(width / 2),
@@ -33,7 +35,7 @@ export default class BlockView {
 
       this.blockGroup.add(newBlock, blockTitle);
     } else if (this.block.Type === 'Use-case') {
-      const newBlock = svgCreate_UseCase(this.snap, x, y,
+      const newBlock = this.factory.svgCreate_UseCase(x, y,
         Math.round(width / 2), Math.round(height / 2));
 
       const blockTitle = this.snap.text(
