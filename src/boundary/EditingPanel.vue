@@ -19,10 +19,18 @@
 
 <script>
 /* eslint-disable no-console */
+import blockView from '../entity/blockView';
+
 export default {
   name: 'EditingPanel',
-  props: ['selectedBlockSvg', 'selectedBlockEntity'],
-  emits: ['close-panel'],
+  props: {
+    selectedBlockView: blockView,
+  },
+  emits: {
+    'close-panel': null,
+    'apply-changes': { title: String, description: String },
+  },
+
   data() {
     return {
       snap: null,
@@ -32,8 +40,8 @@ export default {
   },
 
   mounted() {
-    this.blockTitle = this.selectedBlockEntity.title;
-    this.blockDescription = this.selectedBlockEntity.description;
+    this.blockTitle = this.selectedBlockView.block.title;
+    this.blockDescription = this.selectedBlockView.block.description;
   },
 
   methods: {
@@ -42,10 +50,11 @@ export default {
     },
 
     apply() {
-      this.selectedBlockEntity.title = this.blockTitle;
-      this.selectedBlockSvg[1].node.textContent = this.blockTitle;
-      this.selectedBlockEntity.description = this.blockDescription;
+      // this.selectedBlockView.block.title = this.blockTitle;
+      this.selectedBlockView.blockGroup[1].node.textContent = this.blockTitle;
+      // this.selectedBlockView.block.description = this.blockDescription;
       // TODO server save
+      this.$emit('apply-changes', { title: this.blockTitle, description: this.blockDescription });
     },
   },
 

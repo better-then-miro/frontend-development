@@ -40,6 +40,8 @@ export function updateBlockProperties(block) {
     width: block.width,
     height: block.height,
     coords: block.coords,
+    title: block.title,
+    description: block.description,
   };
 
   console.log('Properties to update: ', properties);

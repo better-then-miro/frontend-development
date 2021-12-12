@@ -33,7 +33,8 @@ export default {
         .then((data) => {
           data.blocks.forEach((block) => {
             this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
-              block.coords[0], block.coords[1], block.width, block.height));
+              block.coords[0], block.coords[1], block.width, block.height,
+              block.title, block.description, block.additionalFields));
           });
         },
         ).then(() => {

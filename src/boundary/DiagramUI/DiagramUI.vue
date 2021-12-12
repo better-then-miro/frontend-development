@@ -17,10 +17,10 @@
           Add new block
         </button>
       </div>
-      <editing-panel v-if="selectedBlockSVG!=null"
-                     v-bind:selected-block-svg="selectedBlockSVG"
-                     v-bind:selected-block-entity="selectedBlockEntity"
-                     v-on:close-panel="selectedBlockSVG=null"/>
+      <editing-panel v-if="selectedBlockView!=null"
+                      v-bind:selected-block-view="selectedBlockView"
+                      v-on:close-panel="selectedBlockView=null"
+                      v-on:apply-changes="changeFields"/>
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@
 import Snap from 'snapsvg-cjs';
 import { setBounds } from './drag';
 import { sel } from './scale';
-import { createNewBlock } from '../serverProtocol';
+import { createNewBlock, updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
 import BlockView from '../../entity/blockView';
 import Block from '../../entity/block';
@@ -45,7 +45,7 @@ export default {
       snap: null,
       blockTitle: '',
       blockType: null,
-      selectedBlockSVG: null,
+      selectedBlockView: null,
     };
   },
 
@@ -71,7 +71,7 @@ export default {
       if (this.blockType != null && this.blockTitle.replaceAll(' ', '') !== '') {
         const properties = {
           dId: this.currentDiagram.Id,
-          type: this.blockType,
+          Type: this.blockType,
           coords: [250, 250],
           width: 100,
           height: 50,
@@ -79,8 +79,10 @@ export default {
 
         createNewBlock(properties)
           .then((blockId) => {
-            const newBlock = new Block(blockId, properties.type,
-              properties.coords[0], properties.coords[1], properties.width, properties.height);
+            console.log('New block ID:', blockId);
+            const newBlock = new Block(blockId, properties.Type,
+              properties.coords[0], properties.coords[1], properties.width,
+              properties.height, this.blockTitle);
             this.currentDiagram.blocks.push(newBlock);
             const blockView = new BlockView(newBlock, this.snap);
             blockView.redrawOnSnap();
@@ -90,21 +92,13 @@ export default {
     },
 
     updateInfo() {
-      this.selectedBlockSVG = sel;
+      this.selectedBlockView = sel;
     },
-  },
 
-  computed: {
-    selectedBlockEntity() {
-      if (this.selectedBlockSVG == null) return null;
-      let res;
-      for (let i = 0; i < this.currentDiagram.blocks.length; i += 1) {
-        if (this.currentDiagram.blocks[i].Id === this.selectedBlockSVG.data('Id')) {
-          res = this.currentDiagram.blocks[i];
-          break;
-        }
-      }
-      return res;
+    changeFields(properties) {
+      this.selectedBlockView.block.title = properties.title;
+      this.selectedBlockView.block.description = properties.description;
+      updateBlockProperties(this.selectedBlockView.block);
     },
   },
 };

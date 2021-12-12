@@ -111,5 +111,5 @@ export const turnOnscaleMode = function () {
 // eslint-disable-next-line import/no-mutable-exports
 export let sel = null;
 export const select = function () {
-  sel = this;
+  sel = this.data('blockView');
 };

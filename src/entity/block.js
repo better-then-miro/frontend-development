@@ -6,7 +6,10 @@ export default class Block {
   height = null;
   title = '';
   description = '';
-  constructor(Id, Type, x, y, width, height, title = `Default name ${Id}`, description = '') {
+  additionalFields = {
+    // attrs, methods for 'Class' type
+  };
+  constructor(Id, Type, x, y, width, height, title = `Default name ${Id}`, description = '', additionalFields = null) {
     this.Id = Id;
     Object.defineProperty(this, 'Id', { writable: false }); // readonly ID
     this.Type = Type;
@@ -15,6 +18,10 @@ export default class Block {
     this.height = height;
     this.title = title;
     this.description = description;
+    if (this.Type === 'Class' && additionalFields === null) {
+      this.additionalFields.attrs = [];
+      this.additionalFields.methods = [];
+    }
   }
 
   setCoords(coords) {
@@ -27,5 +34,17 @@ export default class Block {
 
   setHeight(height) {
     this.height = height;
+  }
+
+  addAttribute(attrContent) {
+    if (this.Type === 'Class') {
+      this.additionalFields.attrs.push(attrContent);
+    }
+  }
+
+  addMethod(methodContent) {
+    if (this.Type === 'Class') {
+      this.additionalFields.attrs.push(methodContent);
+    }
   }
 }
