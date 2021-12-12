@@ -21,7 +21,7 @@ export const dragMove = function (dx, dy, x, y) {
       }
     }
 
-    if (dx > 2 || dy > 2) {
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
       this.data('saveDrag', true);
     }
   }
