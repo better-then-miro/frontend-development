@@ -2,21 +2,7 @@
   <div style="display:flex">
     <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
-      <div>
-        <input id="blockTitle" type="text" placeholder="Enter block title"
-               name="blockTitle" v-model="blockTitle">
-        <div>
-          <input type="radio" id="contactChoice1"
-                 name="blockType" value="Class" v-model="blockType">
-          <label for="contactChoice1">Class</label>
-          <input type="radio" id="contactChoice2"
-                 name="blockType" value="Use-case" v-model="blockType">
-          <label for="contactChoice2">Use-case</label>
-        </div>
-        <button type="button" class="btn icon-plus" v-on:click="addNewBlock()">
-          Add new block
-        </button>
-      </div>
+      <side-panel v-on:create-block="addNewBlock"/>
       <editing-panel v-if="selectedBlockView!=null"
                       v-bind:selected-block-view="selectedBlockView"
                       v-on:close-panel="selectedBlockView=null"
@@ -35,10 +21,11 @@ import EditingPanel from '../EditingPanel';
 import BlockView from '../../entity/blockView';
 import Block from '../../entity/block';
 import '../../entity/connection';
+import SidePanel from '../SidePanel';
 
 export default {
   name: 'DiagramUi',
-  components: { EditingPanel },
+  components: { SidePanel, EditingPanel },
   props: ['currentDiagram'], // TODO only blocks and links needed to this boundary
   data() {
     return {
@@ -70,37 +57,27 @@ export default {
       this.snapLinks.push(this.snap.connection(this.snapBlocks[0], this.snapBlocks[1], '#333', '#111'));
     },
 
-    addNewBlock() {
-      // TODO: Find a better way to handle blocks with an empty title
-      // TODO: (or a title that only contains spaces)
-      if (this.blockType != null) {
-        let newTitle;
-        if (this.blockTitle.replaceAll(' ', '') === '') {
-          newTitle = this.blockType;
-        } else {
-          newTitle = this.blockTitle;
-        }
-        const properties = {
-          dId: this.currentDiagram.Id,
-          Type: this.blockType,
-          coords: [250, 250],
-          width: 100,
-          height: 50,
-          title: newTitle,
-        };
+    addNewBlock(fields) {
+      const properties = {
+        dId: this.currentDiagram.Id,
+        Type: fields.Type,
+        coords: [250, 250],
+        width: 100,
+        height: 50,
+        title: fields.title,
+      };
 
-        createNewBlock(properties)
-          .then((blockId) => {
-            console.log('New block ID:', blockId);
-            const newBlock = new Block(blockId, properties.Type,
-              properties.coords[0], properties.coords[1], properties.width,
-              properties.height, newTitle);
-            this.currentDiagram.blocks.push(newBlock);
-            const blockView = new BlockView(newBlock, this.snap);
-            blockView.redrawOnSnap();
-          },
-          );
-      }
+      createNewBlock(properties)
+        .then((blockId) => {
+          console.log('New block ID:', blockId);
+          const newBlock = new Block(blockId, properties.Type,
+            properties.coords[0], properties.coords[1], properties.width,
+            properties.height, properties.title);
+          this.currentDiagram.blocks.push(newBlock);
+          const blockView = new BlockView(newBlock, this.snap);
+          blockView.redrawOnSnap();
+        },
+        );
     },
 
     updateInfo() {

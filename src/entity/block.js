@@ -17,7 +17,7 @@ export default class Block {
     this.width = width;
     this.height = height;
     this.description = description;
-    if (title.replaceAll(' ', '') === ''){
+    if (title.replaceAll(' ', '') === '') {
       this.title = Type;
     } else {
       this.title = title;
