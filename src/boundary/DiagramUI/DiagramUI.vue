@@ -18,9 +18,9 @@ import { setBounds } from './drag';
 import { sel } from './scale';
 import { createNewBlock, updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
-import BlockView from '../../entity/blockView';
+import BlockView from '../SnapUtils/blockView';
 import Block from '../../entity/block';
-import '../../entity/connection';
+import '../SnapUtils/connection';
 import SidePanel from '../SidePanel';
 
 export default {

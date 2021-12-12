@@ -19,7 +19,7 @@
 
 <script>
 /* eslint-disable no-console */
-import blockView from '../entity/blockView';
+import blockView from './SnapUtils/blockView';
 
 export default {
   name: 'EditingPanel',

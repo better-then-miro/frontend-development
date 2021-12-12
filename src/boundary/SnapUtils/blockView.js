@@ -1,5 +1,7 @@
-import { dragMove, dragStart, dragStop } from '../boundary/DiagramUI/drag';
-import { turnOnscaleMode, select } from '../boundary/DiagramUI/scale';
+/* eslint-disable camelcase */
+import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
+import { turnOnscaleMode, select } from '../DiagramUI/scale';
+import { svgCreate_ClassBlock, svgCreate_UseCase } from './svgBlockFactory';
 
 export default class BlockView {
   block = null;
@@ -21,26 +23,23 @@ export default class BlockView {
     this.blockGroup = this.snap.group();
 
     if (this.block.Type === 'Class') {
-      const newBlock = this.snap.rect(
-        x, y,
-        width, height);
+      const newBlock = svgCreate_ClassBlock(this.snap, x, y, width, height);
 
       const blockTitle = this.snap.text(
         x + Math.round(width / 2),
         y + Math.round(height / 2),
         this.block.title,
-      ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
+      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
 
       this.blockGroup.add(newBlock, blockTitle);
     } else if (this.block.Type === 'Use-case') {
-      const newBlock = this.snap.ellipse(
-        x, y,
+      const newBlock = svgCreate_UseCase(this.snap, x, y,
         Math.round(width / 2), Math.round(height / 2));
 
       const blockTitle = this.snap.text(
         x, y,
         this.block.title,
-      ).attr({ stroke: 'white', dominantBaseline: 'middle', textAnchor: 'middle' });
+      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
 
       this.blockGroup.add(newBlock, blockTitle);
     }
