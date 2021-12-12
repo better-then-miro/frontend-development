@@ -57,3 +57,9 @@ export function createNewBlock(properties) {
   return axios.post('http://127.0.0.1:5000/createNewBlock', properties)
     .then(response => response.data.bId);
 }
+
+export function createNewLink(properties) {
+  console.log('New link properties: ', properties);
+  return axios.post('http://127.0.0.1:5000/createNewLink', properties)
+    .then(response => response.data.lId);
+}
