@@ -2,7 +2,11 @@
   <div style="display:flex">
     <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
-      <side-panel v-on:create-block="addNewBlock"/>
+      <side-panel v-on:create-block="addNewBlock"
+                  v-bind:is-link-add-mode="isLinkAddMode"
+                  v-on:toggle-link-mode="toggleLinkMode"
+                  v-on:add-new-link="addNewLink"
+                  ref="sidePanel"/>
       <editing-panel v-if="selectedBlockView!=null"
                       v-bind:selected-block-view="selectedBlockView"
                       v-on:close-panel="selectedBlockView=null"
@@ -14,14 +18,15 @@
 <script>
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
-import { setBounds } from './drag';
-import { sel } from './scale';
-import { createNewBlock, updateBlockProperties } from '../serverProtocol';
+import setBounds from './drag';
+import sel from './scale';
+import { createNewBlock, createNewLink, updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
 import BlockView from '../SnapUtils/blockView';
 import Block from '../../entity/block';
-import '../SnapUtils/connection';
+import Link from '../../entity/link';
 import SidePanel from '../SidePanel';
+import '../SnapUtils/connection';
 
 export default {
   name: 'DiagramUi',
@@ -30,11 +35,11 @@ export default {
   data() {
     return {
       snap: null,
-      blockTitle: '',
-      blockType: null,
       selectedBlockView: null,
       snapBlocks: [],
       snapLinks: [],
+      linkSourceBlock: null,
+      isLinkAddMode: false,
     };
   },
 
@@ -83,12 +88,50 @@ export default {
           this.currentDiagram.blocks.push(newBlock);
           const blockView = new BlockView(newBlock, this.snap, this.snapLinks);
           blockView.redrawOnSnap();
+          this.snapBlocks.push(blockView);
         },
         );
     },
 
     updateInfo() {
       this.selectedBlockView = sel;
+      if (this.isLinkAddMode) {
+        if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
+          this.$refs.sidePanel.addNewLink();
+        } else {
+          this.linkSourceBlock = sel;
+        }
+      } else {
+        this.linkSourceBlock = null;
+      }
+    },
+
+    addNewLink(data) {
+      if (data.linkType == null) {
+        return;
+      }
+      const properties = {
+        dId: this.currentDiagram.Id,
+        Type: data.linkType,
+        sId: this.linkSourceBlock.block.Id,
+        tId: sel.block.Id,
+      };
+
+      createNewLink(properties)
+        .then((linkId) => {
+          console.log('New Link ID:', linkId);
+          const newLink = new Link(linkId, properties.Type,
+            properties.sId, properties.tId);
+          this.currentDiagram.links.push(newLink);
+          this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, '#333', '#111'));
+          this.linkSourceBlock = null;
+          this.isLinkAddMode = false;
+        },
+        );
+    },
+
+    toggleLinkMode(properties) {
+      this.isLinkAddMode = properties.bool;
     },
 
     changeFields(properties) {
