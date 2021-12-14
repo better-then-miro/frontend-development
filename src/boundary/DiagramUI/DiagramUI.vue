@@ -18,8 +18,8 @@
 <script>
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
-import setBounds from './drag';
-import sel from './scale';
+import { setBounds } from './drag';
+import { sel } from './scale';
 import { createNewBlock, createNewLink, updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
 import BlockView from '../SnapUtils/blockView';

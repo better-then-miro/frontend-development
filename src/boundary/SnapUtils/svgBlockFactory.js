@@ -24,6 +24,7 @@ export default class SvgBlockFactory {
     return fig;
   }
 
+  // eslint-disable-next-line no-unused-vars
   svgCreate_Actor(x, y, w, h) {
     const g = this.snap.group();
     g.data('ot', g.transform().local);
