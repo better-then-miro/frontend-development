@@ -44,6 +44,16 @@ export default class BlockView {
       ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
 
       this.blockGroup.add(newBlock, blockTitle);
+    } else if (this.block.Type === 'Actor') {
+      const newBlock = this.factory.svgCreate_Actor(x, y,
+        Math.round(width / 2), Math.round(height / 2));
+
+      const blockTitle = this.snap.text(
+        x + Math.round(width / 2), y + height,
+        this.block.title,
+      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+
+      this.blockGroup.add(newBlock, blockTitle);
     }
 
     // eslint-disable-next-line no-plusplus

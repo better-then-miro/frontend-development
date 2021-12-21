@@ -5,12 +5,43 @@
       <span v-on:click="close" class="closeForm"
             title="Close panel">X</span>
     </div>
-    <div class="input-title">Name:</div>
-    <input id="selectedBlockTitle" type="text" placeholder="Enter block title"
-           name="blockTitle" v-model="blockTitle">
-    <div class="input-title">Description:</div>
-    <input id="selectedBlockDescription" type="text" placeholder="Enter block description"
-           name="blockDescription" v-model="blockDescription">
+
+    <h3 class="input-title"
+        style="margin-top:5px; margin-bottom:5px;">
+        Name:
+    </h3>
+    <input id="selectedBlockTitle"
+        style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+        type="text" placeholder="Enter block title"
+        name="blockTitle" v-model="blockTitle">
+
+    <h3 class="input-title"
+        style="margin-top:5px; margin-bottom:5px;">
+        Description:
+    </h3>
+    <input id="selectedBlockDescription"
+        style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+        type="text" placeholder="Enter block description"
+        name="blockDescription" v-model="blockDescription">
+
+    <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
+      v-bind:key="attributeKey">
+      <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
+        <div class="input-title">{{ attributeKey }}:</div>
+        <ul>
+          <li v-for="method in selectedBlockView.block.additionalFields[attributeKey]"
+            :key="method">
+            {{ method }}
+          </li>
+        </ul>
+      </div>
+      <div v-else>
+        <div class="input-title">{{ attributeKey }}:</div>
+        <input type="text" placeholder="Enter property value"
+            :ref=attributeKey :value=selectedBlockView.block.additionalFields[attributeKey]>
+      </div>
+    </div>
+
     <button class="btn btn-1" v-on:click="apply">
       Apply Changes
     </button>
@@ -28,7 +59,7 @@ export default {
   },
   emits: {
     'close-panel': null,
-    'apply-changes': { title: String, description: String },
+    'apply-changes': {},
   },
 
   data() {
@@ -49,6 +80,18 @@ export default {
     },
 
     apply() {
+      // for (const attributeKey of Object.keys(selectedBlockView.block.additionalFields)) {
+      //   // eslint-disable-next-line dot-notation
+      //   if (this.$refs['testField'].length === 1) {
+      //     // eslint-disable-next-line dot-notation
+      //     console.log(this.$refs['testField'][0].value);
+      //   }
+      // }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [key, value] of Object.entries(this.selectedBlockView.block.additionalFields)) {
+        console.log(key, value);
+      }
       this.selectedBlockView.blockGroup[1].node.textContent = this.blockTitle;
       this.$emit('apply-changes', { title: this.blockTitle, description: this.blockDescription });
     },
