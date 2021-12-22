@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 /* eslint-disable camelcase */
 import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
 import { turnOnscaleMode, select } from '../DiagramUI/scale';
@@ -27,13 +29,16 @@ export default class BlockView {
     if (this.block.Type === 'Class') {
       const newBlock = this.factory.svgCreate_ClassBlock(x, y, width, height);
 
+      const newFields = this.factory.svgCreate_BlockFields(x, y, width, height,
+        this.block.additionalFields);
+
       const blockTitle = this.snap.text(
         x + Math.round(width / 2),
         y + Math.round(height / 2),
         this.block.title,
       ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
 
-      this.blockGroup.add(newBlock, blockTitle);
+      this.blockGroup.add(newBlock, blockTitle, newFields);
     } else if (this.block.Type === 'Use-case') {
       const newBlock = this.factory.svgCreate_UseCase(x, y,
         Math.round(width / 2), Math.round(height / 2));

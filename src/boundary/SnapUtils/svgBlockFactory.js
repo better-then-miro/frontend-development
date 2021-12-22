@@ -1,3 +1,5 @@
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable camelcase */
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
@@ -35,6 +37,37 @@ export default class SvgBlockFactory {
     g.attr({
       transform: g.data('ot') + (g.data('ot') ? 'T' : 't') + [x, y],
     });
+    return g;
+  }
+
+  svgCreate_BlockFields(x, y, w, h, additionalFields) {
+    let titleOffset = 15;
+    const g = this.snap.group();
+    g.attr({ 'font-size': '13px' });
+    for (const [key, values] of Object.entries(additionalFields)) {
+      // eslint-disable-next-line no-console
+      console.log(key, values);
+
+      const keyTitle = this.snap.text(
+        x + Math.round(w / 2),
+        y + h + titleOffset,
+        key,
+      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+      titleOffset += 20;
+      g.append(keyTitle);
+
+      for (const valueIndex in values) {
+        const valueTitle = this.snap.text(
+          x + Math.round(w / 2),
+          y + h + titleOffset,
+          values[valueIndex],
+        ).attr({ dominantBaseline: 'start', textAnchor: 'middle' });
+        titleOffset += 15;
+        g.append(valueTitle);
+      }
+      titleOffset += 10;
+    }
+
     return g;
   }
 }

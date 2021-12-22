@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
+/* eslint-disable no-console */
 /* eslint-disable func-names */
 
 import { updateBlockProperties } from '../serverProtocol';
@@ -55,7 +58,12 @@ export const scaleStop = function () {
 };
 
 function updateBlockPosition(blockGroup) {
-  scalingBlockGroup.selectAll('circle.handler').remove();
+  [2, 1].forEach((index) => {
+    if (scalingBlockGroup[0][index] != null) {
+      console.log(index, scalingBlockGroup[0][index]);
+      scalingBlockGroup[0][index].remove();
+    }
+  });
 
   const coords = scalingBlockGroup.getBBox();
 
@@ -88,7 +96,7 @@ export const turnOnscaleMode = function () {
 
   if (this.data('blockView').isScaling === false) {
     this.data('blockView').isScaling = true;
-    const groupBbox = this.getBBox();
+    const groupBbox = this[0].getBBox();
     const anchors = [];
     anchors[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[0].data('side', 'topleft');
