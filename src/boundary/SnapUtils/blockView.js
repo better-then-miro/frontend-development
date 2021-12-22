@@ -35,7 +35,7 @@ export default class BlockView {
 
       this.blockGroup.add(newBlock, blockTitle);
     } else if (this.block.Type === 'Use-case') {
-      const newBlock = this.factory.svgCreate_UseCase(x, y,
+      const newBlock = this.factory.svgCreate_UseCaseCenter(x, y,
         Math.round(width / 2), Math.round(height / 2));
 
       const blockTitle = this.snap.text(

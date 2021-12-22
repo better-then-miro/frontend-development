@@ -25,7 +25,7 @@ import EditingPanel from '../EditingPanel';
 import BlockView from '../SnapUtils/blockView';
 import Block from '../../entity/block';
 import Link from '../../entity/link';
-import SidePanel from '../SidePanel';
+import SidePanel from '../SidePanel/SidePanel';
 import '../SnapUtils/connection';
 
 export default {
