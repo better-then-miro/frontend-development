@@ -2,7 +2,17 @@
   <div>
     <input id="blockTitle" type="text" placeholder="Enter block title"
            name="blockTitle" v-model="blockTitle">
-    <div style="display:flex; flex-direction: row;
+    <div class="selection-grid" style="display:flex; flex-direction: row;">
+      <selection-entry v-for="type in supportedBlockTypes"
+                       v-bind:block-type="type"
+                       v-bind:selected-entry="blockType"
+                       v-on:entry-selected="changeSelected"
+                       v-bind:key="type"/>
+      <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="addNewBlock()">
+        Add new block
+      </button>
+    </div>
+    <!--<div style="display:flex; flex-direction: row;
       justify-content: space-around; align-items: center">
       <div style="margin: 5px">
         <input type="radio" id="blockChoice1"
@@ -17,7 +27,7 @@
       <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="addNewBlock()">
         Add new block
       </button>
-    </div>
+    </div>-->
 
     <div style="display:flex; flex-direction: column;
       justify-content: space-around; align-items: center">
@@ -44,8 +54,11 @@
 
 <script>
 /* eslint-disable no-console */
+import SelectionEntry from './SelectionEntry';
+
 export default {
   name: 'SidePanel',
+  components: { SelectionEntry },
   props: {
     isLinkAddMode: Boolean,
   },
@@ -59,6 +72,7 @@ export default {
       blockTitle: '',
       blockType: null,
       linkType: null,
+      supportedBlockTypes: ['Class', 'Use-case', 'Actor'],
     };
   },
 
@@ -86,6 +100,10 @@ export default {
     addNewLink() {
       this.$emit('add-new-link', { linkType: this.linkType });
       this.linkType = null;
+    },
+
+    changeSelected(sel) {
+      this.blockType = sel;
     },
   },
 };

@@ -13,14 +13,32 @@ export default class SvgBlockFactory {
     this.snap = snap;
   }
 
+  svgCreate_byType(type, x, y, w, h) {
+    if (type === 'Class') {
+      return this.svgCreate_ClassBlock(x, y, w, h);
+    } else if (type === 'Use-case') {
+      return this.svgCreate_UseCase(x, y, w, h);
+    } else if (type === 'Actor') {
+      return this.svgCreate_Actor(x, y, w, h);
+    }
+    return null;
+  }
+
   svgCreate_ClassBlock(x, y, w, h) {
     const fig = this.snap.rect(x, y, w, h);
     fig.attr({ fill: bgColor, stroke: 'black', strokeWidth: 1 });
     return fig;
   }
 
-
   svgCreate_UseCase(x, y, w, h) {
+    const width = Math.round(w / 2);
+    const height = Math.round(h / 2);
+    const fig = this.snap.ellipse(x + width, y + height, width, height);
+    fig.attr({ fill: bgColor, stroke: 'black', strokeWidth: 1 });
+    return fig;
+  }
+
+  svgCreate_UseCaseCenter(x, y, w, h) {
     const fig = this.snap.ellipse(x, y, w, h);
     fig.attr({ fill: bgColor, stroke: 'black', strokeWidth: 1 });
     return fig;
