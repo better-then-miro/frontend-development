@@ -38,9 +38,9 @@
               <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
             </li>
           </ul>
-          <button type="button" class="btn icon-plus sidePanelBtn"
+          <button class="addNewAttributeValueBtn" role="button"
             v-on:click="addNewItem(attributeKey)">
-            add new item
+            Add new item
           </button>
         </div>
         <div v-else>
