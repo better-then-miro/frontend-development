@@ -58,12 +58,7 @@ export const scaleStop = function () {
 };
 
 function updateBlockPosition(blockGroup) {
-  [2, 1].forEach((index) => {
-    if (scalingBlockGroup[0][index] != null) {
-      console.log(index, scalingBlockGroup[0][index]);
-      scalingBlockGroup[0][index].remove();
-    }
-  });
+  scalingBlockGroup[0].remove();
 
   const coords = scalingBlockGroup.getBBox();
 
