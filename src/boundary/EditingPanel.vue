@@ -83,7 +83,7 @@ export default {
       this.$emit('close-panel');
     },
 
-    apply() {
+    apply(addNewItem = false) {
       const newAdditionFieldsDict = {};
       const oldKeys = Object.keys(this.selectedBlockView.block.additionalFields);
       for (const attributeKey in oldKeys) {
@@ -97,7 +97,7 @@ export default {
           newAdditionFieldsDict[fieldInput.id] = [];
         }
 
-        if (fieldInput.value !== '') {
+        if (addNewItem || fieldInput.value !== '') {
           newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
         }
       });
@@ -111,7 +111,7 @@ export default {
     },
 
     addNewItem(itemType) {
-      this.apply();
+      this.apply(true);
       let addingAllowed = true;
       const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
       additionalFieldInputs.forEach((fieldInput) => {
