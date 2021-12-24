@@ -152,7 +152,6 @@ select {
   cursor: pointer;
 }
 
-/* Extra styles for the cancel button */
 .cancelbtn {
   background-color: #fa6e64;
 }
@@ -161,7 +160,6 @@ select {
   background-color: #69c1f5;
 }
 
-/* Float cancel and signup buttons and add an equal width */
 .cancelbtn, .signupbtn {
   color: #ffffff;
   padding: 10px 20px;
@@ -177,12 +175,6 @@ select {
   padding-left: 20px;
   padding-right: 20px;
 }
-/*
-.newProjectButtons::after {
-  content: "";
-  clear: both;
-  display: table;
-} */
 
 .btn {
   border: none;
@@ -260,4 +252,9 @@ select {
 
 .icon-plus:before {
   content: "\f055";
+}
+
+.sidePanelBtn {
+  margin: 5px;
+  padding: 5px;
 }

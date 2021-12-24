@@ -3,15 +3,54 @@ export default class Block {
   Type = '';
   coords = [null, null];
   width = null;
-  heigth = null;
-  // TODO additional fields. For example name and description
-  constructor(Id, Type, x, y, width, heigth) {
+  height = null;
+  title = '';
+  description = '';
+  additionalFields = {
+    // attrs, methods for 'Class' type
+  };
+  constructor(Id, Type, x, y, width, height, title = `Default name ${Id}`, description = '', additionalFields = null) {
     this.Id = Id;
     Object.defineProperty(this, 'Id', { writable: false }); // readonly ID
     this.Type = Type;
     this.coords = [x, y];
     this.width = width;
-    this.heigth = heigth;
-    this.name = name;
+    this.height = height;
+    this.description = description;
+    if (title.replaceAll(' ', '') === '') {
+      this.title = Type;
+    } else {
+      this.title = title;
+    }
+    if (this.Type === 'Class' && additionalFields === null) {
+      this.additionalFields.attrs = [];
+      this.additionalFields.methods = [];
+    } else {
+      this.additionalFields = additionalFields;
+    }
+  }
+
+  setCoords(coords) {
+    this.coords = coords;
+  }
+
+  setWidth(width) {
+    this.width = width;
+  }
+
+  setHeight(height) {
+    this.height = height;
+  }
+
+  addAttribute(attrContent) {
+    if (this.Type === 'Class') {
+      this.additionalFields.attrs.push(attrContent);
+    }
+  }
+
+  addMethod(methodContent) {
+    if (this.Type === 'Class') {
+      this.additionalFields.attrs.push(methodContent);
+    }
   }
 }
