@@ -134,10 +134,9 @@ export default {
       this.isLinkAddMode = properties.bool;
     },
 
-    changeFields(properties) {
-      this.selectedBlockView.block.title = properties.title;
-      this.selectedBlockView.block.description = properties.description;
+    changeFields() {
       updateBlockProperties(this.selectedBlockView.block);
+      this.selectedBlockView.redrawOnSnap();
     },
   },
 };

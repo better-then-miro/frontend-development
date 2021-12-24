@@ -10,38 +10,42 @@
         style="margin-top:5px; margin-bottom:5px;">
         Name:
     </h3>
-    <input id="selectedBlockTitle"
+    <input id="selectedBlockTitle" ref="blockTitle"
         style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
         type="text" placeholder="Enter block title"
-        name="blockTitle" v-model="blockTitle">
+        name="blockTitle" :value=selectedBlockView.block.title>
 
     <h3 class="input-title"
         style="margin-top:5px; margin-bottom:5px;">
         Description:
     </h3>
-    <input id="selectedBlockDescription"
+    <input id="selectedBlockDescription" ref="blockDescription"
         style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
         type="text" placeholder="Enter block description"
-        name="blockDescription" v-model="blockDescription">
+        name="blockDescription" :value=selectedBlockView.block.description>
 
-    <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
-      v-bind:key="attributeKey">
-      <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
-        <div class="input-title">{{ attributeKey }}:</div>
-        <ul>
-          <li v-for="method in selectedBlockView.block.additionalFields[attributeKey]"
-            :key="method">
-            {{ method }}
-          </li>
-        </ul>
-      </div>
-      <div v-else>
-        <div class="input-title">{{ attributeKey }}:</div>
-        <input type="text" placeholder="Enter property value"
-            :ref=attributeKey :value=selectedBlockView.block.additionalFields[attributeKey]>
+    <div ref="additionalFieldsSection">
+      <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
+        v-bind:key="attributeKey">
+        <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
+          <h3 class="input-title"
+            style="margin-top:5px; margin-bottom:5px;">
+            {{ attributeKey }}
+          </h3>
+          <ul class="additionalFieldList">
+            <li v-for="attributeValue in selectedBlockView.block.additionalFields[attributeKey]"
+              :key="attributeValue">
+              <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <div class="input-title">{{ attributeKey }}:</div>
+          <input type="text" placeholder="Enter property value"
+              :ref=attributeKey :value=selectedBlockView.block.additionalFields[attributeKey]>
+        </div>
       </div>
     </div>
-
     <button class="btn btn-1" v-on:click="apply">
       Apply Changes
     </button>
@@ -49,6 +53,8 @@
 </template>
 
 <script>
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 import blockView from './SnapUtils/blockView';
 
@@ -65,13 +71,7 @@ export default {
   data() {
     return {
       snap: null,
-      blockTitle: '',
-      blockDescription: '',
     };
-  },
-
-  mounted() {
-    this.changeSelected();
   },
 
   methods: {
@@ -80,31 +80,24 @@ export default {
     },
 
     apply() {
-      // for (const attributeKey of Object.keys(selectedBlockView.block.additionalFields)) {
-      //   // eslint-disable-next-line dot-notation
-      //   if (this.$refs['testField'].length === 1) {
-      //     // eslint-disable-next-line dot-notation
-      //     console.log(this.$refs['testField'][0].value);
-      //   }
-      // }
+      const newAdditionFieldsDict = {};
+      const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(this.selectedBlockView.block.additionalFields)) {
-        console.log(key, value);
-      }
-      this.selectedBlockView.blockGroup[1].node.textContent = this.blockTitle;
-      this.$emit('apply-changes', { title: this.blockTitle, description: this.blockDescription });
-    },
+      additionalFieldInputs.forEach((fieldInput) => {
+        if (fieldInput.id in newAdditionFieldsDict === false) {
+          console.log('New array');
+          newAdditionFieldsDict[fieldInput.id] = [];
+        }
+        console.log(fieldInput.id, fieldInput.value);
+        newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
+      });
 
-    changeSelected() {
-      this.blockTitle = this.selectedBlockView.block.title;
-      this.blockDescription = this.selectedBlockView.block.description;
-    },
-  },
+      this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
 
-  watch: {
-    selectedBlockView() {
-      this.changeSelected();
+      this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;
+      this.selectedBlockView.block.title = this.$refs.blockTitle.value;
+      this.selectedBlockView.block.description = this.$refs.blockDescription.value;
+      this.$emit('apply-changes');
     },
   },
 };

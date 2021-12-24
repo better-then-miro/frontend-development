@@ -67,26 +67,15 @@ input[type=text], input[type=password] {
 }
 
 /* Add a background color when the inputs get focus */
-input[type=text]:focus, input[type=password]:focus {
+/* input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+} */
+
+input[type=text]:hover, input[type=password]:hover {
   background-color: #ddd;
   outline: none;
 }
-
-/* Set a style for all buttons */
-/* .navbar button  {
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  opacity: 0.9;
-} */
-
-/* .navbar button:hover {
-  opacity:1;
-} */
-
 
 /* Add padding to container elements */
 .newProjectForm {
@@ -257,4 +246,27 @@ select {
 .sidePanelBtn {
   margin: 5px;
   padding: 5px;
+}
+
+.additionalFieldList {
+  margin: 0;
+  margin-bottom: 5px;
+}
+
+.additionalFieldItem {
+  padding: 5px; 
+  padding-left: 0px; 
+  margin-bottom:5px;
+  font-size:17px;
+  width: 100%;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+
+/* .additionalFieldItem:focus,  */
+.additionalFieldItem:hover {
+  background-color: #ddd;
+  outline: none;
 }

@@ -39,6 +39,7 @@ export function updateBlockProperties(block) {
     coords: block.coords,
     title: block.title,
     description: block.description,
+    additionalFields: block.additionalFields,
   };
 
   console.log('Properties to update: ', properties);
