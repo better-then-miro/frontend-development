@@ -33,6 +33,10 @@ export const dragStart = function () {
 };
 
 export const dragStop = function () {
+  if (Object.keys(this.data('blockView').block.additionalFields).length > 0) {
+    this[2].remove();
+  }
+
   const coords = this.getBBox();
 
   let newCoords = [];
