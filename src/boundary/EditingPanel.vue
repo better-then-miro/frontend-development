@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-1" v-on:click="apply">
+    <button class="btn btn-1" v-on:click="apply(false)">
       Apply Changes
     </button>
   </div>
@@ -97,7 +97,7 @@ export default {
           newAdditionFieldsDict[fieldInput.id] = [];
         }
 
-        if (addNewItem || fieldInput.value !== '') {
+        if (addNewItem || (fieldInput.value !== '')) {
           newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
         }
       });
