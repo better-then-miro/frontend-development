@@ -23,8 +23,8 @@ export default class Block {
       this.title = title;
     }
     if (this.Type === 'Class' && additionalFields === null) {
-      this.additionalFields.attrs = [];
-      this.additionalFields.methods = [];
+      this.additionalFields.Attributes = [];
+      this.additionalFields.Operations = [];
     } else {
       this.additionalFields = additionalFields;
     }

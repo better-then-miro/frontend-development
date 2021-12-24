@@ -38,11 +38,15 @@
               <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
             </li>
           </ul>
+          <button type="button" class="btn icon-plus sidePanelBtn"
+            v-on:click="addNewItem(attributeKey)">
+            add new item
+          </button>
         </div>
         <div v-else>
           <div class="input-title">{{ attributeKey }}:</div>
           <input type="text" placeholder="Enter property value"
-              :ref=attributeKey :value=selectedBlockView.block.additionalFields[attributeKey]>
+              :value=selectedBlockView.block.additionalFields[attributeKey]>
         </div>
       </div>
     </div>
@@ -81,15 +85,21 @@ export default {
 
     apply() {
       const newAdditionFieldsDict = {};
+      const oldKeys = Object.keys(this.selectedBlockView.block.additionalFields);
+      for (const attributeKey in oldKeys) {
+        newAdditionFieldsDict[oldKeys[attributeKey]] = [];
+      }
+
       const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
 
       additionalFieldInputs.forEach((fieldInput) => {
         if (fieldInput.id in newAdditionFieldsDict === false) {
-          console.log('New array');
           newAdditionFieldsDict[fieldInput.id] = [];
         }
-        console.log(fieldInput.id, fieldInput.value);
-        newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
+
+        if (fieldInput.value !== '') {
+          newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
+        }
       });
 
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
@@ -98,6 +108,24 @@ export default {
       this.selectedBlockView.block.title = this.$refs.blockTitle.value;
       this.selectedBlockView.block.description = this.$refs.blockDescription.value;
       this.$emit('apply-changes');
+    },
+
+    addNewItem(itemType) {
+      this.apply();
+      let addingAllowed = true;
+      const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
+      additionalFieldInputs.forEach((fieldInput) => {
+        if (fieldInput.id === itemType && fieldInput.value === '') {
+          addingAllowed = false;
+        }
+      });
+
+      if (addingAllowed) {
+        if (itemType in this.selectedBlockView.block.additionalFields === false) {
+          this.selectedBlockView.block.additionalFields[itemType] = [];
+        }
+        this.selectedBlockView.block.additionalFields[itemType].push('');
+      }
     },
   },
 };

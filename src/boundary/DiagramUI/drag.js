@@ -34,8 +34,6 @@ export const dragStart = function () {
 
 export const dragStop = function () {
   if (this.data('saveDrag') === false) {
-    // eslint-disable-next-line no-console
-    console.log('Too small drag');
     return;
   }
 
