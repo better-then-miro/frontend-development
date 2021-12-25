@@ -33,7 +33,8 @@
         <div class="card" @click="openDiagram(diagram)">
           <p><b>Name:</b> {{ diagram.name }}</p>
           <p><b>Description:</b> {{ diagram.description }}</p>
-          <p><b>Type:</b> {{ diagram.Type }}</p>
+          <p><b>Type:</b> {{ diagram.Type }} diagram</p>
+          <p><b>Mode:</b> {{ diagram.mode }}</p>
         </div>
       </div>
     </div>
@@ -87,14 +88,24 @@
           <label for="Description"><b>Description</b></label>
           <input id="Description" type="text" placeholder="Enter diagram description"
                  name="description" v-model="newDescription">
-          <label><b>Diagram Type</b></label>
-          <select>
-            <option>strict</option>
-            <option>free</option>
-          </select>
+          <div style="display:flex; flex-direction: row; margin-top: 20px">
+            <div>
+              <label><b>Diagram mode</b></label>
+              <select v-model="newDiagramMode">
+                <option>strict</option>
+                <option>free</option>
+              </select>
+            </div>
+            <div>
+              <label><b>Diagram type</b></label>
+              <select v-model="newDiagramType">
+                <option>Use-case</option>
+                <option>Class</option>
+              </select>
+            </div>
+          </div>
           <div class="newProjectButtons">
-            <button type="button" v-on:click="showCreateNewDiagramDialog=false"
-                    class="cancelbtn">
+            <button type="button" v-on:click="showCreateNewDiagramDialog=false" class="cancelbtn">
               Cancel
             </button>
             <button type="button" class="signupbtn" v-on:click="addDiagram()">Create</button>
@@ -107,6 +118,7 @@
 
 
 <script>
+/* eslint-disable no-console */
 import DiagramController from './controller/DiagramController';
 import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
 import Project from './entity/project';
@@ -122,7 +134,8 @@ export default {
       projects: [],
       newName: '',
       newDescription: '',
-      newDiagramType: '',
+      newDiagramType: 'Use-case',
+      newDiagramMode: 'free',
       currentProject: null,
       currentDiagram: null,
       showCreateNewProjectDialog: false,
@@ -147,7 +160,6 @@ export default {
 
     openProject(project) {
       this.showProject(project);
-      // eslint-disable-next-line no-return-assign
       this.currentProject.diagrams = loadDiagramsFromServer(project.Id);
     },
 
@@ -161,14 +173,16 @@ export default {
     addDiagram() {
       // TODO: Creating of diagram request to server
       const newDiagram = new Diagram(
-        this.projects.length,
+        this.currentProject.diagrams.length,
         this.newName,
         this.newDescription,
         this.newDiagramType,
+        this.newDiagramMode,
       );
+      console.log('New diagram: ', newDiagram);
       this.currentProject.diagrams = [...this.currentProject.diagrams, newDiagram];
       this.showCreateNewDiagramDialog = false;
-      this.showDiagram(newDiagram);
+      // this.showDiagram(newDiagram);
     },
 
     openDiagram(diagram) {
@@ -187,12 +201,12 @@ export default {
       this.currentDiagram = null;
       this.currentProject = null;
     },
-  },
 
-  watch: {
-    showCreateNewProjectDialog() {
-      // eslint-disable-next-line no-console
-      console.log(this.showCreateNewProjectDialog);
+    clear() {
+      this.newName = '';
+      this.newDescription = '';
+      this.newDiagramType = 'Use-case';
+      this.newDiagramMode = 'free';
     },
   },
 };

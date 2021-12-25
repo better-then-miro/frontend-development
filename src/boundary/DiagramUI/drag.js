@@ -33,6 +33,14 @@ export const dragStart = function () {
 };
 
 export const dragStop = function () {
+  if (this.data('saveDrag') === false) {
+    return;
+  }
+
+  if (Object.keys(this.data('blockView').block.additionalFields).length > 0) {
+    this[2].remove();
+  }
+
   const coords = this.getBBox();
 
   let newCoords = [];
@@ -40,12 +48,6 @@ export const dragStop = function () {
     newCoords = [Math.round(coords.cx), Math.round(coords.cy)];
   } else {
     newCoords = [Math.round(coords.x), Math.round(coords.y)];
-  }
-
-  if (this.data('saveDrag') === false) {
-    // eslint-disable-next-line no-console
-    console.log('Too small drag');
-    return;
   }
 
   this.data('blockView').block.setCoords(newCoords);

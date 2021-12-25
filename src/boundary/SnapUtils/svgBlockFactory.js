@@ -63,8 +63,10 @@ export default class SvgBlockFactory {
     const g = this.snap.group();
     g.attr({ 'font-size': '13px' });
     for (const [key, values] of Object.entries(additionalFields)) {
-      // eslint-disable-next-line no-console
-      console.log(key, values);
+      if (values.length === 0) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
 
       const keyTitle = this.snap.text(
         x + Math.round(w / 2),

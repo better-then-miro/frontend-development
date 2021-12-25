@@ -11,12 +11,15 @@ import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import { getDiagramContent } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
+import Diagram from '../entity/diagram';
 
 
 export default {
   name: 'DiagramController',
   components: { DiagramUi },
-  props: ['currentDiagram'],
+  props: {
+    currentDiagram: Diagram,
+  },
 
   data() {
     return {
@@ -36,7 +39,6 @@ export default {
             this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
               block.coords[0], block.coords[1], block.width, block.height,
               block.title, block.description, block.additionalFields));
-            console.log(block.additionalFields.methods);
           });
           data.links.forEach((link) => {
             this.currentDiagram.links.push(new Link(link.Id, link.Type,
@@ -48,6 +50,13 @@ export default {
         });
     },
 
+  },
+
+  computed: {
+    supportedBlocks() {
+      // TODO free/strict restrictions
+      return null;
+    },
   },
 };
 </script>
