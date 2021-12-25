@@ -7,7 +7,7 @@
     <div style="display:flex; flex-direction: column">
       <side-panel v-on:create-block="addNewBlock"
                   v-bind:is-link-add-mode="isLinkAddMode"
-                  v-bind:supported-block-types="supportedBlocks"
+                  v-bind:supported-block-types="currentDiagram.supportedBlockTypes"
                   v-on:toggle-link-mode="toggleLinkMode"
                   ref="sidePanel"/>
       <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
@@ -145,13 +145,6 @@ export default {
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
       updateBlockProperties(this.selectedBlockView.block);
       this.$refs.diagramUI.changeFields();
-    },
-  },
-
-  computed: {
-    supportedBlocks() {
-      // TODO free/strict restrictions
-      return ['Class', 'Use-case', 'Actor'];
     },
   },
 };

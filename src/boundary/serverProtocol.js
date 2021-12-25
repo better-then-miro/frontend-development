@@ -13,7 +13,8 @@ export function loadDiagramsFromServer(pId) {
       data.forEach((diagram) => {
         diagrams.push(
           // TODO mode support on server side
-          new Diagram(diagram.Id, diagram.name, diagram.description, diagram.Type, diagram.mode),
+          new Diagram(diagram.Id, diagram.name, diagram.description,
+            diagram.Type, diagram.mode, diagram.supportedBlockTypes),
         );
       });
     });
