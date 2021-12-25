@@ -35,7 +35,13 @@
           <ul class="additionalFieldList">
             <li v-for="attributeValue in selectedBlockView.block.additionalFields[attributeKey]"
               :key="attributeValue">
-              <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
+              <div style="display:flex; flex-direction: row; align-items: center">
+                <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
+                <button class="deleteAttributeValueBtn" role="button"
+                  v-on:click="deleteItem(attributeKey, attributeValue)">
+                  X
+                </button>
+              </div>
             </li>
           </ul>
           <button class="addNewAttributeValueBtn" role="button"
@@ -126,6 +132,23 @@ export default {
         }
         this.selectedBlockView.block.additionalFields[itemType].push('');
       }
+    },
+
+    deleteItem(attributeKey, attributeValue) {
+      const newAdditionFieldsDict = {};
+      const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
+      additionalFieldInputs.forEach((fieldInput) => {
+        if (fieldInput.id in newAdditionFieldsDict === false) {
+          newAdditionFieldsDict[fieldInput.id] = [];
+        }
+
+        if (((fieldInput.id === attributeKey) && (fieldInput.value === attributeValue)) === false) {
+          newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
+        }
+      });
+
+      this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
+      this.$emit('apply-changes');
     },
   },
 };
