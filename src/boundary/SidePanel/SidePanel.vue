@@ -40,8 +40,13 @@
         </div>
         <div style="margin: 5px">
           <input type="radio" id="linkChoice2"
+                name="linkType" value="Association(Bidirectional)" v-model="linkType">
+          <label for="linkChoice2">Association(Bidirectional)</label>
+        </div>
+        <div style="margin: 5px">
+          <input type="radio" id="linkChoice3"
                 name="linkType" value="Dependency" v-model="linkType">
-          <label for="linkChoice2">Dependency</label>
+          <label for="linkChoice3">Dependency</label>
         </div>
         <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
           Toggle link mode

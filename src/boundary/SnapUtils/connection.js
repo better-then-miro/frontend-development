@@ -16,6 +16,10 @@ Snap.plugin((Snap, Paper) => {
     }
     const bb1 = firstBlockView.blockGroup.getBBox();
     const bb2 = secondBlockView.blockGroup.getBBox();
+    let offset = 20;
+    if (linkType === 'Association(Bidirectional)') {
+      offset = 0;
+    }
     const p = [{
       x: bb1.x + (bb1.width / 2),
       y: bb1.y - 1,
@@ -30,15 +34,15 @@ Snap.plugin((Snap, Paper) => {
       y: bb1.y + (bb1.height / 2),
     }, {
       x: bb2.x + (bb2.width / 2),
-      y: bb2.y - 21,
+      y: bb2.y - 1 - offset,
     }, {
       x: bb2.x + (bb2.width / 2),
-      y: bb2.y + bb2.height + 21,
+      y: bb2.y + bb2.height + 1 + offset,
     }, {
-      x: bb2.x - 21,
+      x: bb2.x - 1 - offset,
       y: bb2.y + (bb2.height / 2),
     }, {
-      x: bb2.x + bb2.width + 21,
+      x: bb2.x + bb2.width + 1 + offset,
       y: bb2.y + (bb2.height / 2),
     }];
     const d = {};
@@ -79,19 +83,18 @@ Snap.plugin((Snap, Paper) => {
     const y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
     const path = [`M${x1.toFixed(3)}`, `${y1.toFixed(3)}C${x2}`, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(',');
 
-    let arrowPoints = null;
+    let arrowPointsStr = null;
     if (x4 === (bb2.x - 21)) {
-      arrowPoints = [x4, y4 - 5, x4, y4 + 5, x4 + 20, y4];
+      arrowPointsStr = [x4, y4 - 5, x4, y4 + 5, x4 + 20, y4].join(',');
     } else if (x4 === (bb2.x + bb2.width + 21)) {
-      arrowPoints = [x4, y4 - 5, x4, y4 + 5, x4 - 20, y4];
+      arrowPointsStr = [x4, y4 - 5, x4, y4 + 5, x4 - 20, y4].join(',');
     } if (y4 === (bb2.y - 21)) {
-      arrowPoints = [(bb2.x + (bb2.width / 2)) - 5, y4,
-        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 + 20];
+      arrowPointsStr = [(bb2.x + (bb2.width / 2)) - 5, y4,
+        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 + 20].join(',');
     } else if (y4 === (bb2.y + bb2.height + 21)) {
-      arrowPoints = [(bb2.x + (bb2.width / 2)) - 5, y4,
-        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 - 20];
+      arrowPointsStr = [(bb2.x + (bb2.width / 2)) - 5, y4,
+        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 - 20].join(',');
     }
-    const arrowPointsStr = arrowPoints.join(',');
 
     if (line && line.line) {
       line.bg.attr({ path });
@@ -100,6 +103,10 @@ Snap.plugin((Snap, Paper) => {
           path,
         });
         line.arrow.attr({ points: arrowPointsStr });
+      } else if (linkType === 'Association(Bidirectional)') {
+        line.line.attr({
+          path,
+        });
       } else if (linkType === 'Dependency') {
         line.line.attr({
           path,
@@ -135,6 +142,21 @@ Snap.plugin((Snap, Paper) => {
           from: firstBlockView,
           to: secondBlockView,
           arrow: arrow,
+        };
+      } else if (linkType === 'Association(Bidirectional)') {
+        return {
+          bg: bg && bg.split && this.path(path).attr({
+            stroke: bg.split('|')[0],
+            fill: 'none',
+            'stroke-width': bg.split('|')[1] || 3,
+          }),
+          line: this.path(path).attr({
+            stroke: color,
+            fill: 'none',
+          }),
+          linkType: linkType,
+          from: firstBlockView,
+          to: secondBlockView,
         };
       } else if (linkType === 'Dependency') {
         const arrow = this.polyline().attr({
