@@ -75,7 +75,12 @@ export default {
   },
   emits: {
     'close-panel': null,
-    'apply-changes': {},
+    'apply-changes': {
+      additionalFields: {},
+      title: String,
+      description: String,
+    },
+    'item-deleted': {},
   },
 
   data() {
@@ -108,12 +113,13 @@ export default {
         }
       });
 
-      this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
-
+      // TODO work with SVG should be only in DiagramUI
       this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;
-      this.selectedBlockView.block.title = this.$refs.blockTitle.value;
-      this.selectedBlockView.block.description = this.$refs.blockDescription.value;
-      this.$emit('apply-changes');
+      this.$emit('apply-changes', {
+        additionalFields: newAdditionFieldsDict,
+        title: this.$refs.blockTitle.value,
+        description: this.$refs.blockDescription.value,
+      });
     },
 
     addNewItem(itemType) {
@@ -127,6 +133,7 @@ export default {
       });
 
       if (addingAllowed) {
+        // TODO is it OK to let this boundary edit entities? probably not...
         if (itemType in this.selectedBlockView.block.additionalFields === false) {
           this.selectedBlockView.block.additionalFields[itemType] = [];
         }
@@ -147,8 +154,7 @@ export default {
         }
       });
 
-      this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
-      this.$emit('apply-changes');
+      this.$emit('item-deleted', newAdditionFieldsDict);
     },
   },
 };

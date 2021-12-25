@@ -2,14 +2,19 @@
   <div style="display:flex; flex-direction: row; margin-top: 20px">
     <diagram-ui v-if="showDiagramWindow" v-bind:currentDiagram="this.currentDiagram"
                 ref="diagramUI" :key="keyOfDiagramUI"
-                v-on:ready-add-new-link="addNewLink"/>
+                v-on:ready-add-new-link="addNewLink"
+                v-on:block-view-selected="changeSelected"/>
     <div style="display:flex; flex-direction: column">
       <side-panel v-on:create-block="addNewBlock"
                   v-bind:is-link-add-mode="isLinkAddMode"
                   v-bind:supported-block-types="supportedBlocks"
                   v-on:toggle-link-mode="toggleLinkMode"
-                  v-on:add-new-link="addNewLink"
                   ref="sidePanel"/>
+      <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
+                     v-bind:selected-block-view="selectedBlockView"
+                     v-on:close-panel="selectedBlockView=null"
+                     v-on:apply-changes="changeFields"
+                     v-on:item-deleted="updateAdditionalFields"/>
     </div>
     <!--  TODO add block boundary component  -->
   </div>
@@ -19,7 +24,8 @@
 /* eslint-disable no-console */
 import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
-import { createNewBlock, createNewLink, getDiagramContent } from '../boundary/serverProtocol';
+import EditingPanel from '../boundary/EditingPanel';
+import { createNewBlock, createNewLink, getDiagramContent, updateBlockProperties } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
 import Diagram from '../entity/diagram';
@@ -27,7 +33,7 @@ import Diagram from '../entity/diagram';
 
 export default {
   name: 'DiagramController',
-  components: { DiagramUi, SidePanel },
+  components: { DiagramUi, SidePanel, EditingPanel },
   props: {
     currentDiagram: Diagram,
   },
@@ -37,6 +43,7 @@ export default {
       showDiagramWindow: false,
       isLinkAddMode: false,
       keyOfDiagramUI: 0,
+      selectedBlockView: null,
     };
   },
 
@@ -120,6 +127,24 @@ export default {
           this.$refs.sidePanel.clear();
         },
         );
+    },
+
+    changeSelected(blockView) {
+      this.selectedBlockView = blockView;
+    },
+
+    changeFields(data) {
+      this.selectedBlockView.block.additionalFields = data.additionalFields;
+      this.selectedBlockView.block.title = data.title;
+      this.selectedBlockView.block.description = data.description;
+      updateBlockProperties(this.selectedBlockView.block);
+      this.$refs.diagramUI.changeFields();
+    },
+
+    updateAdditionalFields(newAdditionFieldsDict) {
+      this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
+      updateBlockProperties(this.selectedBlockView.block);
+      this.$refs.diagramUI.changeFields();
     },
   },
 

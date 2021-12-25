@@ -71,8 +71,7 @@ export default {
           newTitle = this.blockTitle;
         }
         this.$emit('create-block', { Type: this.blockType, title: newTitle });
-        this.blockTitle = '';
-        this.blockType = null;
+        this.clear();
       }
     },
 

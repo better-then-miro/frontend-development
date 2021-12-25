@@ -1,13 +1,5 @@
 <template>
-  <div style="display:flex">
-    <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
-    <div style="display:flex; flex-direction: column; margin-top: 20px">
-      <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
-                      v-bind:selected-block-view="selectedBlockView"
-                      v-on:close-panel="selectedBlockView=null"
-                      v-on:apply-changes="changeFields"/>
-    </div>
-  </div>
+  <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
 </template>
 
 <script>
@@ -15,21 +7,19 @@
 import Snap from 'snapsvg-cjs';
 import { setBounds } from './drag';
 import { sel } from './scale';
-import { updateBlockProperties } from '../serverProtocol';
-import EditingPanel from '../EditingPanel';
 import BlockView from '../SnapUtils/blockView';
-import SidePanel from '../SidePanel/SidePanel';
 import '../SnapUtils/connection';
 import Diagram from '../../entity/diagram';
 
 export default {
   name: 'DiagramUi',
-  components: { SidePanel, EditingPanel },
   props: {
     currentDiagram: Diagram,
   },
   emits: {
     'ready-add-new-link': { sourceID: Number, targetID: Number },
+    'block-view-selected': BlockView,
+    // TODO return only block entity and make changes in View in this component
   },
   data() {
     return {
@@ -77,6 +67,7 @@ export default {
 
     updateInfo() {
       this.selectedBlockView = sel;
+      this.$emit('block-view-selected', this.selectedBlockView);
       if (this.isLinkAddMode) {
         if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
           this.$emit('ready-add-new-link',
@@ -105,7 +96,6 @@ export default {
     },
 
     changeFields() {
-      updateBlockProperties(this.selectedBlockView.block);
       this.selectedBlockView.redrawOnSnap();
     },
   },
