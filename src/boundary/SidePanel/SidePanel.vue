@@ -12,22 +12,6 @@
         Add new block
       </button>
     </div>
-    <!--<div style="display:flex; flex-direction: row;
-      justify-content: space-around; align-items: center">
-      <div style="margin: 5px">
-        <input type="radio" id="blockChoice1"
-              name="blockType" value="Class" v-model="blockType">
-        <label for="blockChoice1">Class</label>
-      </div>
-      <div style="margin: 5px">
-        <input type="radio" id="blockChoice2"
-              name="blockType" value="Use-case" v-model="blockType">
-        <label for="blockChoice2">Use-case</label>
-      </div>
-      <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="addNewBlock()">
-        Add new block
-      </button>
-    </div>-->
 
     <div style="display:flex; flex-direction: column;
       justify-content: space-around; align-items: center">
@@ -61,10 +45,10 @@ export default {
   components: { SelectionEntry },
   props: {
     isLinkAddMode: Boolean,
+    supportedBlockTypes: Array,
   },
   emits: {
     'toggle-link-mode': { bool: Boolean },
-    'add-new-link': { linkType: String },
     'create-block': { Type: String, title: String },
   },
   data() {
@@ -72,7 +56,6 @@ export default {
       blockTitle: '',
       blockType: null,
       linkType: null,
-      supportedBlockTypes: ['Class', 'Use-case', 'Actor'],
     };
   },
 
@@ -97,8 +80,9 @@ export default {
       this.$emit('toggle-link-mode', { bool: !this.isLinkAddMode });
     },
 
-    addNewLink() {
-      this.$emit('add-new-link', { linkType: this.linkType });
+    clear() {
+      this.blockTitle = '';
+      this.blockType = null;
       this.linkType = null;
     },
 

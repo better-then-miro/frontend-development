@@ -92,8 +92,8 @@
             <div>
               <label><b>Diagram mode</b></label>
               <select v-model="newDiagramMode">
-                <option>strict</option>
-                <option>free</option>
+                <option>Strict</option>
+                <option>Free</option>
               </select>
             </div>
             <div>
@@ -135,7 +135,7 @@ export default {
       newName: '',
       newDescription: '',
       newDiagramType: 'Use-case',
-      newDiagramMode: 'free',
+      newDiagramMode: 'Free',
       currentProject: null,
       currentDiagram: null,
       showCreateNewProjectDialog: false,
@@ -205,7 +205,7 @@ export default {
     clear() {
       this.newName = '';
       this.newDescription = '';
-      this.newDiagramType = 'Use-case';
+      this.newDiagramType = 'use-case';
       this.newDiagramMode = 'free';
     },
   },

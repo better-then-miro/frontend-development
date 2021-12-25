@@ -2,11 +2,6 @@
   <div style="display:flex">
     <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
     <div style="display:flex; flex-direction: column; margin-top: 20px">
-      <side-panel v-on:create-block="addNewBlock"
-                  v-bind:is-link-add-mode="isLinkAddMode"
-                  v-on:toggle-link-mode="toggleLinkMode"
-                  v-on:add-new-link="addNewLink"
-                  ref="sidePanel"/>
       <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
                       v-bind:selected-block-view="selectedBlockView"
                       v-on:close-panel="selectedBlockView=null"
@@ -20,11 +15,9 @@
 import Snap from 'snapsvg-cjs';
 import { setBounds } from './drag';
 import { sel } from './scale';
-import { createNewBlock, createNewLink, updateBlockProperties } from '../serverProtocol';
+import { updateBlockProperties } from '../serverProtocol';
 import EditingPanel from '../EditingPanel';
 import BlockView from '../SnapUtils/blockView';
-import Block from '../../entity/block';
-import Link from '../../entity/link';
 import SidePanel from '../SidePanel/SidePanel';
 import '../SnapUtils/connection';
 import Diagram from '../../entity/diagram';
@@ -34,6 +27,9 @@ export default {
   components: { SidePanel, EditingPanel },
   props: {
     currentDiagram: Diagram,
+  },
+  emits: {
+    'ready-add-new-link': { sourceID: Number, targetID: Number },
   },
   data() {
     return {
@@ -72,35 +68,19 @@ export default {
       });
     },
 
-    addNewBlock(fields) {
-      const properties = {
-        dId: this.currentDiagram.Id,
-        Type: fields.Type,
-        coords: [250, 250],
-        width: 100,
-        height: 50,
-        title: fields.title,
-      };
-
-      createNewBlock(properties)
-        .then((blockId) => {
-          console.log('New block ID:', blockId);
-          const newBlock = new Block(blockId, properties.Type,
-            properties.coords[0], properties.coords[1], properties.width,
-            properties.height, properties.title);
-          this.currentDiagram.blocks.push(newBlock);
-          const blockView = new BlockView(newBlock, this.snap, this.snapLinks);
-          blockView.redrawOnSnap();
-          this.snapBlocks.push(blockView);
-        },
-        );
+    // It is better to render new block than rerender all canvas
+    drawNewBlock(newBlock) {
+      const blockView = new BlockView(newBlock, this.snap, this.snapLinks);
+      blockView.redrawOnSnap();
+      this.snapBlocks.push(blockView);
     },
 
     updateInfo() {
       this.selectedBlockView = sel;
       if (this.isLinkAddMode) {
         if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
-          this.$refs.sidePanel.addNewLink();
+          this.$emit('ready-add-new-link',
+            { sourceID: this.linkSourceBlock.block.Id, targetID: sel.block.Id });
         } else {
           this.linkSourceBlock = sel;
         }
@@ -109,28 +89,15 @@ export default {
       }
     },
 
-    addNewLink(data) {
-      if (data.linkType == null) {
+    drawNewLink() {
+      console.log('Drawing new link');
+      if (sel == null || this.linkSourceBlock == null) {
+        console.log('Error drawing new link');
         return;
       }
-      const properties = {
-        dId: this.currentDiagram.Id,
-        Type: data.linkType,
-        sId: this.linkSourceBlock.block.Id,
-        tId: sel.block.Id,
-      };
-
-      createNewLink(properties)
-        .then((linkId) => {
-          console.log('New Link ID:', linkId);
-          const newLink = new Link(linkId, properties.Type,
-            properties.sId, properties.tId);
-          this.currentDiagram.links.push(newLink);
-          this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, '#333', '#111'));
-          this.linkSourceBlock = null;
-          this.isLinkAddMode = false;
-        },
-        );
+      this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, '#333', '#111'));
+      this.linkSourceBlock = null;
+      this.isLinkAddMode = false;
     },
 
     toggleLinkMode(properties) {
