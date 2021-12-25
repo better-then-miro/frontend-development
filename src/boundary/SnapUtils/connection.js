@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable object-shorthand */
 /* eslint-disable prefer-template */
 /* eslint-disable no-shadow */
@@ -21,29 +22,79 @@ Snap.plugin((Snap, Paper) => {
       offset = 0;
     }
     const p = [{
+      x: bb1.x + (bb1.width / 4),
+      y: bb1.y - 1,
+    }, {
       x: bb1.x + (bb1.width / 2),
       y: bb1.y - 1,
+    }, {
+      x: bb1.x + ((bb1.width / 4) * 3),
+      y: bb1.y - 1,
+    }, {
+      x: bb1.x + (bb1.width / 4),
+      y: bb1.y + bb1.height + 1,
     }, {
       x: bb1.x + (bb1.width / 2),
       y: bb1.y + bb1.height + 1,
     }, {
+      x: bb1.x + ((bb1.width / 4) * 3),
+      y: bb1.y + bb1.height + 1,
+    }, {
+      x: bb1.x - 1,
+      y: bb1.y + (bb1.height / 4),
+    }, {
       x: bb1.x - 1,
       y: bb1.y + (bb1.height / 2),
+    }, {
+      x: bb1.x - 1,
+      y: bb1.y + ((bb1.height / 4) * 3),
+    }, {
+      x: bb1.x + bb1.width + 1,
+      y: bb1.y + (bb1.height / 4),
     }, {
       x: bb1.x + bb1.width + 1,
       y: bb1.y + (bb1.height / 2),
     }, {
+      x: bb1.x + bb1.width + 1,
+      y: bb1.y + ((bb1.height / 4) * 3),
+    },
+
+    {
+      x: bb2.x + (bb2.width / 4),
+      y: bb2.y - 1 - offset,
+    }, {
       x: bb2.x + (bb2.width / 2),
       y: bb2.y - 1 - offset,
+    }, {
+      x: bb2.x + ((bb2.width / 4) * 3),
+      y: bb2.y - 1 - offset,
+    }, {
+      x: bb2.x + (bb2.width / 4),
+      y: bb2.y + bb2.height + 1 + offset,
     }, {
       x: bb2.x + (bb2.width / 2),
       y: bb2.y + bb2.height + 1 + offset,
     }, {
+      x: bb2.x + ((bb2.width / 4) * 3),
+      y: bb2.y + bb2.height + 1 + offset,
+    }, {
+      x: bb2.x - 1 - offset,
+      y: bb2.y + (bb2.height / 4),
+    }, {
       x: bb2.x - 1 - offset,
       y: bb2.y + (bb2.height / 2),
     }, {
+      x: bb2.x - 1 - offset,
+      y: bb2.y + ((bb2.height / 4) * 3),
+    }, {
+      x: bb2.x + bb2.width + 1 + offset,
+      y: bb2.y + (bb2.height / 4),
+    }, {
       x: bb2.x + bb2.width + 1 + offset,
       y: bb2.y + (bb2.height / 2),
+    }, {
+      x: bb2.x + bb2.width + 1 + offset,
+      y: bb2.y + ((bb2.height / 4) * 3),
     }];
     const d = {};
     const dis = [];
@@ -51,17 +102,17 @@ Snap.plugin((Snap, Paper) => {
     let dy = 0;
     let res;
 
-    for (let i = 0; i < 4; i += 1) {
-      for (let j = 4; j < 8; j += 1) {
+    for (let i = 0; i < 12; i += 1) {
+      for (let j = 12; j < 24; j += 1) {
         dx = Math.abs(p[i].x - p[j].x);
         dy = Math.abs(p[i].y - p[j].y);
-        if ((i === j - 4) || (((i !== 3 && j !== 6) || p[i].x < p[j].x) && ((i !== 2 && j !== 7) ||
-          p[i].x > p[j].x) && ((i !== 0 && j !== 5) || p[i].y > p[j].y) && ((i !== 1 && j !== 4) ||
-          p[i].y < p[j].y))
-        ) {
-          dis.push(dx + dy);
-          d[dis[dis.length - 1]] = [i, j];
-        }
+        // if ((i === j - 4) || (((i !== 3 && j !== 6) || p[i].x < p[j].x) && ((i !== 2 && j !== 7) ||
+        //   p[i].x > p[j].x) && ((i !== 0 && j !== 5) || p[i].y > p[j].y) && ((i !== 1 && j !== 4) ||
+        //   p[i].y < p[j].y))
+        // ) {
+        dis.push(dx + dy);
+        d[dis[dis.length - 1]] = [i, j];
+        // }
       }
     }
 
@@ -77,11 +128,13 @@ Snap.plugin((Snap, Paper) => {
 
     dx = Math.max(Math.abs(x1 - x4) / 2, 10);
     dy = Math.max(Math.abs(y1 - y4) / 2, 10);
-    const x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3);
-    const y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3);
-    const x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3);
-    const y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
-    const path = [`M${x1.toFixed(3)}`, `${y1.toFixed(3)}C${x2}`, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(',');
+    // const x2 = [x1, x1, x1 - dx, x1 + dx][res[0]].toFixed(3);
+    // const y2 = [y1 - dy, y1 + dy, y1, y1][res[0]].toFixed(3);
+    // const x3 = [0, 0, 0, 0, x4, x4, x4 - dx, x4 + dx][res[1]].toFixed(3);
+    // const y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
+    // const path = [`M${x1.toFixed(3)}`, `${y1.toFixed(3)}C${x2}`,
+    // y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(',');
+    const path = [`M${x1.toFixed(3)}`, `${y1.toFixed(3)}`, x4.toFixed(3), y4.toFixed(3)].join(',');
 
     let arrowPointsStr = null;
     if (x4 === (bb2.x - 21)) {
@@ -89,11 +142,11 @@ Snap.plugin((Snap, Paper) => {
     } else if (x4 === (bb2.x + bb2.width + 21)) {
       arrowPointsStr = [x4, y4 - 5, x4, y4 + 5, x4 - 20, y4].join(',');
     } if (y4 === (bb2.y - 21)) {
-      arrowPointsStr = [(bb2.x + (bb2.width / 2)) - 5, y4,
-        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 + 20].join(',');
+      arrowPointsStr = [x4 - 5, y4,
+        x4 + 5, y4, x4, y4 + 20].join(',');
     } else if (y4 === (bb2.y + bb2.height + 21)) {
-      arrowPointsStr = [(bb2.x + (bb2.width / 2)) - 5, y4,
-        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 - 20].join(',');
+      arrowPointsStr = [x4 - 5, y4,
+        x4 + 5, y4, x4, y4 - 20].join(',');
     }
 
     if (line && line.line) {
