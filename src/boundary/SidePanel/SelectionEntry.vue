@@ -34,8 +34,6 @@ export default {
     this.snap.attr({ viewBox: '0 0 80 80' });
     this.factory = new SvgBlockFactory(this.snap);
     this.factory.svgCreate_byType(this.blockType, 0, 0, 80, 80);
-    // eslint-disable-next-line no-console
-    console.log('mounted', this.blockType);
   },
 
   methods: {
@@ -52,11 +50,6 @@ export default {
     },
   },
 
-  /* watch: {
-    selectedEntry() {
-      this.isSelected = this.blockType === this.selectedEntry;
-    },
-  }, */
 };
 </script>
 

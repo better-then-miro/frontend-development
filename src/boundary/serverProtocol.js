@@ -12,7 +12,8 @@ export function loadDiagramsFromServer(pId) {
       const data = response.data;
       data.forEach((diagram) => {
         diagrams.push(
-          new Diagram(diagram.Id, diagram.name, diagram.description, diagram.Type),
+          // TODO mode support on server side
+          new Diagram(diagram.Id, diagram.name, diagram.description, diagram.Type, diagram.mode),
         );
       });
     });

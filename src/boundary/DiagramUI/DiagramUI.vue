@@ -27,11 +27,14 @@ import Block from '../../entity/block';
 import Link from '../../entity/link';
 import SidePanel from '../SidePanel/SidePanel';
 import '../SnapUtils/connection';
+import Diagram from '../../entity/diagram';
 
 export default {
   name: 'DiagramUi',
   components: { SidePanel, EditingPanel },
-  props: ['currentDiagram'], // TODO only blocks and links needed to this boundary
+  props: {
+    currentDiagram: Diagram,
+  },
   data() {
     return {
       snap: null,
@@ -139,6 +142,7 @@ export default {
       this.selectedBlockView.redrawOnSnap();
     },
   },
+
 };
 </script>
 

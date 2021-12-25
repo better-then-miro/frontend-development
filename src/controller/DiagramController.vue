@@ -11,12 +11,15 @@ import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import { getDiagramContent } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
+import Diagram from '../entity/diagram';
 
 
 export default {
   name: 'DiagramController',
   components: { DiagramUi },
-  props: ['currentDiagram'],
+  props: {
+    currentDiagram: Diagram,
+  },
 
   data() {
     return {
@@ -47,6 +50,13 @@ export default {
         });
     },
 
+  },
+
+  computed: {
+    supportedBlocks() {
+      // TODO free/strict restrictions
+      return null;
+    },
   },
 };
 </script>
