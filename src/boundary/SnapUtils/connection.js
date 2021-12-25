@@ -30,15 +30,15 @@ Snap.plugin((Snap, Paper) => {
       y: bb1.y + (bb1.height / 2),
     }, {
       x: bb2.x + (bb2.width / 2),
-      y: bb2.y - 1,
+      y: bb2.y - 21,
     }, {
       x: bb2.x + (bb2.width / 2),
-      y: bb2.y + bb2.height + 1,
+      y: bb2.y + bb2.height + 21,
     }, {
-      x: bb2.x - 1,
+      x: bb2.x - 21,
       y: bb2.y + (bb2.height / 2),
     }, {
-      x: bb2.x + bb2.width + 1,
+      x: bb2.x + bb2.width + 21,
       y: bb2.y + (bb2.height / 2),
     }];
     const d = {};
@@ -79,12 +79,27 @@ Snap.plugin((Snap, Paper) => {
     const y3 = [0, 0, 0, 0, y1 + dy, y1 - dy, y4, y4][res[1]].toFixed(3);
     const path = [`M${x1.toFixed(3)}`, `${y1.toFixed(3)}C${x2}`, y2, x3, y3, x4.toFixed(3), y4.toFixed(3)].join(',');
 
+    let arrowPoints = null;
+    if (x4 === (bb2.x - 21)) {
+      arrowPoints = [x4, y4 - 5, x4, y4 + 5, x4 + 20, y4];
+    } else if (x4 === (bb2.x + bb2.width + 21)) {
+      arrowPoints = [x4, y4 - 5, x4, y4 + 5, x4 - 20, y4];
+    } if (y4 === (bb2.y - 21)) {
+      arrowPoints = [(bb2.x + (bb2.width / 2)) - 5, y4,
+        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 + 20];
+    } else if (y4 === (bb2.y + bb2.height + 21)) {
+      arrowPoints = [(bb2.x + (bb2.width / 2)) - 5, y4,
+        (bb2.x + (bb2.width / 2)) + 5, y4, (bb2.x + (bb2.width / 2)), y4 - 20];
+    }
+    const arrowPointsStr = arrowPoints.join(',');
+
     if (line && line.line) {
       line.bg.attr({ path });
       if (linkType === 'Association') {
         line.line.attr({
           path,
         });
+        line.arrow.attr({ points: arrowPointsStr });
       } else if (linkType === 'Dependency') {
         line.line.attr({
           path,
@@ -92,6 +107,7 @@ Snap.plugin((Snap, Paper) => {
           'stroke-dashoffset': 10,
           'stroke-width': 4,
         });
+        line.arrow.attr({ points: arrowPointsStr });
       } else {
         line.line.attr({
           path,
@@ -100,6 +116,11 @@ Snap.plugin((Snap, Paper) => {
     } else {
       const color = typeof line === 'string' ? line : '#000';
       if (linkType === 'Association') {
+        const arrow = this.polyline().attr({
+          stroke: '#000',
+          fill: '#000',
+          points: arrowPointsStr,
+        });
         return {
           bg: bg && bg.split && this.path(path).attr({
             stroke: bg.split('|')[0],
@@ -113,8 +134,14 @@ Snap.plugin((Snap, Paper) => {
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
+          arrow: arrow,
         };
       } else if (linkType === 'Dependency') {
+        const arrow = this.polyline().attr({
+          stroke: '#000',
+          fill: '#000',
+          points: arrowPointsStr,
+        });
         return {
           bg: bg && bg.split && this.path(path).attr({
             fill: 'none',
@@ -129,8 +156,10 @@ Snap.plugin((Snap, Paper) => {
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
+          arrow: arrow,
         };
       }
+
       return {
         bg: bg && bg.split && this.path(path).attr({
           stroke: bg.split('|')[0],
@@ -140,8 +169,8 @@ Snap.plugin((Snap, Paper) => {
         line: this.path(path).attr({
           stroke: color,
           fill: 'none',
-          linkType: linkType,
         }),
+        linkType: linkType,
         from: firstBlockView,
         to: secondBlockView,
       };
