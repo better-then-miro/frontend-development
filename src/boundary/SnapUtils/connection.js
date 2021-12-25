@@ -1,3 +1,5 @@
+/* eslint-disable object-shorthand */
+/* eslint-disable prefer-template */
 /* eslint-disable no-shadow */
 /* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
@@ -5,11 +7,12 @@
 import Snap from 'snapsvg-cjs';
 
 Snap.plugin((Snap, Paper) => {
-  Paper.prototype.connection = function (firstBlockView, secondBlockView, line, bg) {
+  Paper.prototype.connection = function (firstBlockView, secondBlockView, linkType, line = '#555', bg = '#999') {
     if (firstBlockView.line && firstBlockView.from && firstBlockView.to) {
       line = firstBlockView;
       firstBlockView = line.from;
       secondBlockView = line.to;
+      linkType = line.linkType;
     }
     const bb1 = firstBlockView.blockGroup.getBBox();
     const bb2 = secondBlockView.blockGroup.getBBox();
@@ -44,8 +47,6 @@ Snap.plugin((Snap, Paper) => {
     let dy = 0;
     let res;
 
-    // eslint-disable-next-line no-console
-    // console.log(bb1, bb2);
     for (let i = 0; i < 4; i += 1) {
       for (let j = 4; j < 8; j += 1) {
         dx = Math.abs(p[i].x - p[j].x);
@@ -80,11 +81,56 @@ Snap.plugin((Snap, Paper) => {
 
     if (line && line.line) {
       line.bg.attr({ path });
-      line.line.attr({
-        path,
-      });
+      if (linkType === 'Association') {
+        line.line.attr({
+          path,
+        });
+      } else if (linkType === 'Dependency') {
+        line.line.attr({
+          path,
+          'stroke-dasharray': 10 + ' ' + 10,
+          'stroke-dashoffset': 10,
+          'stroke-width': 4,
+        });
+      } else {
+        line.line.attr({
+          path,
+        });
+      }
     } else {
       const color = typeof line === 'string' ? line : '#000';
+      if (linkType === 'Association') {
+        return {
+          bg: bg && bg.split && this.path(path).attr({
+            stroke: bg.split('|')[0],
+            fill: 'none',
+            'stroke-width': bg.split('|')[1] || 3,
+          }),
+          line: this.path(path).attr({
+            stroke: color,
+            fill: 'none',
+          }),
+          linkType: linkType,
+          from: firstBlockView,
+          to: secondBlockView,
+        };
+      } else if (linkType === 'Dependency') {
+        return {
+          bg: bg && bg.split && this.path(path).attr({
+            fill: 'none',
+          }),
+          line: this.path(path).attr({
+            stroke: color,
+            fill: 'none',
+            'stroke-dasharray': 10 + ' ' + 10,
+            'stroke-dashoffset': 10,
+            'stroke-width': 4,
+          }),
+          linkType: linkType,
+          from: firstBlockView,
+          to: secondBlockView,
+        };
+      }
       return {
         bg: bg && bg.split && this.path(path).attr({
           stroke: bg.split('|')[0],
@@ -94,6 +140,7 @@ Snap.plugin((Snap, Paper) => {
         line: this.path(path).attr({
           stroke: color,
           fill: 'none',
+          linkType: linkType,
         }),
         from: firstBlockView,
         to: secondBlockView,

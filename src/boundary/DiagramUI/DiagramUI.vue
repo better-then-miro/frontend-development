@@ -65,7 +65,7 @@ export default {
         const sBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.sId);
         const tBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.tId);
         if (sBlockView.length === 1 && tBlockView.length === 1) {
-          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], '#333', '#111'));
+          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], link.Type));
         } else {
           console.log('Incorrect link parameters!');
         }
@@ -126,7 +126,7 @@ export default {
           const newLink = new Link(linkId, properties.Type,
             properties.sId, properties.tId);
           this.currentDiagram.links.push(newLink);
-          this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, '#333', '#111'));
+          this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, data.linkType));
           this.linkSourceBlock = null;
           this.isLinkAddMode = false;
         },
