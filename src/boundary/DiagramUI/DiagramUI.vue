@@ -9,7 +9,7 @@
                   ref="sidePanel"/>
       <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
                       v-bind:selected-block-view="selectedBlockView"
-                      v-on:close-panel="selectedBlockView=null"
+                      v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
                       v-on:apply-changes="changeFields"/>
     </div>
   </div>

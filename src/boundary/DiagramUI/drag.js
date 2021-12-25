@@ -28,6 +28,7 @@ export const dragMove = function (dx, dy, x, y) {
 };
 
 export const dragStart = function () {
+  this.data('blockView').removeLinkPoints();
   this.data('ot', this.transform().local);
   this.data('saveDrag', false);
 };

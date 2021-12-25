@@ -82,6 +82,7 @@ function updateBlockPosition(blockGroup) {
 
 // eslint-disable-next-line func-names
 export const turnOnscaleMode = function () {
+  this.data('blockView').removeLinkPoints();
   const snap = this.data('blockView').snap;
 
   if (lastModifiedGroup != null && lastModifiedGroup !== this) {
@@ -114,5 +115,9 @@ export const turnOnscaleMode = function () {
 // eslint-disable-next-line import/no-mutable-exports
 export let sel = null;
 export const select = function () {
+  if (sel !== null) {
+    sel.removeLinkPoints();
+  }
   sel = this.data('blockView');
+  sel.drawLinkPoints();
 };
