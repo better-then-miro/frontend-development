@@ -10,7 +10,8 @@
       <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
                       v-bind:selected-block-view="selectedBlockView"
                       v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
-                      v-on:apply-changes="changeFields"/>
+                      v-on:apply-changes="changeFields"
+                      v-on:delete-block="deleteBlock"/>
     </div>
   </div>
 </template>
@@ -94,6 +95,38 @@ export default {
           this.snapBlocks.push(blockView);
         },
         );
+    },
+
+    deleteLink(link) {
+      const index = this.snapLinks.indexOf(link);
+      if (index > -1) {
+        this.snapLinks.splice(index, 1);
+        link.line.remove();
+        link.bg.remove();
+        if (link.arrow !== undefined) {
+          link.arrow.remove();
+        }
+      }
+    },
+
+    deleteBlock(parameters) {
+      const blockToDelete = parameters.blockToDelete;
+      blockToDelete.removeLinkPoints();
+      blockToDelete.blockGroup.remove();
+
+      const blockId = blockToDelete.block.Id;
+      const linksToRemove = [];
+      this.snapLinks.forEach((link) => {
+        const fromBlockID = link.from.block.Id;
+        const toBlockID = link.to.block.Id;
+        if ((fromBlockID === blockId) || (toBlockID === blockId)) {
+          linksToRemove.push(link);
+        }
+      });
+
+      linksToRemove.forEach((link) => {
+        this.deleteLink(link);
+      });
     },
 
     updateInfo() {
