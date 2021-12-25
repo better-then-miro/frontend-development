@@ -150,8 +150,17 @@ export default {
 
   computed: {
     supportedBlocks() {
-      // TODO free/strict restrictions
-      return ['Class', 'Use-case', 'Actor'];
+      let blocks = [];
+      if (this.currentDiagram.mode.toLowerCase() === 'free') {
+        blocks = ['Class', 'Use-case', 'Actor'];
+      } else if (this.currentDiagram.Type.toLowerCase() === 'use-case') {
+        blocks = ['Use-case', 'Actor'];
+      } else if (this.currentDiagram.Type.toLowerCase() === 'class') {
+        blocks = ['Class'];
+      } else {
+        console.log('Unsupported schema');
+      }
+      return blocks;
     },
   },
 };
