@@ -54,6 +54,17 @@ export function getDiagramContent(diagramId) {
     .then(response => response.data);
 }
 
+export function createNewProject(properties) {
+  return axios.post('http://127.0.0.1:5000/createNewProject', properties)
+    .then(response => response.data.pId);
+}
+
+export function createNewDiagram(properties) {
+  console.log('New diagram properties: ', properties);
+  return axios.post('http://127.0.0.1:5000/createNewDiagram', properties)
+    .then(response => response.data.dId);
+}
+
 export function createNewBlock(properties) {
   console.log('New block properties: ', properties);
   return axios.post('http://127.0.0.1:5000/createNewBlock', properties)

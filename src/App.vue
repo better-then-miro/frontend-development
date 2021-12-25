@@ -120,7 +120,12 @@
 <script>
 /* eslint-disable no-console */
 import DiagramController from './controller/DiagramController';
-import { loadDiagramsFromServer, loadProjectsFromServer } from './boundary/serverProtocol';
+import {
+  createNewDiagram,
+  createNewProject,
+  loadDiagramsFromServer,
+  loadProjectsFromServer,
+} from './boundary/serverProtocol';
 import Project from './entity/project';
 import Diagram from './entity/diagram';
 
@@ -150,12 +155,17 @@ export default {
 
   methods: {
     addProject() {
-      // TODO: Creating project should be done by server
-      const newProject = new Project(this.projects.length, this.newName, this.newDescription);
-      // Creating new list with new created project
-      this.projects = [...this.projects, newProject];
-      this.showCreateNewProjectDialog = false;
-      this.showProject(newProject);
+      const properties = {
+        name: this.newName,
+        description: this.newDescription,
+      };
+      createNewProject(properties).then((pId) => {
+        console.log('New project ID:', pId);
+        const newProject = new Project(pId, this.newName, this.newDescription);
+        this.projects = [...this.projects, newProject];
+        this.showCreateNewProjectDialog = false;
+        this.showProject(newProject);
+      });
     },
 
     openProject(project) {
@@ -172,17 +182,25 @@ export default {
 
     addDiagram() {
       // TODO: Creating of diagram request to server
-      const newDiagram = new Diagram(
-        this.currentProject.diagrams.length,
-        this.newName,
-        this.newDescription,
-        this.newDiagramType,
-        this.newDiagramMode,
-      );
-      console.log('New diagram: ', newDiagram);
-      this.currentProject.diagrams = [...this.currentProject.diagrams, newDiagram];
-      this.showCreateNewDiagramDialog = false;
-      // this.showDiagram(newDiagram);
+      const properties = {
+        pId: this.currentProject.Id,
+        name: this.newName,
+        description: this.newDescription,
+        Type: this.newDiagramType,
+        mode: this.newDiagramMode,
+      };
+      createNewDiagram(properties).then((dId) => {
+        const newDiagram = new Diagram(
+          dId,
+          this.newName,
+          this.newDescription,
+          this.newDiagramType,
+          this.newDiagramMode,
+        );
+        this.currentProject.diagrams = [...this.currentProject.diagrams, newDiagram];
+        this.showCreateNewDiagramDialog = false;
+        this.showDiagram(newDiagram);
+      });
     },
 
     openDiagram(diagram) {
