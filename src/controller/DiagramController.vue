@@ -3,7 +3,8 @@
     <diagram-ui v-if="showDiagramWindow" v-bind:currentDiagram="this.currentDiagram"
                 ref="diagramUI" :key="keyOfDiagramUI"
                 v-on:ready-add-new-link="addNewLink"
-                v-on:block-view-selected="changeSelected"/>
+                v-on:block-view-selected="changeSelected"
+                v-on:turn-off-link-mode="turnOffLinkMode"/>
     <div style="display:flex; flex-direction: column">
       <side-panel v-on:create-block="addNewBlock"
                   v-bind:is-link-add-mode="isLinkAddMode"
@@ -12,7 +13,7 @@
                   ref="sidePanel"/>
       <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
                      v-bind:selected-block-view="selectedBlockView"
-                     v-on:close-panel="selectedBlockView=null"
+                     v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
                      v-on:apply-changes="changeFields"
                      v-on:item-deleted="updateAdditionalFields"/>
     </div>
@@ -101,6 +102,10 @@ export default {
       this.$refs.diagramUI.toggleLinkMode(properties);
     },
 
+    turnOffLinkMode() {
+      this.isLinkAddMode = false;
+    },
+
     addNewLink(data) {
       const linkType = this.$refs.sidePanel.linkType;
       if (linkType == null) {
@@ -123,7 +128,7 @@ export default {
           const newLink = new Link(linkId, properties.Type,
             properties.sId, properties.tId);
           this.currentDiagram.links.push(newLink);
-          this.$refs.diagramUI.drawNewLink();
+          this.$refs.diagramUI.drawNewLink(linkType);
           this.$refs.sidePanel.clear();
         },
         );

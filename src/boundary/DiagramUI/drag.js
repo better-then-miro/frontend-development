@@ -38,7 +38,8 @@ export const dragStop = function () {
     return;
   }
 
-  if (Object.keys(this.data('blockView').block.additionalFields).length > 0) {
+  if (this.data('blockView').block.additionalFields &&
+    Object.keys(this.data('blockView').block.additionalFields).length > 0) {
     this[2].remove();
   }
 

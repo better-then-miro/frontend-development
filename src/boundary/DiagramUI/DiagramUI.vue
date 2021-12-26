@@ -19,6 +19,7 @@ export default {
   emits: {
     'ready-add-new-link': { sourceID: Number, targetID: Number },
     'block-view-selected': BlockView,
+    'turn-off-link-mode': null,
     // TODO return only block entity and make changes in View in this component
   },
   data() {
@@ -112,15 +113,16 @@ export default {
       }
     },
 
-    drawNewLink() {
+    drawNewLink(linkType) {
       console.log('Drawing new link');
       if (sel == null || this.linkSourceBlock == null) {
         console.log('Error drawing new link');
         return;
       }
-      this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, '#333', '#111'));
+      this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, linkType));
       this.linkSourceBlock = null;
       this.isLinkAddMode = false;
+      this.$emit('turn-off-link-mode');
     },
 
     toggleLinkMode(properties) {
