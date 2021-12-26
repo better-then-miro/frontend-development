@@ -71,4 +71,64 @@ export default class BlockView {
     this.blockGroup.click(select);
     this.blockGroup.data('blockView', this);
   }
+
+  drawLinkPoints() {
+    const bbox = this.blockGroup.getBBox();
+    const p = [{
+      x: bbox.x + (bbox.width / 4),
+      y: bbox.y - 1,
+    }, {
+      x: bbox.x + (bbox.width / 2),
+      y: bbox.y - 1,
+    }, {
+      x: bbox.x + ((bbox.width / 4) * 3),
+      y: bbox.y - 1,
+    }, {
+      x: bbox.x + (bbox.width / 4),
+      y: bbox.y + bbox.height + 1,
+    }, {
+      x: bbox.x + (bbox.width / 2),
+      y: bbox.y + bbox.height + 1,
+    }, {
+      x: bbox.x + ((bbox.width / 4) * 3),
+      y: bbox.y + bbox.height + 1,
+    }, {
+      x: bbox.x - 1,
+      y: bbox.y + (bbox.height / 4),
+    }, {
+      x: bbox.x - 1,
+      y: bbox.y + (bbox.height / 2),
+    }, {
+      x: bbox.x - 1,
+      y: bbox.y + ((bbox.height / 4) * 3),
+    }, {
+      x: bbox.x + bbox.width + 1,
+      y: bbox.y + (bbox.height / 4),
+    }, {
+      x: bbox.x + bbox.width + 1,
+      y: bbox.y + (bbox.height / 2),
+    }, {
+      x: bbox.x + bbox.width + 1,
+      y: bbox.y + ((bbox.height / 4) * 3),
+    }];
+
+    const points = [];
+    p.forEach((point) => {
+      const snapPoint = this.snap.circle(point.x, point.y, 3).attr({ fill: 'blue' });
+      points.push(snapPoint);
+    });
+
+    this.blockGroup.data('linkPoints', points);
+  }
+
+  removeLinkPoints() {
+    const points = this.blockGroup.data('linkPoints');
+    if (points != null) {
+      points.forEach((point) => {
+        point.remove();
+      });
+
+      this.blockGroup.data('linkPoints', null);
+    }
+  }
 }

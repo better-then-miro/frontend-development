@@ -56,8 +56,12 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-1" v-on:click="apply(false)">
+    <button class="btn btn-1" style="margin-left: 20px" v-on:click="apply(false)">
       Apply Changes
+    </button>
+    <button class="btn btn-1"
+      style="margin-left: 20px; background: red; color: white" v-on:click="deleteBlock()">
+      Delete block
     </button>
   </div>
 </template>
@@ -155,6 +159,10 @@ export default {
       });
 
       this.$emit('item-deleted', newAdditionFieldsDict);
+    },
+
+    deleteBlock() {
+      this.$emit('delete-block', { blockToDelete: this.selectedBlockView });
     },
   },
 };

@@ -51,7 +51,7 @@ export default {
         const sBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.sId);
         const tBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.tId);
         if (sBlockView.length === 1 && tBlockView.length === 1) {
-          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], '#333', '#111'));
+          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], link.Type));
         } else {
           console.log('Incorrect link parameters!');
         }
@@ -63,6 +63,38 @@ export default {
       const blockView = new BlockView(newBlock, this.snap, this.snapLinks);
       blockView.redrawOnSnap();
       this.snapBlocks.push(blockView);
+    },
+
+    deleteLink(link) {
+      const index = this.snapLinks.indexOf(link);
+      if (index > -1) {
+        this.snapLinks.splice(index, 1);
+        link.line.remove();
+        link.bg.remove();
+        if (link.arrow !== undefined) {
+          link.arrow.remove();
+        }
+      }
+    },
+
+    deleteBlock(parameters) {
+      const blockToDelete = parameters.blockToDelete;
+      blockToDelete.removeLinkPoints();
+      blockToDelete.blockGroup.remove();
+
+      const blockId = blockToDelete.block.Id;
+      const linksToRemove = [];
+      this.snapLinks.forEach((link) => {
+        const fromBlockID = link.from.block.Id;
+        const toBlockID = link.to.block.Id;
+        if ((fromBlockID === blockId) || (toBlockID === blockId)) {
+          linksToRemove.push(link);
+        }
+      });
+
+      linksToRemove.forEach((link) => {
+        this.deleteLink(link);
+      });
     },
 
     updateInfo() {
