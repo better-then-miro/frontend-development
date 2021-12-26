@@ -24,7 +24,7 @@
         type="text" placeholder="Enter block description"
         name="blockDescription" :value=selectedBlockView.block.description>
 
-    <div ref="additionalFieldsSection">
+    <div ref="additionalFieldsSection" v-if="selectedBlockView.block.additionalFields">
       <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
         v-bind:key="attributeKey">
         <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
@@ -85,6 +85,7 @@ export default {
       description: String,
     },
     'item-deleted': {},
+    'delete-block': { blockToDelete: Object },
   },
 
   data() {

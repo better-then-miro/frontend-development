@@ -4,6 +4,7 @@
 /* eslint-disable func-names */
 
 import { updateBlockProperties } from '../serverProtocol';
+import BlockView from '../SnapUtils/blockView';
 
 let scalingBlockGroup = null;
 let lastModifiedGroup = null;
@@ -115,9 +116,13 @@ export const turnOnscaleMode = function () {
 // eslint-disable-next-line import/no-mutable-exports
 export let sel = null;
 export const select = function () {
-  if (sel !== null) {
-    sel.removeLinkPoints();
+  console.log(this.data('blockView'));
+  // eslint-disable-next-line no-prototype-builtins
+  if (BlockView.prototype.isPrototypeOf(this.data('blockView'))) {
+    if (sel !== null) {
+      sel.removeLinkPoints();
+    }
+    sel = this.data('blockView');
+    sel.drawLinkPoints();
   }
-  sel = this.data('blockView');
-  sel.drawLinkPoints();
 };

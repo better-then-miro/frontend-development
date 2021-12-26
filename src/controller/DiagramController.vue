@@ -15,7 +15,8 @@
                      v-bind:selected-block-view="selectedBlockView"
                      v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
                      v-on:apply-changes="changeFields"
-                     v-on:item-deleted="updateAdditionalFields"/>
+                     v-on:item-deleted="updateAdditionalFields"
+                     v-on:delete-block="deleteBlock"/>
     </div>
     <!--  TODO add block boundary component  -->
   </div>
@@ -91,6 +92,41 @@ export default {
           this.$refs.diagramUI.drawNewBlock(newBlock);
         },
         );
+    },
+
+    deleteLink(link) {
+      const index = this.$refs.diagramUI.snapLinks.indexOf(link);
+      if (index > -1) {
+        this.$refs.diagramUI.snapLinks.splice(index, 1);
+        link.line.remove();
+        link.bg.remove();
+        if (link.arrow !== undefined) {
+          link.arrow.remove();
+        }
+      }
+    },
+
+    deleteBlock(parameters) {
+      const blockToDelete = parameters.blockToDelete;
+      blockToDelete.removeLinkPoints();
+      blockToDelete.blockGroup.remove();
+
+      const blockId = blockToDelete.block.Id;
+      const linksToRemove = [];
+      this.$refs.diagramUI.snapLinks.forEach((link) => {
+        const fromBlockID = link.from.block.Id;
+        const toBlockID = link.to.block.Id;
+        if ((fromBlockID === blockId) || (toBlockID === blockId)) {
+          linksToRemove.push(link);
+        }
+      });
+
+      linksToRemove.forEach((link) => {
+        this.deleteLink(link);
+      });
+
+      const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
+      this.$refs.diagramUI.snapBlocks.splice(index, 1);
     },
 
     redrawDiagramUI() {
