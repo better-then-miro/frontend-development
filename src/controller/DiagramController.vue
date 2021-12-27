@@ -127,6 +127,7 @@ export default {
 
       const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
       this.$refs.diagramUI.snapBlocks.splice(index, 1);
+      this.selectedBlockView = null;
     },
 
     redrawDiagramUI() {
