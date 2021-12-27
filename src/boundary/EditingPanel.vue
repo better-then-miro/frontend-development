@@ -111,23 +111,24 @@ export default {
 
     apply(addNewItem = false) {
       const newAdditionFieldsDict = {};
-      const oldKeys = Object.keys(this.selectedBlockView.block.additionalFields);
-      for (const attributeKey in oldKeys) {
-        newAdditionFieldsDict[oldKeys[attributeKey]] = [];
+      if (this.selectedBlockView.block.additionalFields !== null) {
+        const oldKeys = Object.keys(this.selectedBlockView.block.additionalFields);
+        for (const attributeKey in oldKeys) {
+          newAdditionFieldsDict[oldKeys[attributeKey]] = [];
+        }
+
+        const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
+
+        additionalFieldInputs.forEach((fieldInput) => {
+          if (fieldInput.id in newAdditionFieldsDict === false) {
+            newAdditionFieldsDict[fieldInput.id] = [];
+          }
+
+          if (addNewItem || (fieldInput.value !== '')) {
+            newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
+          }
+        });
       }
-
-      const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
-
-      additionalFieldInputs.forEach((fieldInput) => {
-        if (fieldInput.id in newAdditionFieldsDict === false) {
-          newAdditionFieldsDict[fieldInput.id] = [];
-        }
-
-        if (addNewItem || (fieldInput.value !== '')) {
-          newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
-        }
-      });
-
       // TODO work with SVG should be only in DiagramUI
       this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;
       this.$emit('apply-changes', {
@@ -149,10 +150,12 @@ export default {
 
       if (addingAllowed) {
         // TODO is it OK to let this boundary edit entities? probably not...
-        if (itemType in this.selectedBlockView.block.additionalFields === false) {
-          this.selectedBlockView.block.additionalFields[itemType] = [];
+        if (this.selectedBlockView.block.additionalFields !== null) {
+          if (itemType in this.selectedBlockView.block.additionalFields === false) {
+            this.selectedBlockView.block.additionalFields[itemType] = [];
+          }
+          this.selectedBlockView.block.additionalFields[itemType].push('');
         }
-        this.selectedBlockView.block.additionalFields[itemType].push('');
       }
     },
 

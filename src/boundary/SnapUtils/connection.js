@@ -20,7 +20,7 @@ Snap.plugin((Snap, Element, Paper) => {
       this.arrow.attr({ stroke: color, fill: color });
     }
   };
-  Paper.prototype.connection = function (firstBlockView, secondBlockView, linkType) {
+  Paper.prototype.connection = function (firstBlockView, secondBlockView, lId, linkType) {
     let line = '#000';
     const bg = '#000';
     if (firstBlockView.line && firstBlockView.from && firstBlockView.to) {
@@ -161,6 +161,7 @@ Snap.plugin((Snap, Element, Paper) => {
           from: firstBlockView,
           to: secondBlockView,
           arrow: arrow,
+          lId: lId,
           changeColor: changeColor,
         };
       } else if (linkType === 'Association(Bidirectional)') {
@@ -177,6 +178,7 @@ Snap.plugin((Snap, Element, Paper) => {
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
+          lId: lId,
           changeColor: changeColor,
         };
       } else if (linkType === 'Dependency') {
@@ -200,6 +202,7 @@ Snap.plugin((Snap, Element, Paper) => {
           from: firstBlockView,
           to: secondBlockView,
           arrow: arrow,
+          lId: lId,
           changeColor: changeColor,
         };
       } else {
@@ -216,6 +219,7 @@ Snap.plugin((Snap, Element, Paper) => {
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
+          lId: lId,
           changeColor: changeColor,
         };
       }

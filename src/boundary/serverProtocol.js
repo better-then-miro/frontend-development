@@ -76,3 +76,15 @@ export function createNewLink(properties) {
   return axios.post('http://127.0.0.1:5000/createNewLink', properties)
     .then(response => response.data.lId);
 }
+
+export function deleteLink(linkId) {
+  console.log('Deleting link: ', linkId);
+  return axios.get('http://127.0.0.1:5000/deleteLink', { params: { Id: linkId } })
+    .then(response => response.data.lId);
+}
+
+export function deleteBlock(blockId) {
+  console.log('Deleting block: ', blockId);
+  return axios.get('http://127.0.0.1:5000/deleteBlock', { params: { Id: blockId } })
+    .then(response => response.data.lId);
+}

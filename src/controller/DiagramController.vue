@@ -18,8 +18,8 @@
                      v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
                      v-on:apply-changes="changeFields"
                      v-on:item-deleted="updateAdditionalFields"
-                     v-on:delete-block="deleteBlock"
-                     v-on:delete-link="deleteLink"/>
+                     v-on:delete-block="deleteBlockFromSnap"
+                     v-on:delete-link="deleteLinkFromSnap"/>
     </div>
     <!--  TODO add block boundary component  -->
   </div>
@@ -30,7 +30,8 @@
 import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
-import { createNewBlock, createNewLink, getDiagramContent, updateBlockProperties } from '../boundary/serverProtocol';
+import { createNewBlock, createNewLink, getDiagramContent,
+  updateBlockProperties, deleteLink, deleteBlock } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
 import Diagram from '../entity/diagram';
@@ -98,7 +99,9 @@ export default {
         );
     },
 
-    deleteLink(linkToDelete) {
+    deleteLinkFromSnap(linkToDelete, deleteFromServer = true) {
+      this.selectedBlockView = null;
+      this.selectedLink = null;
       const index = this.$refs.diagramUI.snapLinks.indexOf(linkToDelete);
       console.log('Delete link:', linkToDelete, index);
       if (index > -1) {
@@ -109,9 +112,14 @@ export default {
           linkToDelete.arrow.remove();
         }
       }
+      if (deleteFromServer) {
+        deleteLink(linkToDelete.lId);
+      }
     },
 
-    deleteBlock(parameters) {
+    deleteBlockFromSnap(parameters) {
+      this.selectedBlockView = null;
+      this.selectedLink = null;
       const blockToDelete = parameters.blockToDelete;
       blockToDelete.removeLinkPoints();
       blockToDelete.blockGroup.remove();
@@ -127,8 +135,10 @@ export default {
       });
 
       linksToRemove.forEach((link) => {
-        this.deleteLink(link);
+        this.deleteLinkFromSnap(link, false);
       });
+
+      deleteBlock(blockId);
 
       const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
       this.$refs.diagramUI.snapBlocks.splice(index, 1);
@@ -170,7 +180,7 @@ export default {
           const newLink = new Link(linkId, properties.Type,
             properties.sId, properties.tId);
           this.currentDiagram.links.push(newLink);
-          this.$refs.diagramUI.drawNewLink(linkType);
+          this.$refs.diagramUI.drawNewLink(linkType, linkId);
           this.$refs.sidePanel.clear();
         },
         );

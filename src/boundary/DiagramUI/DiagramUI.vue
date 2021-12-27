@@ -54,7 +54,7 @@ export default {
         const sBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.sId);
         const tBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.tId);
         if (sBlockView.length === 1 && tBlockView.length === 1) {
-          const newLink = this.snap.connection(sBlockView[0], tBlockView[0], link.Type);
+          const newLink = this.snap.connection(sBlockView[0], tBlockView[0], link.Id, link.Type);
           newLink.line.click(selectLink);
           this.snapLinks.push(newLink);
         } else {
@@ -116,13 +116,13 @@ export default {
       }
     },
 
-    drawNewLink(linkType) {
+    drawNewLink(linkType, linkId) {
       console.log('Drawing new link');
       if (sel == null || this.linkSourceBlock == null) {
         console.log('Error drawing new link');
         return;
       }
-      const newLink = this.snap.connection(this.linkSourceBlock, sel, linkType);
+      const newLink = this.snap.connection(this.linkSourceBlock, sel, linkId, linkType);
       newLink.line.click(selectLink);
       this.snapLinks.push(newLink);
       this.linkSourceBlock = null;
