@@ -7,8 +7,22 @@
 /* eslint-disable func-names */
 import Snap from 'snapsvg-cjs';
 
-Snap.plugin((Snap, Paper) => {
-  Paper.prototype.connection = function (firstBlockView, secondBlockView, linkType, line = '#555', bg = '#999') {
+const linkWidth = 5;
+Snap.plugin((Snap, Element, Paper) => {
+  const changeColor = function (color) {
+    if (this.line.attr('stroke') !== 'none') {
+      this.line.attr({ stroke: color });
+    }
+    if (this.bg.attr('stroke') !== 'none') {
+      this.bg.attr({ stroke: color });
+    }
+    if (this.arrow !== undefined) {
+      this.arrow.attr({ stroke: color, fill: color });
+    }
+  };
+  Paper.prototype.connection = function (firstBlockView, secondBlockView, linkType) {
+    let line = '#000';
+    const bg = '#000';
     if (firstBlockView.line && firstBlockView.from && firstBlockView.to) {
       line = firstBlockView;
       firstBlockView = line.from;
@@ -165,7 +179,7 @@ Snap.plugin((Snap, Paper) => {
           path,
           'stroke-dasharray': 10 + ' ' + 10,
           'stroke-dashoffset': 10,
-          'stroke-width': 4,
+          'stroke-width': linkWidth,
         });
         line.arrow.attr({ points: arrowPointsStr });
       } else {
@@ -174,42 +188,44 @@ Snap.plugin((Snap, Paper) => {
         });
       }
     } else {
-      const color = typeof line === 'string' ? line : '#000';
+      let returnObj;
       if (linkType === 'Association') {
         const arrow = this.polyline().attr({
           stroke: '#000',
           fill: '#000',
           points: arrowPointsStr,
         });
-        return {
+        returnObj = {
           bg: bg && bg.split && this.path(path).attr({
-            stroke: bg.split('|')[0],
+            stroke: bg,
             fill: 'none',
-            'stroke-width': bg.split('|')[1] || 3,
+            'stroke-width': linkWidth,
           }),
           line: this.path(path).attr({
-            stroke: color,
+            stroke: line,
             fill: 'none',
           }),
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
           arrow: arrow,
+          changeColor: changeColor,
         };
       } else if (linkType === 'Association(Bidirectional)') {
-        return {
+        returnObj = {
           bg: bg && bg.split && this.path(path).attr({
-            stroke: bg.split('|')[0],
+            stroke: bg,
             fill: 'none',
-            'stroke-width': bg.split('|')[1] || 3,
+            'stroke-width': linkWidth,
           }),
           line: this.path(path).attr({
-            stroke: color,
+            stroke: line,
             fill: 'none',
           }),
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
+          changeColor: changeColor,
         };
       } else if (linkType === 'Dependency') {
         const arrow = this.polyline().attr({
@@ -217,38 +233,42 @@ Snap.plugin((Snap, Paper) => {
           fill: '#000',
           points: arrowPointsStr,
         });
-        return {
+        returnObj = {
           bg: bg && bg.split && this.path(path).attr({
             fill: 'none',
           }),
           line: this.path(path).attr({
-            stroke: color,
+            stroke: line,
             fill: 'none',
             'stroke-dasharray': 10 + ' ' + 10,
             'stroke-dashoffset': 10,
-            'stroke-width': 4,
+            'stroke-width': linkWidth,
           }),
           linkType: linkType,
           from: firstBlockView,
           to: secondBlockView,
           arrow: arrow,
+          changeColor: changeColor,
+        };
+      } else {
+        returnObj = {
+          bg: bg && bg.split && this.path(path).attr({
+            stroke: line,
+            fill: 'none',
+            'stroke-width': linkWidth,
+          }),
+          line: this.path(path).attr({
+            stroke: line,
+            fill: 'none',
+          }),
+          linkType: linkType,
+          from: firstBlockView,
+          to: secondBlockView,
+          changeColor: changeColor,
         };
       }
-
-      return {
-        bg: bg && bg.split && this.path(path).attr({
-          stroke: bg.split('|')[0],
-          fill: 'none',
-          'stroke-width': bg.split('|')[1] || 3,
-        }),
-        line: this.path(path).attr({
-          stroke: color,
-          fill: 'none',
-        }),
-        linkType: linkType,
-        from: firstBlockView,
-        to: secondBlockView,
-      };
+      returnObj.line.data({ lineObject: returnObj });
+      return returnObj;
     }
   };
 });

@@ -6,7 +6,7 @@
 /* eslint-disable no-console */
 import Snap from 'snapsvg-cjs';
 import { setBounds } from './drag';
-import { sel } from './scale';
+import { sel, selLink, selectLink, setBlockToNull, setLinkToNull } from './scale';
 import BlockView from '../SnapUtils/blockView';
 import '../SnapUtils/connection';
 import Diagram from '../../entity/diagram';
@@ -19,6 +19,7 @@ export default {
   emits: {
     'ready-add-new-link': { sourceID: Number, targetID: Number },
     'block-view-selected': BlockView,
+    'link-selected': Object,
     'turn-off-link-mode': null,
     // TODO return only block entity and make changes in View in this component
   },
@@ -26,6 +27,7 @@ export default {
     return {
       snap: null,
       selectedBlockView: null,
+      selectedLink: null,
       snapBlocks: [],
       snapLinks: [],
       linkSourceBlock: null,
@@ -52,7 +54,9 @@ export default {
         const sBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.sId);
         const tBlockView = this.snapBlocks.filter(blockView => blockView.block.Id === link.tId);
         if (sBlockView.length === 1 && tBlockView.length === 1) {
-          this.snapLinks.push(this.snap.connection(sBlockView[0], tBlockView[0], link.Type));
+          const newLink = this.snap.connection(sBlockView[0], tBlockView[0], link.Type);
+          newLink.line.click(selectLink);
+          this.snapLinks.push(newLink);
         } else {
           console.log('Incorrect link parameters!');
         }
@@ -67,17 +71,48 @@ export default {
     },
 
     updateInfo() {
-      this.selectedBlockView = sel;
-      this.$emit('block-view-selected', this.selectedBlockView);
-      if (this.isLinkAddMode) {
-        if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
-          this.$emit('ready-add-new-link',
-            { sourceID: this.linkSourceBlock.block.Id, targetID: sel.block.Id });
+      console.log(sel, selLink);
+      if (sel !== null) {
+        if (this.selectedBlockView === sel) {
+          this.selectedBlockView.removeLinkPoints();
+          this.selectedBlockView = null;
+          setBlockToNull();
+          this.$emit('block-view-selected', this.selectedBlockView);
         } else {
-          this.linkSourceBlock = sel;
+          if (this.selectedLink !== null) {
+            this.selectedLink = null;
+            setLinkToNull();
+            this.$emit('link-selected', this.selectedLink);
+          }
+          console.log('Update block');
+          this.selectedBlockView = sel;
+          this.$emit('block-view-selected', this.selectedBlockView);
+          if (this.isLinkAddMode) {
+            if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
+              this.$emit('ready-add-new-link',
+                { sourceID: this.linkSourceBlock.block.Id, targetID: sel.block.Id });
+            } else {
+              this.linkSourceBlock = sel;
+            }
+          } else {
+            this.linkSourceBlock = null;
+          }
         }
-      } else {
-        this.linkSourceBlock = null;
+      }
+      if (selLink !== null) {
+        if (this.selectedLink === selLink) {
+          this.selectedLink = null;
+          setLinkToNull();
+          this.$emit('link-selected', this.selectedLink);
+        } else {
+          if (this.selectedBlockView !== null) {
+            this.selectedBlockView = null;
+            setBlockToNull();
+            this.$emit('block-view-selected', this.selectedBlockView);
+          }
+          this.selectedLink = selLink;
+          this.$emit('link-selected', this.selectedLink);
+        }
       }
     },
 
@@ -87,7 +122,9 @@ export default {
         console.log('Error drawing new link');
         return;
       }
-      this.snapLinks.push(this.snap.connection(this.linkSourceBlock, sel, linkType));
+      const newLink = this.snap.connection(this.linkSourceBlock, sel, linkType);
+      newLink.line.click(selectLink);
+      this.snapLinks.push(newLink);
       this.linkSourceBlock = null;
       this.isLinkAddMode = false;
       this.$emit('turn-off-link-mode');

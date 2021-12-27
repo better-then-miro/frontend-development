@@ -4,6 +4,7 @@
                 ref="diagramUI" :key="keyOfDiagramUI"
                 v-on:ready-add-new-link="addNewLink"
                 v-on:block-view-selected="changeSelected"
+                v-on:link-selected="changeSelectedLink"
                 v-on:turn-off-link-mode="turnOffLinkMode"/>
     <div style="display:flex; flex-direction: column">
       <side-panel v-on:create-block="addNewBlock"
@@ -46,6 +47,7 @@ export default {
       isLinkAddMode: false,
       keyOfDiagramUI: 0,
       selectedBlockView: null,
+      selectedLink: null,
     };
   },
 
@@ -173,6 +175,16 @@ export default {
 
     changeSelected(blockView) {
       this.selectedBlockView = blockView;
+    },
+
+    changeSelectedLink(link) {
+      if (this.selectedLink !== null) {
+        this.selectedLink.changeColor('black');
+      }
+      this.selectedLink = link;
+      if (link !== null) {
+        link.changeColor('blue');
+      }
     },
 
     changeFields(data) {

@@ -116,7 +116,6 @@ export const turnOnscaleMode = function () {
 // eslint-disable-next-line import/no-mutable-exports
 export let sel = null;
 export const select = function () {
-  console.log(this.data('blockView'));
   // eslint-disable-next-line no-prototype-builtins
   if (BlockView.prototype.isPrototypeOf(this.data('blockView'))) {
     if (sel !== null) {
@@ -125,4 +124,21 @@ export const select = function () {
     sel = this.data('blockView');
     sel.drawLinkPoints();
   }
+};
+
+// eslint-disable-next-line import/no-mutable-exports
+export let selLink = null;
+export const selectLink = function () {
+  // eslint-disable-next-line no-prototype-builtins
+  if (this.data('lineObject') !== null) {
+    selLink = this.data('lineObject');
+  }
+};
+
+export const setBlockToNull = function () {
+  sel = null;
+};
+
+export const setLinkToNull = function () {
+  selLink = null;
 };

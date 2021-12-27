@@ -49,7 +49,6 @@ export default class SvgBlockFactory {
     const g = this.snap.group();
     g.data('ot', g.transform().local);
     Snap.load(actorIcon, (data) => {
-      console.log(data);
       g.append(data);
     });
     g.attr({
