@@ -12,12 +12,14 @@
                   v-bind:supported-block-types="supportedBlocks"
                   v-on:toggle-link-mode="toggleLinkMode"
                   ref="sidePanel"/>
-      <editing-panel v-if="selectedBlockView!=null&&isLinkAddMode===false"
+      <editing-panel v-if="(selectedBlockView!=null || selectedLink!=null)&&isLinkAddMode===false"
                      v-bind:selected-block-view="selectedBlockView"
+                     v-bind:selected-link="selectedLink"
                      v-on:close-panel="selectedBlockView.removeLinkPoints();selectedBlockView=null"
                      v-on:apply-changes="changeFields"
                      v-on:item-deleted="updateAdditionalFields"
-                     v-on:delete-block="deleteBlock"/>
+                     v-on:delete-block="deleteBlock"
+                     v-on:delete-link="deleteLink"/>
     </div>
     <!--  TODO add block boundary component  -->
   </div>
@@ -96,14 +98,15 @@ export default {
         );
     },
 
-    deleteLink(link) {
-      const index = this.$refs.diagramUI.snapLinks.indexOf(link);
+    deleteLink(linkToDelete) {
+      const index = this.$refs.diagramUI.snapLinks.indexOf(linkToDelete);
+      console.log('Delete link:', linkToDelete, index);
       if (index > -1) {
         this.$refs.diagramUI.snapLinks.splice(index, 1);
-        link.line.remove();
-        link.bg.remove();
-        if (link.arrow !== undefined) {
-          link.arrow.remove();
+        linkToDelete.line.remove();
+        linkToDelete.bg.remove();
+        if (linkToDelete.arrow !== undefined) {
+          linkToDelete.arrow.remove();
         }
       }
     },

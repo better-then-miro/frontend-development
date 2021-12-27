@@ -35,81 +35,33 @@ Snap.plugin((Snap, Element, Paper) => {
     if (linkType === 'Association(Bidirectional)') {
       offset = 0;
     }
-    const p = [{
-      x: bb1.x + (bb1.width / 4),
-      y: bb1.y - 1,
-    }, {
-      x: bb1.x + (bb1.width / 2),
-      y: bb1.y - 1,
-    }, {
-      x: bb1.x + ((bb1.width / 4) * 3),
-      y: bb1.y - 1,
-    }, {
-      x: bb1.x + (bb1.width / 4),
-      y: bb1.y + bb1.height + 1,
-    }, {
-      x: bb1.x + (bb1.width / 2),
-      y: bb1.y + bb1.height + 1,
-    }, {
-      x: bb1.x + ((bb1.width / 4) * 3),
-      y: bb1.y + bb1.height + 1,
-    }, {
-      x: bb1.x - 1,
-      y: bb1.y + (bb1.height / 4),
-    }, {
-      x: bb1.x - 1,
-      y: bb1.y + (bb1.height / 2),
-    }, {
-      x: bb1.x - 1,
-      y: bb1.y + ((bb1.height / 4) * 3),
-    }, {
-      x: bb1.x + bb1.width + 1,
-      y: bb1.y + (bb1.height / 4),
-    }, {
-      x: bb1.x + bb1.width + 1,
-      y: bb1.y + (bb1.height / 2),
-    }, {
-      x: bb1.x + bb1.width + 1,
-      y: bb1.y + ((bb1.height / 4) * 3),
-    },
+    const p = [
+      { x: bb1.x + (bb1.width / 4), y: bb1.y - 1 },
+      { x: bb1.x + (bb1.width / 2), y: bb1.y - 1 },
+      { x: bb1.x + ((bb1.width / 4) * 3), y: bb1.y - 1 },
+      { x: bb1.x + (bb1.width / 4), y: bb1.y + bb1.height + 1 },
+      { x: bb1.x + (bb1.width / 2), y: bb1.y + bb1.height + 1 },
+      { x: bb1.x + ((bb1.width / 4) * 3), y: bb1.y + bb1.height + 1 },
+      { x: bb1.x - 1, y: bb1.y + (bb1.height / 4) },
+      { x: bb1.x - 1, y: bb1.y + (bb1.height / 2) },
+      { x: bb1.x - 1, y: bb1.y + ((bb1.height / 4) * 3) },
+      { x: bb1.x + bb1.width + 1, y: bb1.y + (bb1.height / 4) },
+      { x: bb1.x + bb1.width + 1, y: bb1.y + (bb1.height / 2) },
+      { x: bb1.x + bb1.width + 1, y: bb1.y + ((bb1.height / 4) * 3) },
 
-    {
-      x: bb2.x + (bb2.width / 4),
-      y: bb2.y - 1 - offset,
-    }, {
-      x: bb2.x + (bb2.width / 2),
-      y: bb2.y - 1 - offset,
-    }, {
-      x: bb2.x + ((bb2.width / 4) * 3),
-      y: bb2.y - 1 - offset,
-    }, {
-      x: bb2.x + (bb2.width / 4),
-      y: bb2.y + bb2.height + 1 + offset,
-    }, {
-      x: bb2.x + (bb2.width / 2),
-      y: bb2.y + bb2.height + 1 + offset,
-    }, {
-      x: bb2.x + ((bb2.width / 4) * 3),
-      y: bb2.y + bb2.height + 1 + offset,
-    }, {
-      x: bb2.x - 1 - offset,
-      y: bb2.y + (bb2.height / 4),
-    }, {
-      x: bb2.x - 1 - offset,
-      y: bb2.y + (bb2.height / 2),
-    }, {
-      x: bb2.x - 1 - offset,
-      y: bb2.y + ((bb2.height / 4) * 3),
-    }, {
-      x: bb2.x + bb2.width + 1 + offset,
-      y: bb2.y + (bb2.height / 4),
-    }, {
-      x: bb2.x + bb2.width + 1 + offset,
-      y: bb2.y + (bb2.height / 2),
-    }, {
-      x: bb2.x + bb2.width + 1 + offset,
-      y: bb2.y + ((bb2.height / 4) * 3),
-    }];
+      { x: bb2.x + (bb2.width / 4), y: bb2.y - 1 - offset },
+      { x: bb2.x + (bb2.width / 2), y: bb2.y - 1 - offset },
+      { x: bb2.x + ((bb2.width / 4) * 3), y: bb2.y - 1 - offset },
+      { x: bb2.x + (bb2.width / 4), y: bb2.y + bb2.height + 1 + offset },
+      { x: bb2.x + (bb2.width / 2), y: bb2.y + bb2.height + 1 + offset },
+      { x: bb2.x + ((bb2.width / 4) * 3), y: bb2.y + bb2.height + 1 + offset },
+      { x: bb2.x - 1 - offset, y: bb2.y + (bb2.height / 4) },
+      { x: bb2.x - 1 - offset, y: bb2.y + (bb2.height / 2) },
+      { x: bb2.x - 1 - offset, y: bb2.y + ((bb2.height / 4) * 3) },
+      { x: bb2.x + bb2.width + 1 + offset, y: bb2.y + (bb2.height / 4) },
+      { x: bb2.x + bb2.width + 1 + offset, y: bb2.y + (bb2.height / 2) },
+      { x: bb2.x + bb2.width + 1 + offset, y: bb2.y + ((bb2.height / 4) * 3) },
+    ];
     const d = {};
     const dis = [];
     let dx = 0;

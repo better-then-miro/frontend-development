@@ -1,68 +1,76 @@
 <template>
-  <div class="editing-panel" >
-    <div class="panel-header">
-      <h2>Block modification</h2>
-      <span v-on:click="close" class="closeForm"
-            title="Close panel">X</span>
-    </div>
+  <div>
+    <div v-if="selectedBlockView!=null" class="editing-panel">
+      <div class="panel-header">
+        <h2>Block modification</h2>
+        <span v-on:click="close" class="closeForm"
+              title="Close panel">X</span>
+      </div>
 
-    <h3 class="input-title"
-        style="margin-top:5px; margin-bottom:5px;">
-        Name:
-    </h3>
-    <input id="selectedBlockTitle" ref="blockTitle"
-        style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
-        type="text" placeholder="Enter block title"
-        name="blockTitle" :value=selectedBlockView.block.title>
+      <h3 class="input-title"
+          style="margin-top:5px; margin-bottom:5px;">
+          Name:
+      </h3>
+      <input id="selectedBlockTitle" ref="blockTitle"
+          style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+          type="text" placeholder="Enter block title"
+          name="blockTitle" :value=selectedBlockView.block.title>
 
-    <h3 class="input-title"
-        style="margin-top:5px; margin-bottom:5px;">
-        Description:
-    </h3>
-    <input id="selectedBlockDescription" ref="blockDescription"
-        style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
-        type="text" placeholder="Enter block description"
-        name="blockDescription" :value=selectedBlockView.block.description>
+      <h3 class="input-title"
+          style="margin-top:5px; margin-bottom:5px;">
+          Description:
+      </h3>
+      <input id="selectedBlockDescription" ref="blockDescription"
+          style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+          type="text" placeholder="Enter block description"
+          name="blockDescription" :value=selectedBlockView.block.description>
 
-    <div ref="additionalFieldsSection" v-if="selectedBlockView.block.additionalFields">
-      <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
-        v-bind:key="attributeKey">
-        <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
-          <h3 class="input-title"
-            style="margin-top:5px; margin-bottom:5px;">
-            {{ attributeKey }}
-          </h3>
-          <ul class="additionalFieldList">
-            <li v-for="attributeValue in selectedBlockView.block.additionalFields[attributeKey]"
-              :key="attributeValue">
-              <div style="display:flex; flex-direction: row; align-items: center">
-                <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
-                <button class="deleteAttributeValueBtn" role="button"
-                  v-on:click="deleteItem(attributeKey, attributeValue)">
-                  X
-                </button>
-              </div>
-            </li>
-          </ul>
-          <button class="addNewAttributeValueBtn" role="button"
-            v-on:click="addNewItem(attributeKey)">
-            Add new item
-          </button>
-        </div>
-        <div v-else>
-          <div class="input-title">{{ attributeKey }}:</div>
-          <input type="text" placeholder="Enter property value"
-              :value=selectedBlockView.block.additionalFields[attributeKey]>
+      <div ref="additionalFieldsSection" v-if="selectedBlockView.block.additionalFields">
+        <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
+          v-bind:key="attributeKey">
+          <div v-if="attributeKey=='Operations'||attributeKey=='Attributes'">
+            <h3 class="input-title"
+              style="margin-top:5px; margin-bottom:5px;">
+              {{ attributeKey }}
+            </h3>
+            <ul class="additionalFieldList">
+              <li v-for="attributeValue in selectedBlockView.block.additionalFields[attributeKey]"
+                :key="attributeValue">
+                <div style="display:flex; flex-direction: row; align-items: center">
+                  <input class="additionalFieldItem" :id=attributeKey :value=attributeValue>
+                  <button class="deleteAttributeValueBtn" role="button"
+                    v-on:click="deleteItem(attributeKey, attributeValue)">
+                    X
+                  </button>
+                </div>
+              </li>
+            </ul>
+            <button class="addNewAttributeValueBtn" role="button"
+              v-on:click="addNewItem(attributeKey)">
+              Add new item
+            </button>
+          </div>
+          <div v-else>
+            <div class="input-title">{{ attributeKey }}:</div>
+            <input type="text" placeholder="Enter property value"
+                :value=selectedBlockView.block.additionalFields[attributeKey]>
+          </div>
         </div>
       </div>
+      <button class="btn btn-1" style="margin-left: 20px" v-on:click="apply(false)">
+        Apply Changes
+      </button>
+      <button class="btn btn-1"
+        style="margin-left: 20px; background: red; color: white" v-on:click="deleteBlock()">
+        Delete block
+      </button>
     </div>
-    <button class="btn btn-1" style="margin-left: 20px" v-on:click="apply(false)">
-      Apply Changes
-    </button>
-    <button class="btn btn-1"
-      style="margin-left: 20px; background: red; color: white" v-on:click="deleteBlock()">
-      Delete block
-    </button>
+    <div v-if="selectedLink!=null">
+      <button class="btn btn-1"
+        style="margin-left: 20px; background: red; color: white" v-on:click="deleteLink()">
+        Delete link
+      </button>
+    </div>
   </div>
 </template>
 
@@ -76,6 +84,7 @@ export default {
   name: 'EditingPanel',
   props: {
     selectedBlockView: blockView,
+    selectedLink: Object,
   },
   emits: {
     'close-panel': null,
@@ -86,6 +95,7 @@ export default {
     },
     'item-deleted': {},
     'delete-block': { blockToDelete: Object },
+    'delete-link': Object,
   },
 
   data() {
@@ -164,6 +174,10 @@ export default {
 
     deleteBlock() {
       this.$emit('delete-block', { blockToDelete: this.selectedBlockView });
+    },
+
+    deleteLink() {
+      this.$emit('delete-link', this.selectedLink);
     },
   },
 };
