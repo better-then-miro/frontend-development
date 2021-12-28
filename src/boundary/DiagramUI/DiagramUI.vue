@@ -1,5 +1,6 @@
 <template>
-  <svg @click="updateInfo" id="mySvg" class="editorSvg" height="700" width="700"></svg>
+  <svg  @click="updateInfo" id="mySvg" class="editorSvg"
+        :height="height" :width="width" ref="canvas"></svg>
 </template>
 
 <script>
@@ -32,6 +33,8 @@ export default {
       snapLinks: [],
       linkSourceBlock: null,
       isLinkAddMode: false,
+      height: 800,
+      width: 800,
     };
   },
 
@@ -42,9 +45,10 @@ export default {
 
   methods: {
     init() {
-      setBounds(10, 10, 710, 710);
-      this.snap.attr({ viewBox: '0 0 700 700' });
-      this.snap.rect(0, 0, 700, 700).attr({ fill: 'none', stroke: 'black' });
+      const bcr = this.$refs.canvas.getBoundingClientRect();
+      setBounds(bcr.x, bcr.y, bcr.x + bcr.width, bcr.y + bcr.height);
+      this.snap.attr({ viewBox: `0 0 ${this.width} ${this.height}` });
+      this.snap.rect(0, 0, this.width, this.height).attr({ fill: 'none', stroke: 'black', strokeWidth: 2 });
       this.currentDiagram.blocks.forEach((block) => {
         const blockView = new BlockView(block, this.snap, this.snapLinks);
         blockView.redrawOnSnap();
