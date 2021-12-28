@@ -67,6 +67,19 @@ export default class SvgBlockFactory {
         continue;
       }
 
+      if (key === 'stereotype') {
+        if (values !== '') {
+          const keyTitle = this.snap.text(
+            x + Math.round(w / 2),
+            y - 10,
+            values,
+          ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+          g.append(keyTitle);
+        }
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
       const keyTitle = this.snap.text(
         x + Math.round(w / 2),
         y + h + titleOffset,

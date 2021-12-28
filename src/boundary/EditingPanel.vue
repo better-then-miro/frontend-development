@@ -25,6 +25,24 @@
           type="text" placeholder="Enter block description"
           name="blockDescription" :value=selectedBlockView.block.description>
 
+      <div v-if="selectedBlockView.block.additionalFields">
+        <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
+          v-bind:key="attributeKey">
+          <div v-if="attributeKey=='stereotype'">
+            <h3 class="input-title"
+              style="margin-top:5px; margin-bottom:5px;">
+              Stereotype
+            </h3>
+            <select ref="selectStereotype" v-model="selectedStereotype">
+              <option>Boundary</option>
+              <option>Control</option>
+              <option>Entity</option>
+              <option></option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div ref="additionalFieldsSection" v-if="selectedBlockView.block.additionalFields">
         <div v-for="attributeKey in Object.keys(selectedBlockView.block.additionalFields)"
           v-bind:key="attributeKey">
@@ -50,7 +68,7 @@
               Add new item
             </button>
           </div>
-          <div v-else>
+          <div v-else-if="attributeKey!=='stereotype'">
             <div class="input-title">{{ attributeKey }}:</div>
             <input type="text" placeholder="Enter property value"
                 :value=selectedBlockView.block.additionalFields[attributeKey]>
@@ -101,12 +119,36 @@ export default {
   data() {
     return {
       snap: null,
+      selectedStereotype: '',
     };
+  },
+
+  mounted() {
+    this.updateStereotypySelection();
+  },
+
+  updated() {
+    this.updateStereotypySelection();
   },
 
   methods: {
     close() {
       this.$emit('close-panel');
+    },
+
+    updateStereotypySelection() {
+      if (this.selectedBlockView.block.additionalFields) {
+        if (this.selectedBlockView.block.additionalFields.stereotype) {
+          const currentOption = this.selectedBlockView.block.additionalFields.stereotype;
+          for (const option in Object.values(this.$refs.selectStereotype[0])) {
+            if (this.$refs.selectStereotype[0][option] !== undefined) {
+              if (this.$refs.selectStereotype[0][option].value === currentOption) {
+                console.log(this.$refs.selectStereotype[0][option].selected = true);
+              }
+            }
+          }
+        }
+      }
     },
 
     apply(addNewItem = false) {
@@ -128,6 +170,10 @@ export default {
             newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
           }
         });
+
+        if (this.selectedBlockView.block.additionalFields.stereotype) {
+          newAdditionFieldsDict.stereotype = this.selectedStereotype;
+        }
       }
       // TODO work with SVG should be only in DiagramUI
       this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;

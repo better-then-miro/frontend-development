@@ -201,6 +201,7 @@ export default {
     },
 
     changeFields(data) {
+      this.selectedBlockView.removeLinkPoints();
       this.selectedBlockView.block.additionalFields = data.additionalFields;
       this.selectedBlockView.block.title = data.title;
       this.selectedBlockView.block.description = data.description;
@@ -209,6 +210,7 @@ export default {
     },
 
     updateAdditionalFields(newAdditionFieldsDict) {
+      this.selectedBlockView.removeLinkPoints();
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
       updateBlockProperties(this.selectedBlockView.block);
       this.$refs.diagramUI.changeFields();
