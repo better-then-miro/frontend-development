@@ -25,6 +25,7 @@ export default class Block {
     if (this.Type === 'Class' && additionalFields === null) {
       this.additionalFields.Attributes = [];
       this.additionalFields.Operations = [];
+      this.additionalFields.stereotype = '';
     } else {
       this.additionalFields = additionalFields;
     }

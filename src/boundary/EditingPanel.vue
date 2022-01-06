@@ -143,7 +143,7 @@ export default {
           for (const option in Object.values(this.$refs.selectStereotype[0])) {
             if (this.$refs.selectStereotype[0][option] !== undefined) {
               if (this.$refs.selectStereotype[0][option].value === currentOption) {
-                console.log(this.$refs.selectStereotype[0][option].selected = true);
+                this.$refs.selectStereotype[0][option].selected = true;
               }
             }
           }
