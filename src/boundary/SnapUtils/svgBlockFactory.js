@@ -37,7 +37,7 @@ export default class SvgBlockFactory {
     if (type === 'Class') {
       return this.svgCreate_ClassBlock(x, y, w, h);
     } else if (type === 'Use-case') {
-      return this.svgCreate_UseCase(x, y, w, h);
+      return this.svgPrimitive_Ellipse(x, y, w, h);
     } else if (type === 'Actor') {
       return this.svgCreate_Actor(x, y, w, h);
     }
@@ -50,7 +50,7 @@ export default class SvgBlockFactory {
     return fig;
   }
 
-  svgCreate_UseCase(x, y, w, h) {
+  svgPrimitive_Ellipse(x, y, w, h) {
     const width = Math.round(w / 2);
     const height = Math.round(h / 2);
     const fig = this.snap.ellipse(x + width, y + height, width, height);
@@ -58,7 +58,7 @@ export default class SvgBlockFactory {
     return fig;
   }
 
-  svgCreate_UseCaseCenter(x, y, w, h) {
+  svgPrimitive_EllipseCenter(x, y, w, h) {
     const fig = this.snap.ellipse(x, y, w, h);
     fig.attr({ fill: bgColor, stroke: 'black', strokeWidth: 1 });
     return fig;
@@ -71,9 +71,12 @@ export default class SvgBlockFactory {
     Snap.load(actorIcon, (data) => {
       g.append(data);
     });
-    g.attr({
-      transform: g.data('ot') + (g.data('ot') ? 'T' : 't') + [x, y],
-    });
+
+    const t = new Snap.Matrix();
+    t.scale(w / 80, h / 80, x, y); // scale object
+    t.translate(x, y);
+    g.transform(t); // apply transformation to object
+
     return g;
   }
 

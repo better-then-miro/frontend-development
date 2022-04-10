@@ -6,6 +6,12 @@ import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
 import { turnOnscaleMode, select } from '../DiagramUI/scale';
 import SvgBlockFactory from './svgBlockFactory';
 
+/**
+ * Стоит использовать следующее соглашение на структуру объекта blockGroup, хранящего svg объект
+ * Объект хранится ввиде группы, где на первом уровне индексации blockGroup[i] лежат части объекта
+ * в виде группы из двух элементов: blockGroup[i][0] - фигура(примитив)
+ *                                  blockGroup[i][1] - текст, привязанный к фигуре (необязательно внутри фигуры)
+ */
 export default class BlockView {
   block = null;
   connections = null;
@@ -26,6 +32,8 @@ export default class BlockView {
       this.blockGroup.remove();
     }
     this.blockGroup = this.snap.group();
+    // eslint-disable-next-line no-console
+    console.log('haha');
     // TODO переделать на примитивы все остальные случаи кроме класса
     if (this.block.Type === 'Class') {
       // Constructing upper half of class block
@@ -45,25 +53,16 @@ export default class BlockView {
 
       this.blockGroup = this.factory.svgConstruct(upperHalf, lowerHalf);
     } else if (this.block.Type === 'Use-case') {
-      const newBlock = this.factory.svgCreate_UseCaseCenter(x, y,
+      const newBlock = this.factory.svgPrimitive_EllipseCenter(x, y,
         Math.round(width / 2), Math.round(height / 2));
-
-      const blockTitle = this.snap.text(
-        x, y,
-        this.block.title,
-      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
-
-      this.blockGroup.add(newBlock, blockTitle);
+      const blockTitle = this.factory.svgCreate_Title(x, y, this.block.title);
+      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
     } else if (this.block.Type === 'Actor') {
       const newBlock = this.factory.svgCreate_Actor(x, y,
-        Math.round(width / 2), Math.round(height / 2));
-
-      const blockTitle = this.snap.text(
-        x + Math.round(width / 2), y + height,
-        this.block.title,
-      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
-
-      this.blockGroup.add(newBlock, blockTitle);
+        width, height);
+      const blockTitle = this.factory.svgCreate_Title(x + Math.round(width / 2), y + height + 10,
+        this.block.title);
+      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
     }
 
     // eslint-disable-next-line no-plusplus

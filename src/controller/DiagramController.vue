@@ -82,8 +82,8 @@ export default {
         dId: this.currentDiagram.Id,
         Type: fields.Type,
         coords: [250, 250],
-        width: 100,
-        height: 50,
+        width: 80,
+        height: 80,
         title: fields.title,
       };
 
