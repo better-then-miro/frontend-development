@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 /* eslint-disable camelcase */
+/* eslint-disable max-len */
 import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
 import { turnOnscaleMode, select } from '../DiagramUI/scale';
 import SvgBlockFactory from './svgBlockFactory';
@@ -25,20 +26,24 @@ export default class BlockView {
       this.blockGroup.remove();
     }
     this.blockGroup = this.snap.group();
-
+    // TODO переделать на примитивы все остальные случаи кроме класса
     if (this.block.Type === 'Class') {
-      const newBlock = this.factory.svgCreate_ClassBlock(x, y, width, height);
-
-      const newFields = this.factory.svgCreate_BlockFields(x, y, width, height,
-        this.block.additionalFields);
-
-      const blockTitle = this.snap.text(
+      // Constructing upper half of class block
+      // TODO решить что делать с высотой верхней части
+      const upperHeight = 30;
+      const upperRect = this.factory.svgPrimitive_Rectangle(x, y, width, upperHeight);
+      const blockTitle = this.factory.svgCreate_Title(
         x + Math.round(width / 2),
-        y + Math.round(height / 2),
-        this.block.title,
-      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+        y + Math.round(upperHeight / 2),
+        this.block.title);
+      const upperHalf = this.factory.svgConstruct(upperRect, blockTitle);
+      // Constructing lower half of class block
+      const lowerRect = this.factory.svgPrimitive_Rectangle(x, y + upperHeight, width, height - upperHeight);
+      const newFields = this.factory.svgCreate_BlockFields(x, y + upperHeight, width, height - upperHeight,
+        this.block.additionalFields);
+      const lowerHalf = this.factory.svgConstruct(lowerRect, newFields);
 
-      this.blockGroup.add(newBlock, blockTitle, newFields);
+      this.blockGroup = this.factory.svgConstruct(upperHalf, lowerHalf);
     } else if (this.block.Type === 'Use-case') {
       const newBlock = this.factory.svgCreate_UseCaseCenter(x, y,
         Math.round(width / 2), Math.round(height / 2));

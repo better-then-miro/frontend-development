@@ -40,7 +40,13 @@ export const dragStop = function () {
 
   if (this.data('blockView').block.additionalFields &&
     Object.keys(this.data('blockView').block.additionalFields).length > 0) {
-    this[2].remove();
+    // видимо this - это фигура на полотне, в данном случае группа?,
+    // от которой мы берём некоторый элемент и удаляем
+    // без этого удаления объект дёргается при отсановке перетаскивания
+    this[1][1].remove();
+    // опытным путём выяснено, что надо удалять текст атрибутов
+    // ([нижяя половина][элемент группы с текстом],
+    // так как он может занимать больше пространства, чем фигуры
   }
 
   const coords = this.getBBox();

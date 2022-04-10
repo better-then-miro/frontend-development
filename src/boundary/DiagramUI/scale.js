@@ -16,6 +16,7 @@ const scaleStart = function () {
 };
 
 const scaleMove = function (dx, dy) {
+  // TODO исправить скейл так, чтобы якори не считались за BBox
   const groupBox = scalingBlockGroup.getBBox();
 
   let scaleX = 1;
@@ -93,7 +94,13 @@ export const turnOnscaleMode = function () {
 
   if (this.data('blockView').isScaling === false) {
     this.data('blockView').isScaling = true;
-    const groupBbox = this[0].getBBox();
+    // Create group from figures (without texts) -> [i][0] - figure of i-th primitive
+    // TODO when all block views will use such interface
+    /* const g = this.snap.group();
+    for (let i = 0; i < this.length; i += 1) {
+      g.append(this[i][0]);
+    } */
+    const groupBbox = this.getBBox();
     const anchors = [];
     anchors[0] = snap.circle(groupBbox.x, groupBbox.y, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[0].data('side', 'topleft');
@@ -107,6 +114,7 @@ export const turnOnscaleMode = function () {
     anchors[3] = snap.circle(groupBbox.x + groupBbox.width, groupBbox.y + groupBbox.height, 5).attr({ class: 'handler', fill: 'blue' });
     anchors[3].data('side', 'bottomright');
     anchors[3].drag(scaleMove, scaleStart, scaleStop);
+    // TODO ^
     scalingBlockGroup = snap.group(this, anchors[0], anchors[1], anchors[2], anchors[3]);
   } else {
     updateBlockPosition(this);

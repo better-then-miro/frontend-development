@@ -13,6 +13,26 @@ export default class SvgBlockFactory {
     this.snap = snap;
   }
 
+  svgPrimitive_Rectangle(x, y, w, h, color = bgColor, stroke = 'black') {
+    const fig = this.snap.rect(x, y, w, h);
+    fig.attr({ fill: color, stroke, strokeWidth: 1 });
+    return fig;
+  }
+
+  svgConstruct(...figures) {
+    const g = this.snap.group();
+    g.add(figures);
+    return g;
+  }
+
+  svgCreate_Title(x_center, y_center, title) {
+    return this.snap.text(
+      x_center,
+      y_center,
+      title,
+    ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+  }
+
   svgCreate_byType(type, x, y, w, h) {
     if (type === 'Class') {
       return this.svgCreate_ClassBlock(x, y, w, h);
@@ -67,11 +87,11 @@ export default class SvgBlockFactory {
         continue;
       }
 
-      if (key === 'stereotype') {
+      if (key === 'stereotype') { // Stereotype title
         if (values !== '') {
           const keyTitle = this.snap.text(
             x + Math.round(w / 2),
-            y - 10,
+            y - 40,
             values,
           ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
           g.append(keyTitle);
@@ -82,7 +102,7 @@ export default class SvgBlockFactory {
 
       const keyTitle = this.snap.text(
         x + Math.round(w / 2),
-        y + h + titleOffset,
+        y + titleOffset,
         key,
       ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
       titleOffset += 20;
@@ -91,7 +111,7 @@ export default class SvgBlockFactory {
       for (const valueIndex in values) {
         const valueTitle = this.snap.text(
           x + Math.round(w / 2),
-          y + h + titleOffset,
+          y + titleOffset,
           values[valueIndex],
         ).attr({ dominantBaseline: 'start', textAnchor: 'middle' });
         titleOffset += 15;
