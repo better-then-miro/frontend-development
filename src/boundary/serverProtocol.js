@@ -49,10 +49,14 @@ export function updateBlockProperties(block) {
     description: block.description,
     additionalFields: block.additionalFields,
   };
-
   console.log('Properties to update: ', properties);
-  axios.post(`${ServerUrl}updateBlockProperties`, properties)
-    .then(response => console.log(response));
+  // Handler just to check if error occurred
+  socket.on('updateBlockPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
 }
 
 export function getDiagramContent(diagramId, callback) {
@@ -72,26 +76,47 @@ export function createNewDiagram(properties) {
     .then(response => response.data.dId);
 }
 
-export function createNewBlock(properties) {
+export async function createNewBlock(properties, addNewBlockHandler) {
   console.log('New block properties: ', properties);
-  return axios.post(`${ServerUrl}/createNewBlock`, properties)
-    .then(response => response.data.bId);
+
+  socket.on('createNewBlockHandler', (response) => {
+    if (response.code === 200) {
+      addNewBlockHandler(response.bId);
+    } else {
+      console.log('Error occurred when creating block, error code: ', response.code);
+    }
+  });
+  socket.emit('createNewBlock', properties);
 }
 
-export function createNewLink(properties) {
+export function createNewLink(properties, addNewLinkCallback) {
   console.log('New link properties: ', properties);
-  return axios.post(`${ServerUrl}createNewLink`, properties)
-    .then(response => response.data.lId);
+  socket.on('createNewLinkHandler', (response) => {
+    if (response.code === 200) {
+      addNewLinkCallback(response.lId);
+    } else {
+      console.log('Error occurred when creating link, error code: ', response.code);
+    }
+  });
+  socket.emit('createNewLink', properties);
 }
 
 export function deleteLink(linkId) {
   console.log('Deleting link: ', linkId);
-  return axios.get(`${ServerUrl}/deleteLink`, { params: { Id: linkId } })
-    .then(response => response.data.lId);
+  socket.on('deleteLinkHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when deleting link, error code: ', response.code);
+    }
+  });
+  socket.emit('deleteLink', { Id: linkId });
 }
 
 export function deleteBlock(blockId) {
   console.log('Deleting block: ', blockId);
-  return axios.get(`${ServerUrl}deleteBlock`, { params: { Id: blockId } })
-    .then(response => response.data.lId);
+  socket.on('deleteBlockHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when deleting block, error code: ', response.code);
+    }
+  });
+  socket.emit('deleteBlock', { Id: blockId });
 }

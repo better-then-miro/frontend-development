@@ -53,6 +53,8 @@ export default {
       keyOfDiagramUI: 0,
       selectedBlockView: null,
       selectedLink: null,
+      newBlockProperties: null,
+      newLinkProperties: null,
     };
   },
 
@@ -64,20 +66,6 @@ export default {
     init() {
       initSocketIo();
       getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
-      /* .then((data) => {
-          data.blocks.forEach((block) => {
-            this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
-              block.coords[0], block.coords[1], block.width, block.height,
-              block.title, block.description, block.additionalFields));
-          });
-          data.links.forEach((link) => {
-            this.currentDiagram.links.push(new Link(link.Id, link.Type,
-              link.sId, link.tId));
-          });
-        },
-        ).then(() => {
-          this.showDiagramWindow = true;
-        }); */
     },
 
     // Callback for socketIO on getDiagramContentHandler
@@ -95,8 +83,9 @@ export default {
       this.showDiagramWindow = true;
     },
 
+    // Make request to server
     addNewBlock(fields) {
-      const properties = {
+      this.newBlockProperties = {
         dId: this.currentDiagram.Id,
         Type: fields.Type,
         coords: [250, 250],
@@ -105,16 +94,19 @@ export default {
         title: fields.title,
       };
 
-      createNewBlock(properties)
-        .then((blockId) => {
-          console.log('New block ID:', blockId);
-          const newBlock = new Block(blockId, properties.Type,
-            properties.coords[0], properties.coords[1], properties.width,
-            properties.height, properties.title);
-          this.currentDiagram.blocks.push(newBlock);
-          this.$refs.diagramUI.drawNewBlock(newBlock);
-        },
-        );
+      createNewBlock(this.newBlockProperties, this.addNewBlockHandler);
+    },
+
+    // Handler when server returns block ID
+    addNewBlockHandler(blockId) {
+      console.log('New block ID:', blockId);
+      const newBlock = new Block(blockId, this.newBlockProperties.Type,
+        this.newBlockProperties.coords[0], this.newBlockProperties.coords[1],
+        this.newBlockProperties.width, this.newBlockProperties.height,
+        this.newBlockProperties.title);
+      this.currentDiagram.blocks.push(newBlock);
+      this.$refs.diagramUI.drawNewBlock(newBlock);
+      this.newBlockProperties = null;
     },
 
     deleteLinkFromSnap(linkToDelete, deleteFromServer = true) {
@@ -192,16 +184,19 @@ export default {
         tId: data.targetID,
       };
       console.log('Creating new link');
-      createNewLink(properties)
-        .then((linkId) => {
-          console.log('New Link ID:', linkId);
-          const newLink = new Link(linkId, properties.Type,
-            properties.sId, properties.tId);
-          this.currentDiagram.links.push(newLink);
-          this.$refs.diagramUI.drawNewLink(linkType, linkId);
-          this.$refs.sidePanel.clear();
-        },
-        );
+      // making request to the server
+      this.newLinkProperties = properties;
+      createNewLink(properties, this.addNewLinkHandler);
+    },
+    // Handler when server returns link ID
+    addNewLinkHandler(linkId) {
+      console.log('New Link ID:', linkId);
+      const newLink = new Link(linkId, this.newLinkProperties.Type,
+        this.newLinkProperties.sId, this.newLinkProperties.tId);
+      this.currentDiagram.links.push(newLink);
+      this.$refs.diagramUI.drawNewLink(this.newLinkProperties.Type, linkId);
+      this.$refs.sidePanel.clear();
+      this.newLinkProperties = null;
     },
 
     changeSelected(blockView) {

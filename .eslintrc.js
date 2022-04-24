@@ -27,11 +27,13 @@ module.exports = {
   rules: {
     // fix \n, \r\n warnings
     "linebreak-style": 0,
+    'spaced-comment': 0,
     // don't require .vue extension when importing
     'import/extensions': ['error', 'always', {
       js: 'never',
       vue: 'never'
     }],
+    // disallow reassignment of function parameters
     // disallow reassignment of function parameters
     // disallow parameter object manipulation except for specific exclusions
     'no-param-reassign': ['error', {
