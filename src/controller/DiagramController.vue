@@ -30,8 +30,10 @@
 import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
-import { createNewBlock, createNewLink, getDiagramContent,
-  updateBlockProperties, deleteLink, deleteBlock } from '../boundary/serverProtocol';
+import {
+  createNewBlock, createNewLink, getDiagramContent,
+  updateBlockProperties, deleteLink, deleteBlock, initSocketIo,
+} from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
 import Diagram from '../entity/diagram';
@@ -60,8 +62,9 @@ export default {
 
   methods: {
     init() {
-      getDiagramContent(this.currentDiagram.Id)
-        .then((data) => {
+      initSocketIo();
+      getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+      /* .then((data) => {
           data.blocks.forEach((block) => {
             this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
               block.coords[0], block.coords[1], block.width, block.height,
@@ -74,7 +77,22 @@ export default {
         },
         ).then(() => {
           this.showDiagramWindow = true;
-        });
+        }); */
+    },
+
+    // Callback for socketIO on getDiagramContentHandler
+    loadDiagramContent(data) {
+      console.log('Diagram content ', data);
+      data.blocks.forEach((block) => {
+        this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
+          block.coords[0], block.coords[1], block.width, block.height,
+          block.title, block.description, block.additionalFields));
+      });
+      data.links.forEach((link) => {
+        this.currentDiagram.links.push(new Link(link.Id, link.Type,
+          link.sId, link.tId));
+      });
+      this.showDiagramWindow = true;
     },
 
     addNewBlock(fields) {
