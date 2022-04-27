@@ -32,7 +32,8 @@ import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
 import {
   createNewBlock, createNewLink, getDiagramContent,
-  updateBlockProperties, deleteLink, deleteBlock, initSocketIo,
+  updateBlockTextProperties, updateBlockAdditionalProperties,
+  deleteLink, deleteBlock, initSocketIo,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -218,14 +219,15 @@ export default {
       this.selectedBlockView.block.additionalFields = data.additionalFields;
       this.selectedBlockView.block.title = data.title;
       this.selectedBlockView.block.description = data.description;
-      updateBlockProperties(this.selectedBlockView.block);
+      updateBlockTextProperties(this.selectedBlockView.block);
+      updateBlockAdditionalProperties(this.selectedBlockView.block);
       this.$refs.diagramUI.changeFields();
     },
 
     updateAdditionalFields(newAdditionFieldsDict) {
       this.selectedBlockView.removeLinkPoints();
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
-      updateBlockProperties(this.selectedBlockView.block);
+      updateBlockAdditionalProperties(this.selectedBlockView.block);
       this.$refs.diagramUI.changeFields();
     },
   },

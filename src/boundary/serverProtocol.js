@@ -39,17 +39,46 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockProperties(block) {
+export function updateBlockTextProperties(block) {
+  const properties = {
+    Id: block.Id,
+    title: block.title,
+    description: block.description,
+    additionalFields: block.additionalFields,
+  };
+  console.log('Text properties to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockPositionProperties(block) {
   const properties = {
     Id: block.Id,
     width: block.width,
     height: block.height,
     coords: block.coords,
-    title: block.title,
-    description: block.description,
+  };
+  console.log('Position properties to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockAdditionalProperties(block) {
+  const properties = {
+    Id: block.Id,
     additionalFields: block.additionalFields,
   };
-  console.log('Properties to update: ', properties);
+  console.log('Additional properties to update: ', properties);
   // Handler just to check if error occurred
   socket.on('updateBlockPropertiesHandler', (response) => {
     if (response.code !== 200) {

@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
 
-import { updateBlockProperties } from '../serverProtocol';
+import { updateBlockPositionProperties } from '../serverProtocol';
 
 let boundsToDrag = { x1: 0, y1: 0, x2: 0, y2: 0 };
 export const setBounds = (x1, y1, x2, y2) => {
@@ -61,7 +61,7 @@ export const dragStop = function () {
 
   this.data('blockView').block.setCoords(newCoords);
 
-  updateBlockProperties(this.data('blockView').block);
+  updateBlockPositionProperties(this.data('blockView').block);
 
   this.data('blockView').redrawOnSnap();
 };

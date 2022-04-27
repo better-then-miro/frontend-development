@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 /* eslint-disable func-names */
 
-import { updateBlockProperties } from '../serverProtocol';
+import { updateBlockPositionProperties } from '../serverProtocol';
 import BlockView from '../SnapUtils/blockView';
 
 let scalingBlockGroup = null;
@@ -74,7 +74,8 @@ function updateBlockPosition(blockGroup) {
   blockGroup.data('blockView').block.setHeight(Math.round(coords.height));
   // eslint-disable-next-line no-param-reassign
   blockGroup.data('blockView').isScaling = false;
-  updateBlockProperties(blockGroup.data('blockView').block);
+  // updateBlockProperties(blockGroup.data('blockView').block);
+  updateBlockPositionProperties(blockGroup.data('blockView').block);
 
   blockGroup.data('blockView').redrawOnSnap();
   scalingBlockGroup.remove();
