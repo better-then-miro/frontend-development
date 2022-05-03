@@ -221,7 +221,7 @@ export default {
       this.selectedBlockView.block.description = data.description;
       const thisBlock = this.selectedBlockView.block;
       updateBlockTextProperties(thisBlock.Id, thisBlock.title,
-        thisBlock.description, thisBlock.additionalFields);
+        thisBlock.description);
       updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
         this.selectedBlockView.block.additionalFields);
       this.$refs.diagramUI.changeFields();
