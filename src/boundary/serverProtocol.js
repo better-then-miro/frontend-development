@@ -39,12 +39,12 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockTextProperties(block) {
+export function updateBlockTextProperties(Id, title, description, additionalFields) {
   const properties = {
-    Id: block.Id,
-    title: block.title,
-    description: block.description,
-    additionalFields: block.additionalFields,
+    Id,
+    title,
+    description,
+    additionalFields,
   };
   console.log('Text properties to update: ', properties);
   // Handler just to check if error occurred
@@ -56,12 +56,12 @@ export function updateBlockTextProperties(block) {
   socket.emit('updateBlockProperties', properties);
 }
 
-export function updateBlockPositionProperties(block) {
+export function updateBlockPositionProperties(Id, width, height, coords) {
   const properties = {
-    Id: block.Id,
-    width: block.width,
-    height: block.height,
-    coords: block.coords,
+    Id,
+    width,
+    height,
+    coords,
   };
   console.log('Position properties to update: ', properties);
   // Handler just to check if error occurred
@@ -73,10 +73,10 @@ export function updateBlockPositionProperties(block) {
   socket.emit('updateBlockProperties', properties);
 }
 
-export function updateBlockAdditionalProperties(block) {
+export function updateBlockAdditionalProperties(Id, additionalFields) {
   const properties = {
-    Id: block.Id,
-    additionalFields: block.additionalFields,
+    Id,
+    additionalFields,
   };
   console.log('Additional properties to update: ', properties);
   // Handler just to check if error occurred

@@ -219,15 +219,19 @@ export default {
       this.selectedBlockView.block.additionalFields = data.additionalFields;
       this.selectedBlockView.block.title = data.title;
       this.selectedBlockView.block.description = data.description;
-      updateBlockTextProperties(this.selectedBlockView.block);
-      updateBlockAdditionalProperties(this.selectedBlockView.block);
+      const thisBlock = this.selectedBlockView.block;
+      updateBlockTextProperties(thisBlock.Id, thisBlock.title,
+        thisBlock.description, thisBlock.additionalFields);
+      updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
+        this.selectedBlockView.block.additionalFields);
       this.$refs.diagramUI.changeFields();
     },
 
     updateAdditionalFields(newAdditionFieldsDict) {
       this.selectedBlockView.removeLinkPoints();
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
-      updateBlockAdditionalProperties(this.selectedBlockView.block);
+      updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
+        this.selectedBlockView.block.additionalFields);
       this.$refs.diagramUI.changeFields();
     },
   },

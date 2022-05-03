@@ -61,7 +61,9 @@ export const dragStop = function () {
 
   this.data('blockView').block.setCoords(newCoords);
 
-  updateBlockPositionProperties(this.data('blockView').block);
+  const thisBlock = this.data('blockView').block;
+  updateBlockPositionProperties(thisBlock.Id, thisBlock.width,
+    thisBlock.height, thisBlock.coords);
 
   this.data('blockView').redrawOnSnap();
 };
