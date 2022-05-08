@@ -76,15 +76,29 @@ export function registerAdditionalPropertiesModifierCallback(callback) {
   });
 }
 
-export function updateBlockTextProperties(Id, title, description) {
+export function updateBlockTitleProperty(Id, title) {
   const properties = {
     Id,
     title,
-    description,
   };
-  console.log('Text properties to update: ', properties);
+  console.log('Title property to update: ', properties);
   // Handler just to check if error occurred
   socket.on('updateBlockTextPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockDescriptionProperty(Id, description) {
+  const properties = {
+    Id,
+    description,
+  };
+  console.log('Description property to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockTitlePropertyHandler', (response) => {
     if (response.code !== 200) {
       console.log('Error occurred when updating properties, error code: ', response.code);
     }

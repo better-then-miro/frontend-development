@@ -31,9 +31,8 @@ import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
 import {
-  createNewBlock, createNewLink, getDiagramContent,
-  updateBlockTextProperties, updateBlockAdditionalProperties,
-  deleteLink, deleteBlock, initSocketIo,
+  createNewBlock, createNewLink, getDiagramContent, updateBlockAdditionalProperties,
+  deleteLink, deleteBlock, initSocketIo, updateBlockTitleProperty, updateBlockDescriptionProperty,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -216,14 +215,24 @@ export default {
 
     changeFields(data) {
       this.selectedBlockView.removeLinkPoints();
-      this.selectedBlockView.block.additionalFields = data.additionalFields;
-      this.selectedBlockView.block.title = data.title;
-      this.selectedBlockView.block.description = data.description;
-      const thisBlock = this.selectedBlockView.block;
-      updateBlockTextProperties(thisBlock.Id, thisBlock.title,
-        thisBlock.description);
+
+      if (this.selectedBlockView.block.title !== data.title) {
+        updateBlockTitleProperty(this.selectedBlockView.block.Id, data.title);
+        // Later this modification will happen in the handler
+        this.selectedBlockView.block.title = data.title;
+      }
+
+      if (this.selectedBlockView.block.description !== data.description) {
+        updateBlockDescriptionProperty(this.selectedBlockView.block.Id, data.description);
+        // Later this modification will happen in the handler
+        this.selectedBlockView.block.description = data.description;
+      }
+
       updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
         this.selectedBlockView.block.additionalFields);
+      // Later this modification will happen in the handler
+      this.selectedBlockView.block.additionalFields = data.additionalFields;
+
       this.$refs.diagramUI.changeFields();
     },
 
