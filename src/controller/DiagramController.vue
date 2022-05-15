@@ -30,8 +30,10 @@
 import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
-import { createNewBlock, createNewLink, getDiagramContent,
-  updateBlockProperties, deleteLink, deleteBlock } from '../boundary/serverProtocol';
+import {
+  createNewBlock, createNewLink, getDiagramContent, updateBlockAdditionalProperties,
+  deleteLink, deleteBlock, initSocketIo, updateBlockTitleProperty, updateBlockDescriptionProperty,
+} from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
 import Diagram from '../entity/diagram';
@@ -51,6 +53,8 @@ export default {
       keyOfDiagramUI: 0,
       selectedBlockView: null,
       selectedLink: null,
+      newBlockProperties: null,
+      newLinkProperties: null,
     };
   },
 
@@ -60,25 +64,28 @@ export default {
 
   methods: {
     init() {
-      getDiagramContent(this.currentDiagram.Id)
-        .then((data) => {
-          data.blocks.forEach((block) => {
-            this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
-              block.coords[0], block.coords[1], block.width, block.height,
-              block.title, block.description, block.additionalFields));
-          });
-          data.links.forEach((link) => {
-            this.currentDiagram.links.push(new Link(link.Id, link.Type,
-              link.sId, link.tId));
-          });
-        },
-        ).then(() => {
-          this.showDiagramWindow = true;
-        });
+      initSocketIo();
+      getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
     },
 
+    // Callback for socketIO on getDiagramContentHandler
+    loadDiagramContent(data) {
+      console.log('Diagram content ', data);
+      data.blocks.forEach((block) => {
+        this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
+          block.coords[0], block.coords[1], block.width, block.height,
+          block.title, block.description, block.additionalFields));
+      });
+      data.links.forEach((link) => {
+        this.currentDiagram.links.push(new Link(link.Id, link.Type,
+          link.sId, link.tId));
+      });
+      this.showDiagramWindow = true;
+    },
+
+    // Make request to server
     addNewBlock(fields) {
-      const properties = {
+      this.newBlockProperties = {
         dId: this.currentDiagram.Id,
         Type: fields.Type,
         coords: [250, 250],
@@ -87,16 +94,19 @@ export default {
         title: fields.title,
       };
 
-      createNewBlock(properties)
-        .then((blockId) => {
-          console.log('New block ID:', blockId);
-          const newBlock = new Block(blockId, properties.Type,
-            properties.coords[0], properties.coords[1], properties.width,
-            properties.height, properties.title);
-          this.currentDiagram.blocks.push(newBlock);
-          this.$refs.diagramUI.drawNewBlock(newBlock);
-        },
-        );
+      createNewBlock(this.newBlockProperties, this.addNewBlockHandler);
+    },
+
+    // Handler when server returns block ID
+    addNewBlockHandler(blockId) {
+      console.log('New block ID:', blockId);
+      const newBlock = new Block(blockId, this.newBlockProperties.Type,
+        this.newBlockProperties.coords[0], this.newBlockProperties.coords[1],
+        this.newBlockProperties.width, this.newBlockProperties.height,
+        this.newBlockProperties.title);
+      this.currentDiagram.blocks.push(newBlock);
+      this.$refs.diagramUI.drawNewBlock(newBlock);
+      this.newBlockProperties = null;
     },
 
     deleteLinkFromSnap(linkToDelete, deleteFromServer = true) {
@@ -174,16 +184,19 @@ export default {
         tId: data.targetID,
       };
       console.log('Creating new link');
-      createNewLink(properties)
-        .then((linkId) => {
-          console.log('New Link ID:', linkId);
-          const newLink = new Link(linkId, properties.Type,
-            properties.sId, properties.tId);
-          this.currentDiagram.links.push(newLink);
-          this.$refs.diagramUI.drawNewLink(linkType, linkId);
-          this.$refs.sidePanel.clear();
-        },
-        );
+      // making request to the server
+      this.newLinkProperties = properties;
+      createNewLink(properties, this.addNewLinkHandler);
+    },
+    // Handler when server returns link ID
+    addNewLinkHandler(linkId) {
+      console.log('New Link ID:', linkId);
+      const newLink = new Link(linkId, this.newLinkProperties.Type,
+        this.newLinkProperties.sId, this.newLinkProperties.tId);
+      this.currentDiagram.links.push(newLink);
+      this.$refs.diagramUI.drawNewLink(this.newLinkProperties.Type, linkId);
+      this.$refs.sidePanel.clear();
+      this.newLinkProperties = null;
     },
 
     changeSelected(blockView) {
@@ -202,17 +215,32 @@ export default {
 
     changeFields(data) {
       this.selectedBlockView.removeLinkPoints();
+
+      if (this.selectedBlockView.block.title !== data.title) {
+        updateBlockTitleProperty(this.selectedBlockView.block.Id, data.title);
+        // Later this modification will happen in the handler
+        this.selectedBlockView.block.title = data.title;
+      }
+
+      if (this.selectedBlockView.block.description !== data.description) {
+        updateBlockDescriptionProperty(this.selectedBlockView.block.Id, data.description);
+        // Later this modification will happen in the handler
+        this.selectedBlockView.block.description = data.description;
+      }
+
+      updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
+        this.selectedBlockView.block.additionalFields);
+      // Later this modification will happen in the handler
       this.selectedBlockView.block.additionalFields = data.additionalFields;
-      this.selectedBlockView.block.title = data.title;
-      this.selectedBlockView.block.description = data.description;
-      updateBlockProperties(this.selectedBlockView.block);
+
       this.$refs.diagramUI.changeFields();
     },
 
     updateAdditionalFields(newAdditionFieldsDict) {
       this.selectedBlockView.removeLinkPoints();
       this.selectedBlockView.block.additionalFields = newAdditionFieldsDict;
-      updateBlockProperties(this.selectedBlockView.block);
+      updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
+        this.selectedBlockView.block.additionalFields);
       this.$refs.diagramUI.changeFields();
     },
   },

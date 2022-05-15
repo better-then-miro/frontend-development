@@ -32,8 +32,6 @@ export default class BlockView {
       this.blockGroup.remove();
     }
     this.blockGroup = this.snap.group();
-    // eslint-disable-next-line no-console
-    console.log('haha');
     // TODO переделать на примитивы все остальные случаи кроме класса
     if (this.block.Type === 'Class') {
       // Constructing upper half of class block

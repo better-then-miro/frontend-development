@@ -1,13 +1,20 @@
 /* eslint-disable no-console */
 
+import openSocket from 'socket.io-client';
 import Diagram from '../entity/diagram';
 import Project from '../entity/project';
 
+const ServerUrl = 'http://127.0.0.1:5000/';
 const axios = require('axios');
+
+let socket;
+export function initSocketIo() {
+  socket = openSocket(`${ServerUrl}main`);
+}
 
 export function loadDiagramsFromServer(pId) {
   const diagrams = [];
-  axios.get('http://127.0.0.1:5000/getDiagrams', { params: { Id: pId } })
+  axios.get(`${ServerUrl}getDiagrams`, { params: { Id: pId } })
     .then((response) => {
       const data = response.data;
       data.forEach((diagram) => {
@@ -22,7 +29,7 @@ export function loadDiagramsFromServer(pId) {
 
 export function loadProjectsFromServer() {
   const projects = [];
-  axios.get('http://127.0.0.1:5000/getProjectList')
+  axios.get(`${ServerUrl}getProjectList`)
     .then((response) => {
       const data = response.data;
       data.forEach((project) => {
@@ -32,59 +39,163 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function updateBlockProperties(block) {
-  const properties = {
-    Id: block.Id,
-    width: block.width,
-    height: block.height,
-    coords: block.coords,
-    title: block.title,
-    description: block.description,
-    additionalFields: block.additionalFields,
-  };
-
-  console.log('Properties to update: ', properties);
-  axios.post('http://127.0.0.1:5000/updateBlockProperties', properties)
-    .then(response => console.log(response));
+export function registerTextModifierCallback(callback) {
+  socket.on('updateBlockTextPropertiesHandler', (response) => {
+    if (response.code === 200) {
+      console.log('New text values:', response.bId,
+        response.title, response.description);
+      callback(response.bId, response.title, response.description);
+    } else {
+      console.log('Error occurred when registerTextModifierCallback, error code: ', response.code);
+    }
+  });
 }
 
-export function getDiagramContent(diagramId) {
-  console.log('Fetch content of diagram: ', diagramId);
-  return axios.get('http://127.0.0.1:5000/getDiagramContent', { params: { Id: diagramId } })
-    .then(response => response.data);
+export function registerPositionModifierCallback(callback) {
+  socket.on('updateBlockPositionPropertiesHandler', (response) => {
+    if (response.code === 200) {
+      console.log('New position values:',
+        response.bId, response.coords,
+        response.width, response.height);
+      callback(response.bId, response.coords,
+        response.width, response.height);
+    } else {
+      console.log('Error occurred when registerPositionModifierCallback, error code: ', response.code);
+    }
+  });
+}
+
+export function registerAdditionalPropertiesModifierCallback(callback) {
+  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
+    if (response.code === 200) {
+      console.log('New addition properties values:', response.bId, response.additionalFields);
+      callback(response.bId, response.additionalFields);
+    } else {
+      console.log('Error occurred when registerAdditionalPropertiesModifierCallback, error code: ', response.code);
+    }
+  });
+}
+
+export function updateBlockTitleProperty(Id, title) {
+  const properties = {
+    Id,
+    title,
+  };
+  console.log('Title property to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockTextPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockDescriptionProperty(Id, description) {
+  const properties = {
+    Id,
+    description,
+  };
+  console.log('Description property to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockTitlePropertyHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockPositionProperties(Id, width, height, coords) {
+  const properties = {
+    Id,
+    width,
+    height,
+    coords,
+  };
+  console.log('Position properties to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockPositionPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function updateBlockAdditionalProperties(Id, additionalFields) {
+  const properties = {
+    Id,
+    additionalFields,
+  };
+  console.log('Additional properties to update: ', properties);
+  // Handler just to check if error occurred
+  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when updating properties, error code: ', response.code);
+    }
+  });
+  socket.emit('updateBlockProperties', properties);
+}
+
+export function getDiagramContent(diagramId, callback) {
+  console.log('Requesting content of diagram: ', diagramId);
+  socket.emit('getDiagramContent', { Id: diagramId });
+  socket.on('getDiagramContentHandler', callback);
 }
 
 export function createNewProject(properties) {
-  return axios.post('http://127.0.0.1:5000/createNewProject', properties)
+  return axios.post(`${ServerUrl}createNewProject`, properties)
     .then(response => response.data.pId);
 }
 
 export function createNewDiagram(properties) {
   console.log('New diagram properties: ', properties);
-  return axios.post('http://127.0.0.1:5000/createNewDiagram', properties)
+  return axios.post(`${ServerUrl}createNewDiagram`, properties)
     .then(response => response.data.dId);
 }
 
-export function createNewBlock(properties) {
+export async function createNewBlock(properties, addNewBlockHandler) {
   console.log('New block properties: ', properties);
-  return axios.post('http://127.0.0.1:5000/createNewBlock', properties)
-    .then(response => response.data.bId);
+
+  socket.on('createNewBlockHandler', (response) => {
+    if (response.code === 200) {
+      addNewBlockHandler(response.bId);
+    } else {
+      console.log('Error occurred when creating block, error code: ', response.code);
+    }
+  });
+  socket.emit('createNewBlock', properties);
 }
 
-export function createNewLink(properties) {
+export function createNewLink(properties, addNewLinkCallback) {
   console.log('New link properties: ', properties);
-  return axios.post('http://127.0.0.1:5000/createNewLink', properties)
-    .then(response => response.data.lId);
+  socket.on('createNewLinkHandler', (response) => {
+    if (response.code === 200) {
+      addNewLinkCallback(response.lId);
+    } else {
+      console.log('Error occurred when creating link, error code: ', response.code);
+    }
+  });
+  socket.emit('createNewLink', properties);
 }
 
 export function deleteLink(linkId) {
   console.log('Deleting link: ', linkId);
-  return axios.get('http://127.0.0.1:5000/deleteLink', { params: { Id: linkId } })
-    .then(response => response.data.lId);
+  socket.on('deleteLinkHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when deleting link, error code: ', response.code);
+    }
+  });
+  socket.emit('deleteLink', { Id: linkId });
 }
 
 export function deleteBlock(blockId) {
   console.log('Deleting block: ', blockId);
-  return axios.get('http://127.0.0.1:5000/deleteBlock', { params: { Id: blockId } })
-    .then(response => response.data.lId);
+  socket.on('deleteBlockHandler', (response) => {
+    if (response.code !== 200) {
+      console.log('Error occurred when deleting block, error code: ', response.code);
+    }
+  });
+  socket.emit('deleteBlock', { Id: blockId });
 }
