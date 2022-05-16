@@ -4,7 +4,8 @@
            name="blockTitle" v-model="blockTitle">
     <div class="selection-grid" style="display:flex; flex-direction: row;">
       <selection-entry v-for="type in supportedBlockTypes"
-                       v-bind:block-type="type"
+                       v-bind:object-type="type"
+                       v-bind:is-block="true"
                        v-bind:selected-entry="blockType"
                        v-on:entry-selected="changeSelected"
                        v-bind:key="type"/>
@@ -13,30 +14,17 @@
       </button>
     </div>
 
-    <div style="display:flex; flex-direction: column;
-      justify-content: space-around; align-items: center">
-      <div style="display:flex; flex-direction: row;
-        justify-content: space-around; align-items: center">
-        <div style="margin: 5px">
-          <input type="radio" id="linkChoice1"
-                name="linkType" value="Association" v-model="linkType">
-          <label for="linkChoice1">Association</label>
-        </div>
-        <div style="margin: 5px">
-          <input type="radio" id="linkChoice2"
-                name="linkType" value="Association(Bidirectional)" v-model="linkType">
-          <label for="linkChoice2">Association(Bidirectional)</label>
-        </div>
-        <div style="margin: 5px">
-          <input type="radio" id="linkChoice3"
-                name="linkType" value="Dependency" v-model="linkType">
-          <label for="linkChoice3">Dependency</label>
-        </div>
-        <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
-          Toggle link mode
-        </button>
-      </div>
+    <div class="selection-grid" style="display:flex; flex-direction: row;">
+      <selection-entry v-for="type in supportedLinkTypes"
+                       v-bind:object-type="type"
+                       v-bind:is-block="false"
+                       v-bind:selected-entry="linkType"
+                       v-on:entry-selected="changeSelected"
+                       v-bind:key="type"/>
       <h3 v-if="isLinkAddMode" style="margin: 5px">Link mode</h3>
+      <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
+        Toggle link mode
+      </button>
     </div>
   </div>
 </template>
@@ -51,6 +39,7 @@ export default {
   props: {
     isLinkAddMode: Boolean,
     supportedBlockTypes: Array,
+    supportedLinkTypes: Array,
   },
   emits: {
     'toggle-link-mode': { bool: Boolean },
@@ -90,8 +79,12 @@ export default {
       this.linkType = null;
     },
 
-    changeSelected(sel) {
-      this.blockType = sel;
+    changeSelected(params) {
+      if (params.isBlock) {
+        this.blockType = params.objectType;
+      } else {
+        this.linkType = params.objectType;
+      }
     },
   },
 };

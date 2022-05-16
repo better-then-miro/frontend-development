@@ -10,6 +10,7 @@
       <side-panel v-on:create-block="addNewBlock"
                   v-bind:is-link-add-mode="isLinkAddMode"
                   v-bind:supported-block-types="supportedBlocks"
+                  v-bind:supported-link-types="supportedLinks"
                   v-on:toggle-link-mode="toggleLinkMode"
                   ref="sidePanel"/>
       <editing-panel v-if="(selectedBlockView!=null || selectedLink!=null)&&isLinkAddMode===false"
@@ -38,6 +39,7 @@ import Block from '../entity/block';
 import Link from '../entity/link';
 import Diagram from '../entity/diagram';
 
+const diagramTypes = require('../boundary/SnapUtils/assets/diagramTypes.json');
 
 export default {
   name: 'DiagramController',
@@ -249,15 +251,40 @@ export default {
     supportedBlocks() {
       let blocks = [];
       if (this.currentDiagram.mode.toLowerCase() === 'free') {
-        blocks = ['Class', 'Use-case', 'Actor'];
-      } else if (this.currentDiagram.Type.toLowerCase() === 'use-case') {
-        blocks = ['Use-case', 'Actor'];
-      } else if (this.currentDiagram.Type.toLowerCase() === 'class') {
-        blocks = ['Class'];
+        const diagramType = diagramTypes
+          .filter(elem => elem.type === 'free')[0];
+        console.log(diagramType);
+        blocks = diagramType.blocks;
       } else {
-        console.log('Unsupported schema');
+        const diagramType = diagramTypes
+          .filter(elem => elem.type === this.currentDiagram.Type.toLowerCase())[0];
+        if (diagramType === undefined) {
+          console.log(`Unsupported schema: ${this.currentDiagram.Type.toLowerCase()}`);
+        } else {
+          console.log(diagramType);
+          blocks = diagramType.blocks;
+        }
       }
       return blocks;
+    },
+    supportedLinks() {
+      let links = [];
+      if (this.currentDiagram.mode.toLowerCase() === 'free') {
+        const diagramType = diagramTypes
+          .filter(elem => elem.type === 'free')[0];
+        console.log(diagramType);
+        links = diagramType.links;
+      } else {
+        const diagramType = diagramTypes
+          .filter(elem => elem.type === this.currentDiagram.Type.toLowerCase())[0];
+        if (diagramType === undefined) {
+          console.log(`Unsupported schema: ${this.currentDiagram.Type.toLowerCase()}`);
+        } else {
+          console.log(diagramType);
+          links = diagramType.links;
+        }
+      }
+      return links;
     },
   },
 };
