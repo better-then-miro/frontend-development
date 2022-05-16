@@ -39,40 +39,10 @@ export default class BlockView {
     if (this.block.Type === 'Class') {
       if (this.block.additionalFields.stereotype === '' || this.block.additionalFields.stereotype == null) {
         template = templates.filter(elem => elem.name === 'Class-default')[0];
-      } else { template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`); }
-      // Constructing upper half of class block
-    /*  // TODO решить что делать с высотой верхней части
-      const upperHeight = 30;
-      const upperRect = this.factory.svgPrimitive_Rectangle(x, y, width, upperHeight);
-      const blockTitle = this.factory.svgCreate_Title(
-        x + Math.round(width / 2),
-        y + Math.round(upperHeight / 2),
-        this.block.title);
-      const upperHalf = this.factory.svgConstruct(upperRect, blockTitle);
-      // Constructing lower half of class block
-      const lowerRect = this.factory.svgPrimitive_Rectangle(x, y + upperHeight, width, height - upperHeight);
-      const newFields = this.factory.svgCreate_BlockFields(x, y + upperHeight, width, height - upperHeight,
-        this.block.additionalFields);
-      const lowerHalf = this.factory.svgConstruct(lowerRect, newFields);
-
-      this.blockGroup = this.factory.svgConstruct(upperHalf, lowerHalf);*/
+      } else { template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0]; }
     } else {
-      template = templates.filter(elem => elem.name === this.block.title);
+      template = templates.filter(elem => elem.name === this.block.title)[0];
     }
-    /*else if (this.block.Type === 'Use-case') {
-      const newBlock = this.factory.svgPrimitive_EllipseCenter(x, y,
-        Math.round(width / 2), Math.round(height / 2));
-      const blockTitle = this.factory.svgCreate_Title(x, y, this.block.title);
-      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
-    } else if (this.block.Type === 'Actor') {
-      const newBlock = this.factory.svgCreate_Actor(x, y,
-        width, height);
-      const blockTitle = this.factory.svgCreate_Title(x + Math.round(width / 2), y + height + 10,
-        this.block.title);
-      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
-    }*/
-    console.log(templates);
-    console.log('Founded template:', template);
     this.blockGroup = this.constructSVGBlock(template, this.block);
     for (let i = this.connections.length; i--;) {
       this.snap.connection(this.connections[i]);
