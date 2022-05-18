@@ -64,11 +64,7 @@ function updateBlockPosition(blockGroup) {
 
   const coords = scalingBlockGroup.getBBox();
 
-  if (blockGroup.data('blockView').block.Type === 'Use-case') {
-    blockGroup.data('blockView').block.setCoords([Math.round(coords.cx), Math.round(coords.cy)]);
-  } else {
-    blockGroup.data('blockView').block.setCoords([Math.round(coords.x), Math.round(coords.y)]);
-  }
+  blockGroup.data('blockView').block.setCoords([Math.round(coords.x), Math.round(coords.y)]);
 
   blockGroup.data('blockView').block.setWidth(Math.round(coords.width));
   blockGroup.data('blockView').block.setHeight(Math.round(coords.height));

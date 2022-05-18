@@ -10,8 +10,13 @@
       },
       {
         "shape": "rect",
-        "textFieldsCnts": ["*","*"],
-        "textFieldsNames": ["Attributes", "Operations"]
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Attributes"]
+      },
+      {
+        "shape": "rect",
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Operations"]
       }
     ]
   },

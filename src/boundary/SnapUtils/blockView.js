@@ -60,9 +60,18 @@ export default class BlockView {
     let y = block.coords[1];
     const width = block.width;
     const height = this.block.height;
+    let fixedHeightSum = 0;
+    let fixedHeightNum = 0;
+    for (const element of elements) {
+      if (element.height != null) {
+        fixedHeightSum += element.height;
+        fixedHeightNum++;
+      }
+    }
+
     const svgParts = [];
     for (const element of elements) {
-      let currentElementHeight = Math.round(height / elements.length);
+      let currentElementHeight = Math.round((height - fixedHeightSum) / (elements.length - fixedHeightNum));
       if (element.height != null) {
         currentElementHeight = element.height;
       }
@@ -75,6 +84,8 @@ export default class BlockView {
         console.log('Couldn`t find shape', element);
       }
       const svgTexts = [];
+      let verticalOffset = 0;
+      // TODO This for isn`t needed more, it is better to delete it with array in config in future
       for (let i = 0; i < element.textFieldsCnts.length; i++) {
         const currName = element.textFieldsNames[i];
         if (element.textFieldsCnts[i] === 1) {
@@ -90,8 +101,8 @@ export default class BlockView {
           const fields = {
             currName: this.block.additionalFields[element.textFieldsNames[i]],
           };
-          const result = this.factory.svgCreate_TextFields(x, y, width, fields);
-          y += result.mydata_resultingOffset;
+          const result = this.factory.svgCreate_TextFields(x, y + verticalOffset, width, fields);
+          verticalOffset += result.mydata_resultingOffset;
           delete result.mydata_resultingOffset;
           svgTexts.push(result);
         } else {

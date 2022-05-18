@@ -19,6 +19,8 @@ export default class SvgBlockFactory {
         return this.svgPrimitive_Rectangle(x, y, w, h, color, stroke);
       case 'ellipse':
         return this.svgPrimitive_Ellipse(x, y, w, h);
+      case 'actor':
+        return this.svgCreate_Actor(x, y, w, h);
       default :
         console.log('Don`t know such primitive');
         return null;
@@ -33,6 +35,7 @@ export default class SvgBlockFactory {
     // eslint-disable-next-line global-require,import/no-dynamic-require
     const icon = require(`./assets/${filename}`);
     g.data('ot', g.transform().local);
+    // TODO Fix it... icon loads but too late
     Snap.load(icon, (data) => {
       g.append(data);
     });
@@ -98,7 +101,7 @@ export default class SvgBlockFactory {
         titleOffset += 15;
         g.append(valueTitle);
       }
-      titleOffset += 10;
+      //titleOffset += 10;
       g.mydata_resultingOffset = titleOffset;
     }
     return g;
