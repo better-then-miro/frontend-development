@@ -51,6 +51,17 @@ export function registerTextModifierCallback(callback) {
   });
 }
 
+export function registerModifierCallback(callback) {
+  socket.on('updatePropertiesHandler', (response) => {
+    if (response.code === 200) {
+      console.log('New properties arrived!');
+      callback(response);
+    } else {
+      console.log('Error occurred in updatePropertiesHandler, error code: ', response.code);
+    }
+  });
+}
+
 export function registerPositionModifierCallback(callback) {
   socket.on('updateBlockPositionPropertiesHandler', (response) => {
     if (response.code === 200) {

@@ -32,8 +32,16 @@ import DiagramUi from '../boundary/DiagramUI/DiagramUI';
 import SidePanel from '../boundary/SidePanel/SidePanel';
 import EditingPanel from '../boundary/EditingPanel';
 import {
-  createNewBlock, createNewLink, getDiagramContent, updateBlockAdditionalProperties,
-  deleteLink, deleteBlock, initSocketIo, updateBlockTitleProperty, updateBlockDescriptionProperty,
+  createNewBlock,
+  createNewLink,
+  getDiagramContent,
+  updateBlockAdditionalProperties,
+  deleteLink,
+  deleteBlock,
+  initSocketIo,
+  updateBlockTitleProperty,
+  updateBlockDescriptionProperty,
+  registerModifierCallback,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -68,6 +76,11 @@ export default {
     init() {
       initSocketIo();
       getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+      registerModifierCallback(this.someTestCallback);
+    },
+
+    someTestCallback(data) {
+      console.log('Test callback. Data:', data);
     },
 
     // Callback for socketIO on getDiagramContentHandler
