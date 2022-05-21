@@ -53,11 +53,7 @@ export const dragStop = function () {
   const coords = this.getBBox();
 
   let newCoords = [];
-  if (this.data('blockView').block.Type === 'Use-case') {
-    newCoords = [Math.round(coords.cx), Math.round(coords.cy)];
-  } else {
-    newCoords = [Math.round(coords.x), Math.round(coords.y)];
-  }
+  newCoords = [Math.round(coords.x), Math.round(coords.y)];
 
   this.data('blockView').block.setCoords(newCoords);
 

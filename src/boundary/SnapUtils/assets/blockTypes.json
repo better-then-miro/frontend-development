@@ -1,0 +1,45 @@
+[
+  {
+    "name" : "Class-default",
+    "elements": [
+      {
+        "shape": "rect",
+        "height": 30,
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      },
+      {
+        "shape": "rect",
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Attributes"]
+      },
+      {
+        "shape": "rect",
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Operations"]
+      }
+    ]
+  },
+  {
+    "name" : "Use-case",
+    "elements": [
+      {
+        "shape": "ellipse",
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      }
+    ]
+  },
+  {
+    "name" : "Actor",
+    "elements": [
+      {
+        "shape-svg": "actor.svg"
+      },
+      {
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      }
+    ]
+  }
+]

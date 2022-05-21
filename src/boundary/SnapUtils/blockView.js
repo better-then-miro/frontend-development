@@ -6,6 +6,7 @@ import { dragMove, dragStart, dragStop } from '../DiagramUI/drag';
 import { turnOnscaleMode, select } from '../DiagramUI/scale';
 import SvgBlockFactory from './svgBlockFactory';
 
+const templates = require('./assets/blockTypes.json');
 /**
  * Стоит использовать следующее соглашение на структуру объекта blockGroup, хранящего svg объект
  * Объект хранится ввиде группы, где на первом уровне индексации blockGroup[i] лежат части объекта
@@ -26,44 +27,23 @@ export default class BlockView {
     this.factory = new SvgBlockFactory(snap);
   }
 
-  redrawOnSnap(x = this.block.coords[0], y = this.block.coords[1],
-    width = this.block.width, height = this.block.height) {
+  redrawOnSnap(/*x = this.block.coords[0], y = this.block.coords[1],
+    width = this.block.width, height = this.block.height*/) {
     if (this.blockGroup != null) {
       this.blockGroup.remove();
     }
+    // eslint-disable-next-line no-console
+    console.log(this.block);
     this.blockGroup = this.snap.group();
-    // TODO переделать на примитивы все остальные случаи кроме класса
+    let template;
     if (this.block.Type === 'Class') {
-      // Constructing upper half of class block
-      // TODO решить что делать с высотой верхней части
-      const upperHeight = 30;
-      const upperRect = this.factory.svgPrimitive_Rectangle(x, y, width, upperHeight);
-      const blockTitle = this.factory.svgCreate_Title(
-        x + Math.round(width / 2),
-        y + Math.round(upperHeight / 2),
-        this.block.title);
-      const upperHalf = this.factory.svgConstruct(upperRect, blockTitle);
-      // Constructing lower half of class block
-      const lowerRect = this.factory.svgPrimitive_Rectangle(x, y + upperHeight, width, height - upperHeight);
-      const newFields = this.factory.svgCreate_BlockFields(x, y + upperHeight, width, height - upperHeight,
-        this.block.additionalFields);
-      const lowerHalf = this.factory.svgConstruct(lowerRect, newFields);
-
-      this.blockGroup = this.factory.svgConstruct(upperHalf, lowerHalf);
-    } else if (this.block.Type === 'Use-case') {
-      const newBlock = this.factory.svgPrimitive_EllipseCenter(x, y,
-        Math.round(width / 2), Math.round(height / 2));
-      const blockTitle = this.factory.svgCreate_Title(x, y, this.block.title);
-      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
-    } else if (this.block.Type === 'Actor') {
-      const newBlock = this.factory.svgCreate_Actor(x, y,
-        width, height);
-      const blockTitle = this.factory.svgCreate_Title(x + Math.round(width / 2), y + height + 10,
-        this.block.title);
-      this.blockGroup = this.factory.svgConstruct(newBlock, blockTitle);
+      if (this.block.additionalFields.stereotype === '' || this.block.additionalFields.stereotype == null) {
+        template = templates.filter(elem => elem.name === 'Class-default')[0];
+      } else { template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0]; }
+    } else {
+      template = templates.filter(elem => elem.name === this.block.title)[0];
     }
-
-    // eslint-disable-next-line no-plusplus
+    this.blockGroup = this.constructSVGBlock(template, this.block);
     for (let i = this.connections.length; i--;) {
       this.snap.connection(this.connections[i]);
     }
@@ -72,6 +52,69 @@ export default class BlockView {
     this.blockGroup.dblclick(turnOnscaleMode);
     this.blockGroup.click(select);
     this.blockGroup.data('blockView', this);
+  }
+
+  constructSVGBlock(template, block) {
+    const elements = template.elements;
+    const x = block.coords[0];
+    let y = block.coords[1];
+    const width = block.width;
+    const height = this.block.height;
+    let fixedHeightSum = 0;
+    let fixedHeightNum = 0;
+    for (const element of elements) {
+      if (element.height != null) {
+        fixedHeightSum += element.height;
+        fixedHeightNum++;
+      }
+    }
+
+    const svgParts = [];
+    for (const element of elements) {
+      let currentElementHeight = Math.round((height - fixedHeightSum) / (elements.length - fixedHeightNum));
+      if (element.height != null) {
+        currentElementHeight = element.height;
+      }
+      let svgPrimitive = null;
+      if (element.shape != null) {
+        svgPrimitive = this.factory.svgPrimitive_forName(element.shape, x, y, width, currentElementHeight);
+      } else if (element['shape-svg'] != null) {
+        svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg']);
+      } else {
+        console.log('Couldn`t find shape', element);
+      }
+      const svgTexts = [];
+      let verticalOffset = 0;
+      // TODO This for isn`t needed more, it is better to delete it with array in config in future
+      for (let i = 0; i < element.textFieldsCnts.length; i++) {
+        const currName = element.textFieldsNames[i];
+        if (element.textFieldsCnts[i] === 1) {
+          const x_center = x + (width / 2);
+          const y_center = y + (currentElementHeight / 2);
+
+          if (currName === '<title>') {
+            svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
+          } else {
+            svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.additionalFields[currName]));
+          }
+        } else if (element.textFieldsCnts[i] === '*') {
+          const fields = {
+            currName: this.block.additionalFields[element.textFieldsNames[i]],
+          };
+          const result = this.factory.svgCreate_TextFields(x, y + verticalOffset, width, fields);
+          verticalOffset += result.mydata_resultingOffset;
+          delete result.mydata_resultingOffset;
+          svgTexts.push(result);
+        } else {
+          console.log('Couldn`t understand field count type');
+        }
+      }
+      const svgTextsGroup = this.factory.svgConstruct(...svgTexts);
+      const svgElementGroup = this.factory.svgConstruct(svgPrimitive, svgTextsGroup);
+      svgParts.push(svgElementGroup);
+      y += currentElementHeight;
+    }
+    return this.factory.svgConstruct(...svgParts);
   }
 
   drawLinkPoints() {

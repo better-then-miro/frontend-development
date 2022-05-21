@@ -13,6 +13,41 @@ export default class SvgBlockFactory {
     this.snap = snap;
   }
 
+  svgPrimitive_forName(name, x, y, w, h, color = bgColor, stroke = 'black') {
+    switch (name) {
+      case 'rect':
+        return this.svgPrimitive_Rectangle(x, y, w, h, color, stroke);
+      case 'ellipse':
+        return this.svgPrimitive_Ellipse(x, y, w, h);
+      case 'actor':
+        return this.svgCreate_Actor(x, y, w, h);
+      default :
+        console.log('Don`t know such primitive');
+        return null;
+    }
+  }
+
+  /**
+   * Load svg figure as primitive (svg figure should have size 80x80)
+   */
+  svgPrimitive_fromFile(filename, x, y, w, h) {
+    const g = this.snap.group();
+    // eslint-disable-next-line global-require,import/no-dynamic-require
+    const icon = require(`./assets/${filename}`);
+    g.data('ot', g.transform().local);
+    // TODO Fix it... icon loads but too late
+    Snap.load(icon, (data) => {
+      g.append(data);
+    });
+
+    const t = new Snap.Matrix();
+    t.scale(w / 80, h / 80, x, y); // scale object
+    t.translate(x, y);
+    g.transform(t); // apply transformation to object
+
+    return g;
+  }
+
   svgPrimitive_Rectangle(x, y, w, h, color = bgColor, stroke = 'black') {
     const fig = this.snap.rect(x, y, w, h);
     fig.attr({ fill: color, stroke, strokeWidth: 1 });
@@ -25,12 +60,51 @@ export default class SvgBlockFactory {
     return g;
   }
 
-  svgCreate_Title(x_center, y_center, title) {
+  /*svgConstructFromArr(figures) {
+    const g = this.snap.group();
+    g.add(figures);
+    return g;
+  }*/
+
+  svgCreate_Titile(x_center, y_center, title) {
     return this.snap.text(
       x_center,
       y_center,
       title,
     ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+  }
+
+  svgCreate_TextFields(x, y, w, fields) {
+    let titleOffset = 15;
+    const g = this.snap.group();
+    g.attr({ 'font-size': '13px' });
+    for (const key in fields) {
+      const values = fields[key];
+      if (fields[key].length === 0) {
+        continue;
+      }
+
+      const keyTitle = this.snap.text(
+        x + Math.round(w / 2),
+        y + titleOffset,
+        key,
+      ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
+      titleOffset += 20;
+      g.append(keyTitle);
+
+      for (const valueIndex in values) {
+        const valueTitle = this.snap.text(
+          x + Math.round(w / 2),
+          y + titleOffset,
+          values[valueIndex],
+        ).attr({ dominantBaseline: 'start', textAnchor: 'middle' });
+        titleOffset += 15;
+        g.append(valueTitle);
+      }
+      //titleOffset += 10;
+      g.mydata_resultingOffset = titleOffset;
+    }
+    return g;
   }
 
   svgCreate_byType(type, x, y, w, h) {
@@ -86,7 +160,6 @@ export default class SvgBlockFactory {
     g.attr({ 'font-size': '13px' });
     for (const [key, values] of Object.entries(additionalFields)) {
       if (values.length === 0) {
-        // eslint-disable-next-line no-continue
         continue;
       }
 
@@ -99,7 +172,6 @@ export default class SvgBlockFactory {
           ).attr({ stroke: 'black', dominantBaseline: 'middle', textAnchor: 'middle' });
           g.append(keyTitle);
         }
-        // eslint-disable-next-line no-continue
         continue;
       }
 

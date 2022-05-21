@@ -2,8 +2,8 @@
   <div class="selection-entry" style="display:flex; flex-direction: column;"
         @click="select"
         v-bind:class="{ selected : isSelected }">
-    <svg :id="'svgID_' + blockType" class="blockSvg" height="60" width="60"></svg>
-    {{ blockType }}
+    <svg v-if="isBlock" :id="'svgID_' + objectType" class="blockSvg" height="60" width="60"></svg>
+    {{ objectType }}
   </div>
 </template>
 
@@ -14,7 +14,8 @@ import SvgBlockFactory from '../SnapUtils/svgBlockFactory';
 export default {
   name: 'SelectionEntry',
   props: {
-    blockType: String,
+    objectType: String,
+    isBlock: Boolean,
     selectedEntry: String,
   },
   emits: {
@@ -30,23 +31,25 @@ export default {
   },
 
   mounted() {
-    this.snap = Snap(`#svgID_${this.blockType}`);
-    this.snap.attr({ viewBox: '0 0 80 80' });
-    this.factory = new SvgBlockFactory(this.snap);
-    this.factory.svgCreate_byType(this.blockType, 0, 0, 80, 80);
+    if (this.isBlock) {
+      this.snap = Snap(`#svgID_${this.objectType}`);
+      this.snap.attr({ viewBox: '0 0 80 80' });
+      this.factory = new SvgBlockFactory(this.snap);
+      this.factory.svgCreate_byType(this.objectType, 0, 0, 80, 80);
+    }
   },
 
   methods: {
     select() {
       // eslint-disable-next-line no-console
-      console.log('Entry selected: ', this.blockType);
-      this.$emit('entry-selected', this.blockType);
+      console.log('Entry selected: ', this.objectType);
+      this.$emit('entry-selected', { objectType: this.objectType, isBlock: this.isBlock });
     },
   },
 
   computed: {
     isSelected() {
-      return this.blockType === this.selectedEntry;
+      return this.objectType === this.selectedEntry;
     },
   },
 

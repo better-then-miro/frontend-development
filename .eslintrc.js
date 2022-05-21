@@ -28,6 +28,9 @@ module.exports = {
     // fix \n, \r\n warnings
     "linebreak-style": 0,
     'spaced-comment': 0,
+    'no-plusplus': 0,
+    'no-continue': 0,
+    'no-console': 0,
     // don't require .vue extension when importing
     'import/extensions': ['error', 'always', {
       js: 'never',
