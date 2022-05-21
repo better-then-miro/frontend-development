@@ -79,7 +79,7 @@ export default class BlockView {
       if (element.shape != null) {
         svgPrimitive = this.factory.svgPrimitive_forName(element.shape, x, y, width, currentElementHeight);
       } else if (element['shape-svg'] != null) {
-        svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg']);
+        svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg'], x, y, width, currentElementHeight);
       } else {
         console.log('Couldn`t find shape', element);
       }
