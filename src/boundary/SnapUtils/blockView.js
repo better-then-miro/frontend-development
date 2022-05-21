@@ -93,7 +93,13 @@ export default class BlockView {
           const y_center = y + (currentElementHeight / 2);
 
           if (currName === '<title>') {
-            svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
+            if (template.name === 'Actor') {
+              // Actor's title should be under actor svg
+              const bottom_center = y + currentElementHeight;
+              svgTexts.push(this.factory.svgCreate_Titile(x_center, bottom_center + 10, block.title));
+            } else {
+              svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
+            }
           } else {
             svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.additionalFields[currName]));
           }
