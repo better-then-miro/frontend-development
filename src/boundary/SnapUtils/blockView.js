@@ -104,9 +104,8 @@ export default class BlockView {
             svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.additionalFields[currName]));
           }
         } else if (element.textFieldsCnts[i] === '*') {
-          const fields = {
-            currName: this.block.additionalFields[element.textFieldsNames[i]],
-          };
+          const fields = {};
+          fields[currName] = this.block.additionalFields[currName];
           const result = this.factory.svgCreate_TextFields(x, y + verticalOffset, width, fields);
           verticalOffset += result.mydata_resultingOffset;
           delete result.mydata_resultingOffset;
