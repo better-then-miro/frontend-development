@@ -81,6 +81,27 @@ export default {
 
     someTestCallback(data) {
       console.log('Test callback. Data:', data);
+      if (data.code !== 200) {
+        console.log('Error occurred in updatePropertiesHandler callback, error code: ', data.code);
+      }
+      this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
+        // console.log(block);
+        if (blockView.block.Id === data.Id) {
+          console.log('Block to modify:');
+          console.log(blockView);
+          if (data.coords !== undefined) {
+            blockView.block.setCoords(data.coords);
+          }
+          if (data.width !== undefined) {
+            blockView.block.setWidth(data.width);
+          }
+          if (data.width !== undefined) {
+            blockView.block.setHeight(data.height);
+          }
+
+          blockView.redrawOnSnap();
+        }
+      });
     },
 
     // Callback for socketIO on getDiagramContentHandler
