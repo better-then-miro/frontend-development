@@ -34,9 +34,7 @@
     "name" : "Actor",
     "elements": [
       {
-        "shape-svg": "actor.svg"
-      },
-      {
+        "shape-svg": "actor.svg",
         "textFieldsCnts": [1],
         "textFieldsNames" : ["<title>"]
       }
