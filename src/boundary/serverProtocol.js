@@ -7,6 +7,7 @@ import Project from '../entity/project';
 const ServerUrl = 'http://127.0.0.1:5000/';
 const axios = require('axios');
 
+let uId;
 let socket;
 export function initSocketIo() {
   socket = openSocket(`${ServerUrl}main`);
@@ -37,6 +38,17 @@ export function loadProjectsFromServer() {
       });
     });
   return projects;
+}
+
+export function registerUserOnServer() {
+  // axios.get(`${ServerUrl}registerUser`)
+  //   .then((response) => {
+  //     const data = response.data;
+  //     uId = data.uId;
+  //     console.log('User id = ', uId);
+  //   });
+  uId = 0;
+  console.log('User id = ', uId);
 }
 
 export function registerModifierCallback(callback) {
