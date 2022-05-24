@@ -39,18 +39,6 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function registerTextModifierCallback(callback) {
-  socket.on('updateBlockTextPropertiesHandler', (response) => {
-    if (response.code === 200) {
-      console.log('New text values:', response.bId,
-        response.title, response.description);
-      callback(response.bId, response.title, response.description);
-    } else {
-      console.log('Error occurred when registerTextModifierCallback, error code: ', response.code);
-    }
-  });
-}
-
 export function registerModifierCallback(callback) {
   socket.on('updatePropertiesHandler', (response) => {
     if (response.code === 200) {
@@ -62,43 +50,12 @@ export function registerModifierCallback(callback) {
   });
 }
 
-export function registerPositionModifierCallback(callback) {
-  socket.on('updateBlockPositionPropertiesHandler', (response) => {
-    if (response.code === 200) {
-      console.log('New position values:',
-        response.bId, response.coords,
-        response.width, response.height);
-      callback(response.bId, response.coords,
-        response.width, response.height);
-    } else {
-      console.log('Error occurred when registerPositionModifierCallback, error code: ', response.code);
-    }
-  });
-}
-
-export function registerAdditionalPropertiesModifierCallback(callback) {
-  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
-    if (response.code === 200) {
-      console.log('New addition properties values:', response.bId, response.additionalFields);
-      callback(response.bId, response.additionalFields);
-    } else {
-      console.log('Error occurred when registerAdditionalPropertiesModifierCallback, error code: ', response.code);
-    }
-  });
-}
-
 export function updateBlockTitleProperty(Id, title) {
   const properties = {
     Id,
     title,
   };
   console.log('Title property to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockTextPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -108,12 +65,6 @@ export function updateBlockDescriptionProperty(Id, description) {
     description,
   };
   console.log('Description property to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockTitlePropertyHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -125,12 +76,6 @@ export function updateBlockPositionProperties(Id, width, height, coords) {
     coords,
   };
   console.log('Position properties to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockPositionPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -140,12 +85,6 @@ export function updateBlockAdditionalProperties(Id, additionalFields) {
     additionalFields,
   };
   console.log('Additional properties to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 

@@ -80,15 +80,12 @@ export default {
     },
 
     someTestCallback(data) {
-      console.log('Test callback. Data:', data);
+      console.log('Callback. Data:', data);
       if (data.code !== 200) {
         console.log('Error occurred in updatePropertiesHandler callback, error code: ', data.code);
       }
       this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
-        // console.log(block);
         if (blockView.block.Id === data.Id) {
-          console.log('Block to modify:');
-          console.log(blockView);
           if (data.coords !== undefined) {
             blockView.block.setCoords(data.coords);
           }
@@ -97,6 +94,15 @@ export default {
           }
           if (data.width !== undefined) {
             blockView.block.setHeight(data.height);
+          }
+          if (data.title !== undefined) {
+            blockView.block.setTitle(data.title);
+          }
+          if (data.description !== undefined) {
+            blockView.block.setDescription(data.description);
+          }
+          if (data.additionalFields !== undefined) {
+            blockView.block.setAdditionalFields(data.additionalFields);
           }
 
           blockView.redrawOnSnap();
