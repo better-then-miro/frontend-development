@@ -34,14 +34,15 @@ export default class BlockView {
     }
     // eslint-disable-next-line no-console
     console.log(this.block);
+    console.log(`Stereotype: ${this.block.additionalFields.stereotype}`);
     this.blockGroup = this.snap.group();
     let template;
     if (this.block.Type === 'Class') {
-      if (this.block.additionalFields.stereotype === '' || this.block.additionalFields.stereotype == null) {
+      if (this.block.additionalFields.stereotype === '' || this.block.additionalFields.stereotype === undefined) {
         template = templates.filter(elem => elem.name === 'Class-default')[0];
       } else { template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0]; }
     } else {
-      template = templates.filter(elem => elem.name === this.block.title)[0];
+      template = templates.filter(elem => elem.name === this.block.Type)[0];
     }
     this.blockGroup = this.constructSVGBlock(template, this.block);
     for (let i = this.connections.length; i--;) {
