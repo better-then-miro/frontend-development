@@ -80,7 +80,7 @@ export default class SvgBlockFactory {
     g.attr({ 'font-size': '13px' });
     for (const key in fields) {
       const values = fields[key];
-      if (fields[key].length === 0) {
+      if (values === undefined) {
         continue;
       }
 

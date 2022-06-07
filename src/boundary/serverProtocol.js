@@ -7,6 +7,7 @@ import Project from '../entity/project';
 const ServerUrl = 'http://127.0.0.1:5000/';
 const axios = require('axios');
 
+let uId;
 let socket;
 export function initSocketIo() {
   socket = openSocket(`${ServerUrl}main`);
@@ -39,39 +40,55 @@ export function loadProjectsFromServer() {
   return projects;
 }
 
-export function registerTextModifierCallback(callback) {
-  socket.on('updateBlockTextPropertiesHandler', (response) => {
+export function registerUserOnServer() {
+  // axios.get(`${ServerUrl}registerUser`)
+  //   .then((response) => {
+  //     const data = response.data;
+  //     uId = data.uId;
+  //     console.log('User id = ', uId);
+  //   });
+  uId = 0;
+  console.log('User id = ', uId);
+}
+
+export function registerModifierCallback(callback) {
+  socket.on('updatePropertiesHandler', (response) => {
     if (response.code === 200) {
-      console.log('New text values:', response.bId,
-        response.title, response.description);
-      callback(response.bId, response.title, response.description);
+      console.log('New properties arrived!');
+      callback(response);
     } else {
-      console.log('Error occurred when registerTextModifierCallback, error code: ', response.code);
+      console.log('Error occurred in updatePropertiesHandler, error code: ', response.code);
     }
   });
 }
 
-export function registerPositionModifierCallback(callback) {
-  socket.on('updateBlockPositionPropertiesHandler', (response) => {
+export function registerAddNewLinkCallback(callback) {
+  socket.on('spawnNewLinkHandler', (response) => {
+    callback(response);
+  });
+}
+
+export function registerAddNewBlockCallback(callback) {
+  socket.on('spawnNewBlockHandler', (response) => {
+    callback(response);
+  });
+}
+
+
+export function registerDeleteBlockCallback(callback) {
+  socket.on('deleteBlockHandler', (response) => {
     if (response.code === 200) {
-      console.log('New position values:',
-        response.bId, response.coords,
-        response.width, response.height);
-      callback(response.bId, response.coords,
-        response.width, response.height);
-    } else {
-      console.log('Error occurred when registerPositionModifierCallback, error code: ', response.code);
+      console.log('Delete block arrived!');
+      callback(response);
     }
   });
 }
 
-export function registerAdditionalPropertiesModifierCallback(callback) {
-  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
+export function registerDeleteLinkCallback(callback) {
+  socket.on('deleteLinkHandler', (response) => {
     if (response.code === 200) {
-      console.log('New addition properties values:', response.bId, response.additionalFields);
-      callback(response.bId, response.additionalFields);
-    } else {
-      console.log('Error occurred when registerAdditionalPropertiesModifierCallback, error code: ', response.code);
+      console.log('Delete link arrived!');
+      callback(response);
     }
   });
 }
@@ -82,12 +99,6 @@ export function updateBlockTitleProperty(Id, title) {
     title,
   };
   console.log('Title property to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockTextPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -97,12 +108,6 @@ export function updateBlockDescriptionProperty(Id, description) {
     description,
   };
   console.log('Description property to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockTitlePropertyHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -114,12 +119,6 @@ export function updateBlockPositionProperties(Id, width, height, coords) {
     coords,
   };
   console.log('Position properties to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockPositionPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -129,12 +128,6 @@ export function updateBlockAdditionalProperties(Id, additionalFields) {
     additionalFields,
   };
   console.log('Additional properties to update: ', properties);
-  // Handler just to check if error occurred
-  socket.on('updateBlockAdditionalPropertiesHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when updating properties, error code: ', response.code);
-    }
-  });
   socket.emit('updateBlockProperties', properties);
 }
 
@@ -155,12 +148,12 @@ export function createNewDiagram(properties) {
     .then(response => response.data.dId);
 }
 
-export async function createNewBlock(properties, addNewBlockHandler) {
+export async function createNewBlock(properties) {
   console.log('New block properties: ', properties);
 
   socket.on('createNewBlockHandler', (response) => {
     if (response.code === 200) {
-      addNewBlockHandler(response.bId);
+      console.log('Server accepted block creation request');
     } else {
       console.log('Error occurred when creating block, error code: ', response.code);
     }
@@ -168,11 +161,11 @@ export async function createNewBlock(properties, addNewBlockHandler) {
   socket.emit('createNewBlock', properties);
 }
 
-export function createNewLink(properties, addNewLinkCallback) {
+export function createNewLink(properties) {
   console.log('New link properties: ', properties);
   socket.on('createNewLinkHandler', (response) => {
     if (response.code === 200) {
-      addNewLinkCallback(response.lId);
+      console.log('Server accepted link creation request');
     } else {
       console.log('Error occurred when creating link, error code: ', response.code);
     }
@@ -182,11 +175,11 @@ export function createNewLink(properties, addNewLinkCallback) {
 
 export function deleteLink(linkId) {
   console.log('Deleting link: ', linkId);
-  socket.on('deleteLinkHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when deleting link, error code: ', response.code);
-    }
-  });
+  // socket.on('deleteLinkHandler', (response) => {
+  //   if (response.code !== 200) {
+  //     console.log('Error occurred when deleting link, error code: ', response.code);
+  //   }
+  // });
   socket.emit('deleteLink', { Id: linkId });
 }
 

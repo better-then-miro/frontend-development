@@ -34,14 +34,18 @@ export default class BlockView {
     }
     // eslint-disable-next-line no-console
     console.log(this.block);
+    // console.log(`Stereotype: ${this.block.additionalFields.stereotype}`);
     this.blockGroup = this.snap.group();
     let template;
     if (this.block.Type === 'Class') {
-      if (this.block.additionalFields.stereotype === '' || this.block.additionalFields.stereotype == null) {
+      if (this.block.additionalFields.stereotype === undefined ||
+        this.block.additionalFields.stereotype === '') {
         template = templates.filter(elem => elem.name === 'Class-default')[0];
-      } else { template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0]; }
+      } else {
+        template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0];
+      }
     } else {
-      template = templates.filter(elem => elem.name === this.block.title)[0];
+      template = templates.filter(elem => elem.name === this.block.Type)[0];
     }
     this.blockGroup = this.constructSVGBlock(template, this.block);
     for (let i = this.connections.length; i--;) {
@@ -79,7 +83,7 @@ export default class BlockView {
       if (element.shape != null) {
         svgPrimitive = this.factory.svgPrimitive_forName(element.shape, x, y, width, currentElementHeight);
       } else if (element['shape-svg'] != null) {
-        svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg']);
+        svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg'], x, y, width, currentElementHeight);
       } else {
         console.log('Couldn`t find shape', element);
       }
@@ -93,14 +97,19 @@ export default class BlockView {
           const y_center = y + (currentElementHeight / 2);
 
           if (currName === '<title>') {
-            svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
+            if (template.name === 'Actor') {
+              // Actor's title should be under actor svg
+              const bottom_center = y + currentElementHeight;
+              svgTexts.push(this.factory.svgCreate_Titile(x_center, bottom_center + 10, block.title));
+            } else {
+              svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
+            }
           } else {
             svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.additionalFields[currName]));
           }
         } else if (element.textFieldsCnts[i] === '*') {
-          const fields = {
-            currName: this.block.additionalFields[element.textFieldsNames[i]],
-          };
+          const fields = {};
+          fields[currName] = this.block.additionalFields[currName];
           const result = this.factory.svgCreate_TextFields(x, y + verticalOffset, width, fields);
           verticalOffset += result.mydata_resultingOffset;
           delete result.mydata_resultingOffset;

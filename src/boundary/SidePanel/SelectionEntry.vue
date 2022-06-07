@@ -1,5 +1,6 @@
 <template>
-  <div class="selection-entry" style="display:flex; flex-direction: column;"
+  <div class="selection-entry" style="display:flex; flex-direction: column;
+        border: 1px solid black;"
         @click="select"
         v-bind:class="{ selected : isSelected }">
     <svg v-if="isBlock" :id="'svgID_' + objectType" class="blockSvg" height="60" width="60"></svg>
@@ -59,6 +60,7 @@ export default {
 <style scoped>
 .selection-entry{
   margin: 2px;
+  padding: 5px;
 }
 .blockSvg{
   margin: 4px;

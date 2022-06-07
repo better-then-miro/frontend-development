@@ -93,10 +93,13 @@ export default {
           this.$emit('block-view-selected', this.selectedBlockView);
           if (this.isLinkAddMode) {
             if (this.linkSourceBlock != null && this.linkSourceBlock.block.Id !== sel.block.Id) {
+              console.log('ready-add-new-link');
               this.$emit('ready-add-new-link',
                 { sourceID: this.linkSourceBlock.block.Id, targetID: sel.block.Id });
             } else {
               this.linkSourceBlock = sel;
+              console.log('first tap');
+              console.log(this.linkSourceBlock);
             }
           } else {
             this.linkSourceBlock = null;
@@ -120,13 +123,9 @@ export default {
       }
     },
 
-    drawNewLink(linkType, linkId) {
+    drawNewLink(linkType, linkId, sId, tId) {
       console.log('Drawing new link');
-      if (sel == null || this.linkSourceBlock == null) {
-        console.log('Error drawing new link');
-        return;
-      }
-      const newLink = this.snap.connection(this.linkSourceBlock, sel, linkId, linkType);
+      const newLink = this.snap.connection(sId, tId, linkId, linkType);
       newLink.line.click(selectLink);
       this.snapLinks.push(newLink);
       this.linkSourceBlock = null;

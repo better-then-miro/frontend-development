@@ -125,6 +125,7 @@ import {
   createNewProject,
   loadDiagramsFromServer,
   loadProjectsFromServer,
+  registerUserOnServer,
 } from './boundary/serverProtocol';
 import Project from './entity/project';
 import Diagram from './entity/diagram';
@@ -150,6 +151,7 @@ export default {
   },
 
   mounted() {
+    registerUserOnServer();
     this.projects = loadProjectsFromServer();
   },
 

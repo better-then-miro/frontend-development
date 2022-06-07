@@ -31,6 +31,14 @@ export default class Block {
     }
   }
 
+  setTitle(title) {
+    this.title = title;
+  }
+
+  setDescription(description) {
+    this.description = description;
+  }
+
   setCoords(coords) {
     this.coords = coords;
   }
@@ -41,6 +49,10 @@ export default class Block {
 
   setHeight(height) {
     this.height = height;
+  }
+
+  setAdditionalFields(fields) {
+    this.additionalFields = fields;
   }
 
   addAttribute(attrContent) {
