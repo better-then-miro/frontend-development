@@ -2,16 +2,16 @@
   {
     "type" : "free",
     "blocks": ["Class", "Use-case", "Actor"],
-    "links": ["Association", "Assocoation(Bidirectional)", "Dependency"]
+    "links": ["Association", "Association(Bidirectional)", "Dependency"]
   },
   {
     "type" : "use-case",
     "blocks": ["Use-case", "Actor"],
-    "links": ["Association", "Assocoation(Bidirectional)", "Dependency"]
+    "links": ["Association", "Association(Bidirectional)", "Dependency"]
   },
   {
     "type" : "class",
     "blocks": ["Class"],
-    "links": ["Association", "Assocoation(Bidirectional)", "Dependency"]
+    "links": ["Association", "Association(Bidirectional)", "Dependency"]
   }
 ]

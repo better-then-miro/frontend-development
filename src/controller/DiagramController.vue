@@ -41,7 +41,8 @@ import {
   initSocketIo,
   updateBlockTitleProperty,
   updateBlockDescriptionProperty,
-  registerModifierCallback, registerDeleteBlockCallback, registerAddNewLinkCallback,
+  registerModifierCallback, registerDeleteBlockCallback,
+  registerAddNewLinkCallback, registerAddNewBlockCallback, registerDeleteLinkCallback,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -78,7 +79,9 @@ export default {
       getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
       registerModifierCallback(this.blockModifierCallback);
       registerDeleteBlockCallback(this.blockDeleteCallback);
+      registerDeleteLinkCallback(this.deleteLinkCallback);
       registerAddNewLinkCallback(this.addNewLinkHandler);
+      registerAddNewBlockCallback(this.addNewBlockHandler);
     },
 
     blockModifierCallback(data) {
@@ -113,7 +116,6 @@ export default {
     },
 
     blockDeleteCallback(data) {
-      console.log(data);
       let blockToDelete;
       this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
         if (blockView.block.Id === data.bId) {
@@ -145,6 +147,17 @@ export default {
       this.selectedBlockView = null;
     },
 
+    deleteLinkCallback(data) {
+      let linkToDelete;
+      this.$refs.diagramUI.snapLinks.forEach((link) => {
+        console.log(link);
+        if (link.lId === data.lId) {
+          linkToDelete = link;
+        }
+      });
+      if (linkToDelete !== undefined) { this.deleteLinkFromSnap(linkToDelete, false); }
+    },
+
     // Callback for socketIO on getDiagramContentHandler
     loadDiagramContent(data) {
       console.log('Diagram content ', data);
@@ -171,16 +184,16 @@ export default {
         title: fields.title,
       };
 
-      createNewBlock(this.newBlockProperties, this.addNewBlockHandler);
+      createNewBlock(this.newBlockProperties);
     },
 
     // Handler when server returns block ID
-    addNewBlockHandler(blockId) {
-      console.log('New block ID:', blockId);
-      const newBlock = new Block(blockId, this.newBlockProperties.Type,
-        this.newBlockProperties.coords[0], this.newBlockProperties.coords[1],
-        this.newBlockProperties.width, this.newBlockProperties.height,
-        this.newBlockProperties.title);
+    addNewBlockHandler(blockData) {
+      console.log('New block ID:', blockData.Id);
+      const newBlock = new Block(blockData.Id, blockData.Type,
+        blockData.coords[0], blockData.coords[1],
+        blockData.width, blockData.height,
+        blockData.title);
       this.currentDiagram.blocks.push(newBlock);
       this.$refs.diagramUI.drawNewBlock(newBlock);
       this.newBlockProperties = null;

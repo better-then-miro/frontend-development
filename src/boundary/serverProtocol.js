@@ -68,11 +68,26 @@ export function registerAddNewLinkCallback(callback) {
   });
 }
 
+export function registerAddNewBlockCallback(callback) {
+  socket.on('spawnNewBlockHandler', (response) => {
+    callback(response);
+  });
+}
+
 
 export function registerDeleteBlockCallback(callback) {
   socket.on('deleteBlockHandler', (response) => {
     if (response.code === 200) {
       console.log('Delete block arrived!');
+      callback(response);
+    }
+  });
+}
+
+export function registerDeleteLinkCallback(callback) {
+  socket.on('deleteLinkHandler', (response) => {
+    if (response.code === 200) {
+      console.log('Delete link arrived!');
       callback(response);
     }
   });
@@ -133,12 +148,12 @@ export function createNewDiagram(properties) {
     .then(response => response.data.dId);
 }
 
-export async function createNewBlock(properties, addNewBlockHandler) {
+export async function createNewBlock(properties) {
   console.log('New block properties: ', properties);
 
   socket.on('createNewBlockHandler', (response) => {
     if (response.code === 200) {
-      addNewBlockHandler(response.bId);
+      console.log('Server accepted block creation request');
     } else {
       console.log('Error occurred when creating block, error code: ', response.code);
     }
@@ -160,11 +175,11 @@ export function createNewLink(properties) {
 
 export function deleteLink(linkId) {
   console.log('Deleting link: ', linkId);
-  socket.on('deleteLinkHandler', (response) => {
-    if (response.code !== 200) {
-      console.log('Error occurred when deleting link, error code: ', response.code);
-    }
-  });
+  // socket.on('deleteLinkHandler', (response) => {
+  //   if (response.code !== 200) {
+  //     console.log('Error occurred when deleting link, error code: ', response.code);
+  //   }
+  // });
   socket.emit('deleteLink', { Id: linkId });
 }
 
