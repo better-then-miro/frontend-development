@@ -41,7 +41,7 @@ import {
   initSocketIo,
   updateBlockTitleProperty,
   updateBlockDescriptionProperty,
-  registerModifierCallback, registerDeleteBlockCallback,
+  registerModifierCallback, registerDeleteBlockCallback, registerAddNewLinkCallback,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -78,6 +78,7 @@ export default {
       getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
       registerModifierCallback(this.blockModifierCallback);
       registerDeleteBlockCallback(this.blockDeleteCallback);
+      registerAddNewLinkCallback(this.addNewLinkHandler);
     },
 
     blockModifierCallback(data) {
@@ -206,31 +207,6 @@ export default {
     deleteBlockFromSnap(parameters) {
       const blockId = parameters.blockToDelete.block.Id;
       deleteBlock(blockId);
-      // this.selectedBlockView = null;
-      // this.selectedLink = null;
-      // const blockToDelete = parameters.blockToDelete;
-      // blockToDelete.removeLinkPoints();
-      // blockToDelete.blockGroup.remove();
-      //
-      // const blockId = blockToDelete.block.Id;
-      // const linksToRemove = [];
-      // this.$refs.diagramUI.snapLinks.forEach((link) => {
-      //   const fromBlockID = link.from.block.Id;
-      //   const toBlockID = link.to.block.Id;
-      //   if ((fromBlockID === blockId) || (toBlockID === blockId)) {
-      //     linksToRemove.push(link);
-      //   }
-      // });
-      //
-      // linksToRemove.forEach((link) => {
-      //   this.deleteLinkFromSnap(link, false);
-      // });
-      //
-      // // deleteBlock(blockId);
-      //
-      // const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
-      // this.$refs.diagramUI.snapBlocks.splice(index, 1);
-      // this.selectedBlockView = null;
     },
 
     redrawDiagramUI() {
@@ -264,15 +240,26 @@ export default {
       console.log('Creating new link');
       // making request to the server
       this.newLinkProperties = properties;
-      createNewLink(properties, this.addNewLinkHandler);
+      createNewLink(properties);
     },
     // Handler when server returns link ID
-    addNewLinkHandler(linkId) {
-      console.log('New Link ID:', linkId);
-      const newLink = new Link(linkId, this.newLinkProperties.Type,
-        this.newLinkProperties.sId, this.newLinkProperties.tId);
+    addNewLinkHandler(linkData) {
+      console.log('New Link ID:', linkData.Id);
+      const newLink = new Link(linkData.Id, linkData.Type,
+        linkData.sId, linkData.tId);
+
+      let sourceView;
+      let targetView;
+      this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
+        if (blockView.block.Id === linkData.sId) {
+          sourceView = blockView;
+        }
+        if (blockView.block.Id === linkData.tId) {
+          targetView = blockView;
+        }
+      });
       this.currentDiagram.links.push(newLink);
-      this.$refs.diagramUI.drawNewLink(this.newLinkProperties.Type, linkId);
+      this.$refs.diagramUI.drawNewLink(linkData.Type, linkData.Id, sourceView, targetView);
       this.$refs.sidePanel.clear();
       this.newLinkProperties = null;
     },

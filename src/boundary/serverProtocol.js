@@ -62,6 +62,13 @@ export function registerModifierCallback(callback) {
   });
 }
 
+export function registerAddNewLinkCallback(callback) {
+  socket.on('spawnNewLinkHandler', (response) => {
+    callback(response);
+  });
+}
+
+
 export function registerDeleteBlockCallback(callback) {
   socket.on('deleteBlockHandler', (response) => {
     if (response.code === 200) {
@@ -139,11 +146,11 @@ export async function createNewBlock(properties, addNewBlockHandler) {
   socket.emit('createNewBlock', properties);
 }
 
-export function createNewLink(properties, addNewLinkCallback) {
+export function createNewLink(properties) {
   console.log('New link properties: ', properties);
   socket.on('createNewLinkHandler', (response) => {
     if (response.code === 200) {
-      addNewLinkCallback(response.lId);
+      console.log('Server accepted link creation request');
     } else {
       console.log('Error occurred when creating link, error code: ', response.code);
     }

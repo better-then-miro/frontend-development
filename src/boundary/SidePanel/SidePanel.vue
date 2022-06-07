@@ -23,11 +23,11 @@
                        v-bind:key="type"/>
     </div>
     <div style="display:flex; flex-direction: row;">
-      <button v-if="isLinkAddMode" type="button"
+      <button v-if="!isLinkAddMode" type="button"
               class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
         Enable link mode
       </button>
-      <button v-if="!isLinkAddMode" type="button"
+      <button v-if="isLinkAddMode" type="button"
               class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
         Disable link mode
       </button>
