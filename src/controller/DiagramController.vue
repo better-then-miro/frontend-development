@@ -41,7 +41,7 @@ import {
   initSocketIo,
   updateBlockTitleProperty,
   updateBlockDescriptionProperty,
-  registerModifierCallback,
+  registerModifierCallback, registerDeleteBlockCallback,
 } from '../boundary/serverProtocol';
 import Block from '../entity/block';
 import Link from '../entity/link';
@@ -76,11 +76,12 @@ export default {
     init() {
       initSocketIo();
       getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
-      registerModifierCallback(this.someTestCallback);
+      registerModifierCallback(this.blockModifierCallback);
+      registerDeleteBlockCallback(this.blockDeleteCallback);
     },
 
-    someTestCallback(data) {
-      console.log('Callback. Data:', data);
+    blockModifierCallback(data) {
+      console.log('blockModifierCallback. Data:', data);
       if (data.code !== 200) {
         console.log('Error occurred in updatePropertiesHandler callback, error code: ', data.code);
       }
@@ -108,6 +109,39 @@ export default {
           blockView.redrawOnSnap();
         }
       });
+    },
+
+    blockDeleteCallback(data) {
+      console.log(data);
+      let blockToDelete;
+      this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
+        if (blockView.block.Id === data.bId) {
+          blockToDelete = blockView;
+        }
+      });
+
+      this.selectedBlockView = null;
+      this.selectedLink = null;
+      blockToDelete.removeLinkPoints();
+      blockToDelete.blockGroup.remove();
+
+      const blockId = blockToDelete.block.Id;
+      const linksToRemove = [];
+      this.$refs.diagramUI.snapLinks.forEach((link) => {
+        const fromBlockID = link.from.block.Id;
+        const toBlockID = link.to.block.Id;
+        if ((fromBlockID === blockId) || (toBlockID === blockId)) {
+          linksToRemove.push(link);
+        }
+      });
+
+      linksToRemove.forEach((link) => {
+        this.deleteLinkFromSnap(link, false);
+      });
+
+      const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
+      this.$refs.diagramUI.snapBlocks.splice(index, 1);
+      this.selectedBlockView = null;
     },
 
     // Callback for socketIO on getDiagramContentHandler
@@ -170,31 +204,33 @@ export default {
     },
 
     deleteBlockFromSnap(parameters) {
-      this.selectedBlockView = null;
-      this.selectedLink = null;
-      const blockToDelete = parameters.blockToDelete;
-      blockToDelete.removeLinkPoints();
-      blockToDelete.blockGroup.remove();
-
-      const blockId = blockToDelete.block.Id;
-      const linksToRemove = [];
-      this.$refs.diagramUI.snapLinks.forEach((link) => {
-        const fromBlockID = link.from.block.Id;
-        const toBlockID = link.to.block.Id;
-        if ((fromBlockID === blockId) || (toBlockID === blockId)) {
-          linksToRemove.push(link);
-        }
-      });
-
-      linksToRemove.forEach((link) => {
-        this.deleteLinkFromSnap(link, false);
-      });
-
+      const blockId = parameters.blockToDelete.block.Id;
       deleteBlock(blockId);
-
-      const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
-      this.$refs.diagramUI.snapBlocks.splice(index, 1);
-      this.selectedBlockView = null;
+      // this.selectedBlockView = null;
+      // this.selectedLink = null;
+      // const blockToDelete = parameters.blockToDelete;
+      // blockToDelete.removeLinkPoints();
+      // blockToDelete.blockGroup.remove();
+      //
+      // const blockId = blockToDelete.block.Id;
+      // const linksToRemove = [];
+      // this.$refs.diagramUI.snapLinks.forEach((link) => {
+      //   const fromBlockID = link.from.block.Id;
+      //   const toBlockID = link.to.block.Id;
+      //   if ((fromBlockID === blockId) || (toBlockID === blockId)) {
+      //     linksToRemove.push(link);
+      //   }
+      // });
+      //
+      // linksToRemove.forEach((link) => {
+      //   this.deleteLinkFromSnap(link, false);
+      // });
+      //
+      // // deleteBlock(blockId);
+      //
+      // const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
+      // this.$refs.diagramUI.snapBlocks.splice(index, 1);
+      // this.selectedBlockView = null;
     },
 
     redrawDiagramUI() {
@@ -270,8 +306,9 @@ export default {
         this.selectedBlockView.block.description = data.description;
       }
 
+      console.log('New add fields', data.additionalFields);
       updateBlockAdditionalProperties(this.selectedBlockView.block.Id,
-        this.selectedBlockView.block.additionalFields);
+        data.additionalFields);
       // Later this modification will happen in the handler
       this.selectedBlockView.block.additionalFields = data.additionalFields;
 

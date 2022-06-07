@@ -12,7 +12,7 @@
           Name:
       </h3>
       <input id="selectedBlockTitle" ref="blockTitle"
-          style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+          style="padding-left:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
           type="text" placeholder="Enter block title"
           name="blockTitle" :value=selectedBlockView.block.title>
 
@@ -21,7 +21,7 @@
           Description:
       </h3>
       <input id="selectedBlockDescription" ref="blockDescription"
-          style="padding:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
+          style="padding-left:15px; padding-top:5px; margin-bottom:5px; font-size:17px;"
           type="text" placeholder="Enter block description"
           name="blockDescription" :value=selectedBlockView.block.description>
 
@@ -75,7 +75,7 @@
           </div>
         </div>
       </div>
-      <button class="btn btn-1" style="margin-left: 20px" v-on:click="apply(false)">
+      <button class="btn btn-1" style="margin-left: 20px" v-on:click="apply('')">
         Apply Changes
       </button>
       <button class="btn btn-1"
@@ -151,7 +151,7 @@ export default {
       }
     },
 
-    apply(addNewItem = false) {
+    apply(newItemKey = '') {
       const newAdditionFieldsDict = {};
       if (this.selectedBlockView.block.additionalFields !== null) {
         const oldKeys = Object.keys(this.selectedBlockView.block.additionalFields);
@@ -162,47 +162,33 @@ export default {
         const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
 
         additionalFieldInputs.forEach((fieldInput) => {
-          if (fieldInput.id in newAdditionFieldsDict === false) {
+          if (!(fieldInput.id in newAdditionFieldsDict)) {
             newAdditionFieldsDict[fieldInput.id] = [];
           }
 
-          if (addNewItem || (fieldInput.value !== '')) {
+          if (fieldInput.value !== '') {
             newAdditionFieldsDict[fieldInput.id].push(fieldInput.value);
           }
         });
+        if (newItemKey !== '') { newAdditionFieldsDict[newItemKey].push('Value'); }
 
         if (this.selectedBlockView.block.additionalFields.stereotype) {
           newAdditionFieldsDict.stereotype = this.selectedStereotype;
         }
       }
       // TODO work with SVG should be only in DiagramUI
-      this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;
+      // this.selectedBlockView.blockGroup[1].node.textContent = this.$refs.blockTitle.value;
+      // if (sendChanges) {
       this.$emit('apply-changes', {
         additionalFields: newAdditionFieldsDict,
         title: this.$refs.blockTitle.value,
         description: this.$refs.blockDescription.value,
       });
+      // }
     },
 
     addNewItem(itemType) {
-      this.apply(true);
-      let addingAllowed = true;
-      const additionalFieldInputs = this.$refs.additionalFieldsSection.querySelectorAll('input');
-      additionalFieldInputs.forEach((fieldInput) => {
-        if (fieldInput.id === itemType && fieldInput.value === '') {
-          addingAllowed = false;
-        }
-      });
-
-      if (addingAllowed) {
-        // TODO is it OK to let this boundary edit entities? probably not...
-        if (this.selectedBlockView.block.additionalFields !== null) {
-          if (itemType in this.selectedBlockView.block.additionalFields === false) {
-            this.selectedBlockView.block.additionalFields[itemType] = [];
-          }
-          this.selectedBlockView.block.additionalFields[itemType].push('');
-        }
-      }
+      this.apply(itemType);
     },
 
     deleteItem(attributeKey, attributeValue) {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 300px">
     <input id="blockTitle" type="text" placeholder="Enter block title"
            name="blockTitle" v-model="blockTitle">
     <div class="selection-grid" style="display:flex; flex-direction: row;">
@@ -9,21 +9,27 @@
                        v-bind:selected-entry="blockType"
                        v-on:entry-selected="changeSelected"
                        v-bind:key="type"/>
-      <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="addNewBlock()">
-        Add new block
-      </button>
     </div>
+    <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="addNewBlock()">
+      Add new block
+    </button>
 
-    <div class="selection-grid" style="display:flex; flex-direction: row;">
+    <div class="selection-grid" style="display:flex; flex-direction: column;">
       <selection-entry v-for="type in supportedLinkTypes"
                        v-bind:object-type="type"
                        v-bind:is-block="false"
                        v-bind:selected-entry="linkType"
                        v-on:entry-selected="changeSelected"
                        v-bind:key="type"/>
-      <h3 v-if="isLinkAddMode" style="margin: 5px">Link mode</h3>
-      <button type="button" class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
-        Toggle link mode
+    </div>
+    <div style="display:flex; flex-direction: row;">
+      <button v-if="isLinkAddMode" type="button"
+              class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
+        Enable link mode
+      </button>
+      <button v-if="!isLinkAddMode" type="button"
+              class="btn icon-plus sidePanelBtn" v-on:click="toggleLinkMode()">
+        Disable link mode
       </button>
     </div>
   </div>

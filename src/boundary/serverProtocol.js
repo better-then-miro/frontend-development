@@ -62,6 +62,15 @@ export function registerModifierCallback(callback) {
   });
 }
 
+export function registerDeleteBlockCallback(callback) {
+  socket.on('deleteBlockHandler', (response) => {
+    if (response.code === 200) {
+      console.log('Delete block arrived!');
+      callback(response);
+    }
+  });
+}
+
 export function updateBlockTitleProperty(Id, title) {
   const properties = {
     Id,
