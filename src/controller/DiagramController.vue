@@ -66,6 +66,7 @@ export default {
       selectedLink: null,
       newBlockProperties: null,
       newLinkProperties: null,
+      versionNo: null,
     };
   },
 
@@ -86,8 +87,13 @@ export default {
 
     blockModifierCallback(data) {
       console.log('blockModifierCallback. Data:', data);
-      if (data.code !== 200) {
-        console.log('Error occurred in updatePropertiesHandler callback, error code: ', data.code);
+      if (data.code != null && data.code !== 200) {
+        console.log('Error occurred in blockModifierCallback, error code: ', data.code);
+        return;
+      }
+      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+        getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+        return;
       }
       this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
         if (blockView.block.Id === data.Id) {
@@ -113,9 +119,21 @@ export default {
           blockView.redrawOnSnap();
         }
       });
+
+      if (data.version != null) {
+        this.versionNo = data.version;
+      }
     },
 
     blockDeleteCallback(data) {
+      if (data.code != null && data.code !== 200) {
+        console.log('Error occurred in blockDeleteCallback, error code: ', data.code);
+        return;
+      }
+      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+        getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+        return;
+      }
       let blockToDelete;
       this.$refs.diagramUI.snapBlocks.forEach((blockView) => {
         if (blockView.block.Id === data.bId) {
@@ -145,9 +163,21 @@ export default {
       const index = this.$refs.diagramUI.snapBlocks.indexOf(blockToDelete);
       this.$refs.diagramUI.snapBlocks.splice(index, 1);
       this.selectedBlockView = null;
+
+      if (data.version != null) {
+        this.versionNo = data.version;
+      }
     },
 
     deleteLinkCallback(data) {
+      if (data.code != null && data.code !== 200) {
+        console.log('Error occurred in deleteLinkCallback, error code: ', data.code);
+        return;
+      }
+      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+        getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+        return;
+      }
       let linkToDelete;
       this.$refs.diagramUI.snapLinks.forEach((link) => {
         console.log(link);
@@ -156,10 +186,20 @@ export default {
         }
       });
       if (linkToDelete !== undefined) { this.deleteLinkFromSnap(linkToDelete, false); }
+      if (data.version != null) {
+        this.versionNo = data.version;
+      }
     },
 
     // Callback for socketIO on getDiagramContentHandler
     loadDiagramContent(data) {
+      if (data.code != null && data.code !== 200) {
+        console.log('Error occurred in loadDiagramContent callback, error code: ', data.code);
+        return;
+      }
+      if (data.version != null) {
+        this.versionNo = data.version;
+      }
       console.log('Diagram content ', data);
       data.blocks.forEach((block) => {
         this.currentDiagram.blocks.push(new Block(block.Id, block.Type,
@@ -189,6 +229,10 @@ export default {
 
     // Handler when server returns block ID
     addNewBlockHandler(blockData) {
+      if (blockData.version != null && Math.abs(blockData.version - this.versionNo)) {
+        getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+        return;
+      }
       console.log('New block ID:', blockData.Id);
       const newBlock = new Block(blockData.Id, blockData.Type,
         blockData.coords[0], blockData.coords[1],
@@ -197,6 +241,9 @@ export default {
       this.currentDiagram.blocks.push(newBlock);
       this.$refs.diagramUI.drawNewBlock(newBlock);
       this.newBlockProperties = null;
+      if (blockData.version != null) {
+        this.versionNo = blockData.version;
+      }
     },
 
     deleteLinkFromSnap(linkToDelete, deleteFromServer = true) {
@@ -257,6 +304,10 @@ export default {
     },
     // Handler when server returns link ID
     addNewLinkHandler(linkData) {
+      if (linkData.version != null && Math.abs(linkData.version - this.versionNo)) {
+        getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
+        return;
+      }
       console.log('New Link ID:', linkData.Id);
       const newLink = new Link(linkData.Id, linkData.Type,
         linkData.sId, linkData.tId);
@@ -275,6 +326,9 @@ export default {
       this.$refs.diagramUI.drawNewLink(linkData.Type, linkData.Id, sourceView, targetView);
       this.$refs.sidePanel.clear();
       this.newLinkProperties = null;
+      if (linkData.version != null) {
+        this.versionNo = linkData.version;
+      }
     },
 
     changeSelected(blockView) {
