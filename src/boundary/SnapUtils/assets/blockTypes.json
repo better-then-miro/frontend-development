@@ -39,5 +39,59 @@
         "textFieldsNames" : ["<title>"]
       }
     ]
+  },
+  {
+    "name" : "Class-Boundary",
+    "elements": [
+      {
+        "shape-svg": "boundary.svg",
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Attributes"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Operations"]
+      }
+    ]
+  },
+  {
+    "name" : "Class-Control",
+    "elements": [
+      {
+        "shape-svg": "controller.svg",
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Attributes"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Operations"]
+      }
+    ]
+  },
+  {
+    "name" : "Class-Entity",
+    "elements": [
+      {
+        "shape-svg": "entity.svg",
+        "textFieldsCnts": [1],
+        "textFieldsNames" : ["<title>"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Attributes"]
+      },
+      {
+        "textFieldsCnts": ["*"],
+        "textFieldsNames": ["Operations"]
+      }
+    ]
   }
 ]

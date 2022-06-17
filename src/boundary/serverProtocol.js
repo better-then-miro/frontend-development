@@ -54,7 +54,7 @@ export function registerUserOnServer() {
 export function registerModifierCallback(callback) {
   socket.on('updatePropertiesHandler', (response) => {
     if (response.code === 200) {
-      console.log('New properties arrived!');
+      console.log('New properties arrived!', response);
       callback(response);
     } else {
       console.log('Error occurred in updatePropertiesHandler, error code: ', response.code);

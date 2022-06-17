@@ -42,6 +42,7 @@ export default class BlockView {
         this.block.additionalFields.stereotype === '') {
         template = templates.filter(elem => elem.name === 'Class-default')[0];
       } else {
+        console.log('Stereotype', this.block);
         template = templates.filter(elem => elem.name === `Class-${this.block.additionalFields.stereotype}`)[0];
       }
     } else {
@@ -59,6 +60,7 @@ export default class BlockView {
   }
 
   constructSVGBlock(template, block) {
+    console.log('Template:', template);
     const elements = template.elements;
     const x = block.coords[0];
     let y = block.coords[1];
@@ -85,6 +87,7 @@ export default class BlockView {
       } else if (element['shape-svg'] != null) {
         svgPrimitive = this.factory.svgPrimitive_fromFile(element['shape-svg'], x, y, width, currentElementHeight);
       } else {
+        svgPrimitive = this.factory.svgPrimitive_forName('', x, y, width, currentElementHeight);
         console.log('Couldn`t find shape', element);
       }
       const svgTexts = [];
@@ -97,10 +100,10 @@ export default class BlockView {
           const y_center = y + (currentElementHeight / 2);
 
           if (currName === '<title>') {
-            if (template.name === 'Actor') {
+            if (element['shape-svg'] != null) {
               // Actor's title should be under actor svg
-              const bottom_center = y + currentElementHeight;
-              svgTexts.push(this.factory.svgCreate_Titile(x_center, bottom_center + 10, block.title));
+              //const bottom_center = y + currentElementHeight;
+              svgTexts.push(this.factory.svgCreate_Titile(x_center, y - 10, block.title));
             } else {
               svgTexts.push(this.factory.svgCreate_Titile(x_center, y_center, block.title));
             }

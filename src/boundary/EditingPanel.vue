@@ -172,7 +172,7 @@ export default {
         });
         if (newItemKey !== '') { newAdditionFieldsDict[newItemKey].push('Value'); }
 
-        if (this.selectedBlockView.block.additionalFields.stereotype) {
+        if (this.selectedBlockView.block.additionalFields.stereotype != null) {
           newAdditionFieldsDict.stereotype = this.selectedStereotype;
         }
       }

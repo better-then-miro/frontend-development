@@ -1,9 +1,10 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable camelcase */
-/* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 import Snap from 'snapsvg-cjs';
 import actorIcon from './assets/actor.svg';
+import boundaryIcon from './assets/boundary.svg';
 
 const bgColor = '#60efff';
 
@@ -23,14 +24,14 @@ export default class SvgBlockFactory {
         return this.svgCreate_Actor(x, y, w, h);
       default :
         console.log('Don`t know such primitive');
-        return null;
+        return this.svgPrimitive_Rectangle(x, y, w, h, '#ffffff', 'white');
     }
   }
 
   /**
    * Load svg figure as primitive (svg figure should have size 80x80)
    */
-  svgPrimitive_fromFile(filename, x, y, w, h) {
+  svgPrimitive_fromFile(filename, x, y, w, h, widthSVG = 80, heightSVG = 80) {
     const g = this.snap.group();
     // eslint-disable-next-line global-require,import/no-dynamic-require
     const icon = require(`./assets/${filename}`);
@@ -41,7 +42,7 @@ export default class SvgBlockFactory {
     });
 
     const t = new Snap.Matrix();
-    t.scale(w / 80, h / 80, x, y); // scale object
+    t.scale(w / widthSVG, h / heightSVG, x, y); // scale object
     t.translate(x, y);
     g.transform(t); // apply transformation to object
 
