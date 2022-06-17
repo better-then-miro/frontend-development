@@ -91,7 +91,7 @@ export default {
         console.log('Error occurred in blockModifierCallback, error code: ', data.code);
         return;
       }
-      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+      if (data.version != null && Math.abs(data.version - this.versionNo) > 1) {
         getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
         return;
       }
@@ -130,7 +130,7 @@ export default {
         console.log('Error occurred in blockDeleteCallback, error code: ', data.code);
         return;
       }
-      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+      if (data.version != null && Math.abs(data.version - this.versionNo) > 1) {
         getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
         return;
       }
@@ -174,7 +174,7 @@ export default {
         console.log('Error occurred in deleteLinkCallback, error code: ', data.code);
         return;
       }
-      if (data.version != null && Math.abs(data.version - this.versionNo)) {
+      if (data.version != null && Math.abs(data.version - this.versionNo) > 1) {
         getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
         return;
       }
@@ -199,6 +199,7 @@ export default {
       }
       if (data.version != null) {
         this.versionNo = data.version;
+        console.log('New version: ', this.versionNo);
       }
       console.log('Diagram content ', data);
       data.blocks.forEach((block) => {
@@ -229,7 +230,7 @@ export default {
 
     // Handler when server returns block ID
     addNewBlockHandler(blockData) {
-      if (blockData.version != null && Math.abs(blockData.version - this.versionNo)) {
+      if (blockData.version != null && Math.abs(blockData.version - this.versionNo) > 1) {
         getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
         return;
       }
@@ -304,7 +305,7 @@ export default {
     },
     // Handler when server returns link ID
     addNewLinkHandler(linkData) {
-      if (linkData.version != null && Math.abs(linkData.version - this.versionNo)) {
+      if (linkData.version != null && Math.abs(linkData.version - this.versionNo) > 1) {
         getDiagramContent(this.currentDiagram.Id, this.loadDiagramContent);
         return;
       }
